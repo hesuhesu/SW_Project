@@ -4,7 +4,7 @@ ___
 
 ### Project Title
 
-** 미정 **
+**~~미정~~**
 ___
 
 ### Team Rule
