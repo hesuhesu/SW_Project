@@ -2,9 +2,8 @@
 
 ___
 
-### Project Title
+### Project Title : **< WYSIWYG Editor >**
 
-**~~미정~~**
 ___
 
 ### Team Rule
