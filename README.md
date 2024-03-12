@@ -1,10 +1,4 @@
-# SW_Project
-
-___
-
-### Project Title : **< WYSIWYG Editor >**
-
-___
+# Project Name : < WYSIWYG Editor >
 
 ### Team Rule
 
@@ -18,14 +12,30 @@ ___
 
 ___
 
-### 프로젝트 연혁
+### Team Introduce
 
-#### 24.03.06
-
-- project 생성
+|<a href = "https://github.com/hesuhesu" target = 'blank'><img src = "https://avatars.githubusercontent.com/u/91324571?v=4" heigth = "100" width = "100"><a>|<a href = "https://github.com/jihoonjeong56" target = 'blank'><img src = "https://avatars.githubusercontent.com/u/100738560?v=4" heigth = "100" width = "100"><a>|<a href = "https://github.com/shinseungho0" target = 'blank'><img src = "https://avatars.githubusercontent.com/u/100738567?v=4" heigth = "100" width = "100"><a>|<a href = "https://github.com/dongs3" target = 'blank'><img src = "https://avatars.githubusercontent.com/u/144899149?v=4" heigth = "100" width = "100"><a>|
+|:---:|:---:|:---:|:---:|
+|**hesuhesu**|**jihoonjeong56**|**shinseungho0**|**dongs3**|
+|backend|backend|frontend|frontend|
 
 ___
 
-#### 24.03.07
+### 기술 스택
 
-- basic Manual 정립
+- 미정
+
+___
+
+### 프로젝트 연혁
+
+<br>
+
+> ### 24.03.06
+>> #### project 생성
+
+> ### 24.03.07
+>> #### basic Manual 정립
+
+> ### 24.03.12
+>> #### 역할 분담 및 기술 토의
