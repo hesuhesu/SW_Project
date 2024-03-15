@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dong-A WYSIWYG Editor</title>
+    <style>
+        /* 에디터를 표시할 영역의 스타일 */
+        #editor {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ccc;
+            padding: 5px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1 >Dong-A WYSIWYG Editor</h1>
+    <!-- 에디터를 표시할 div -->
+    <!-- 서식 지정 버튼들 -->
+    <button onclick="execCommand('bold')">굵게</button>
+    <button onclick="execCommand('italic')">기울임</button>
+    <button onclick="execCommand('underline')">밑줄</button>
+    <button onclick="execCommand('insertUnorderedList')">글머리 기호</button>
+    <button onclick="execCommand('insertOrderedList')">번호 매기기</button>
+    <button onclick="execCommand('justifyLeft')">왼쪽 정렬</button>
+    <button onclick="execCommand('justifyCenter')">가운데 정렬</button>
+    <button onclick="execCommand('justifyRight')">오른쪽 정렬</button>
+    <button onclick="execCommand('justifyFull')">양쪽 정렬</button>
+    <button onclick="execCommand('removeFormat')">서식 제거</button>
+    <button onclick="execCommand('removeFormat')">모든 글 서식 제거</button> <!-- 구현 요망 -->
+    
+    <!-- 에디터 작성 칸 -->
+    <div id="editor" contenteditable="true"></div>
+    <br>
+
+    <!-- 이미지 파일을 업로드할 input 요소 -->
+    <input type="file" id="imageInput" accept="image/*">
+    <br>
+
+    <!-- STL 파일을 Drag and Drop으로 업로드할 영역 -->
+    <div id="stlDropArea" style="border: 2px dashed #aaa; padding: 20px;">
+        STL 파일을 이 영역에 끌어다 놓으세요.
+    </div>
+    <br>
+    
+    <!-- 저장 버튼 -->
+    <button onclick="saveContent()">저장</button>
+
+    <!-- 사용자가 작성한 내용을 저장할 hidden input -->
+    <input type="hidden" id="contentInput" name="content">
+
+    <script>
+        // execCommand를 실행하여 사용자가 선택한 서식을 적용하는 함수
+        function execCommand(command) {
+            document.execCommand(command, false, null);
+        }
+
+        // 저장 버튼을 클릭했을 때 사용자가 작성한 내용을 hidden input에 저장하는 함수
+        function saveContent() {
+            var content = document.getElementById('editor').innerHTML;
+            document.getElementById('contentInput').value = content;
+            alert("내용이 저장되었습니다!");
+        }
+
+        // 이미지 파일을 선택했을 때 호출되는 함수
+        document.getElementById('imageInput').addEventListener('change', function(event) {
+            var file = event.target.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var img = document.createElement('img');
+                    img.src = e.target.result;
+                    document.getElementById('editor').appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // STL 파일을 Drop했을 때 호출되는 함수
+        var stlDropArea = document.getElementById('stlDropArea');
+        stlDropArea.addEventListener('dragover', function(event) {
+            event.preventDefault();
+            stlDropArea.style.backgroundColor = '#eee';
+        });
+        stlDropArea.addEventListener('dragleave', function(event) {
+            event.preventDefault();
+            stlDropArea.style.backgroundColor = '';
+        });
+        stlDropArea.addEventListener('drop', function(event) {
+            event.preventDefault();
+            stlDropArea.style.backgroundColor = '';
+            var file = event.dataTransfer.files[0];
+            if (file && file.type === 'model/stl') {
+                var fileName = file.name;
+                var fileSize = file.size;
+                // STL 파일을 업로드하는 로직을 추가하세요.
+                alert('파일 이름: ' + fileName + ', 파일 크기: ' + fileSize + ' bytes');
+            } else {
+                alert('유효한 STL 파일을 업로드하세요.');
+            }
+        });
+    </script>
+</body>
+</html>
