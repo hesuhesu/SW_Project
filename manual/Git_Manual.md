@@ -29,7 +29,7 @@ ex) git clone http://github.com/hesuhesu/Git-chana
 **1-4. 코드 순차 입력**
 
 ```
-cd (folder name)
+cd (folder name) // 해당 폴더로 이동하는 명령어
 ex) cd Git-chana
 
 git remote // origin이 뜨면 합격
@@ -60,9 +60,6 @@ ___
 **2-2. 코드 순차 입력**
 
 ```
-cd (folder name)
-ex) cd Git-chana
-
 git remote // origin이 뜨면 합격
 git add . // 여지껏 한 작업들 전부 한방에 이행
 git status // 추가한 작업물 확인용
