@@ -2,6 +2,8 @@
 
 ### Team Rule
 
+<br>
+
 - basic markdown 문법 숙지
   - issue & PR 작성 요령
 - checklist 에 맞게 develop at day or week
@@ -14,6 +16,8 @@ ___
 
 ### Team Introduce
 
+<br>
+
 |<a href = "https://github.com/hesuhesu" target = 'blank'><img src = "https://avatars.githubusercontent.com/u/91324571?v=4" heigth = "100" width = "100"><a>|<a href = "https://github.com/jihoonjeong56" target = 'blank'><img src = "https://avatars.githubusercontent.com/u/100738560?v=4" heigth = "100" width = "100"><a>|<a href = "https://github.com/shinseungho0" target = 'blank'><img src = "https://avatars.githubusercontent.com/u/100738567?v=4" heigth = "100" width = "100"><a>|<a href = "https://github.com/dongs3" target = 'blank'><img src = "https://avatars.githubusercontent.com/u/144899149?v=4" heigth = "100" width = "100"><a>|
 |:---:|:---:|:---:|:---:|
 |**hesuhesu**|**jihoonjeong56**|**shinseungho0**|**dongs3**|
@@ -23,7 +27,11 @@ ___
 
 ### 기술 스택
 
-미정
+<br>
+
+- **React, DJango, RestAPI**
+
+<div style="display: flex; align-items: flex-start;"><img src="https://techstack-generator.vercel.app/react-icon.svg" alt="icon" width="100" height="100" /><img src="https://techstack-generator.vercel.app/django-icon.svg" alt="icon" width="100" height="100" /><img src="https://techstack-generator.vercel.app/restapi-icon.svg" alt="icon" width="100" height="100" /></div>
 
 ___
 
@@ -39,3 +47,6 @@ ___
 
 > ### 24.03.12
 >> #### 역할 분담 및 기술 토의
+
+> ### 24.03.25
+>> #### 요구 사항 확인 및 발표 완료
