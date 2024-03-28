@@ -81,10 +81,18 @@ ___
 <br>
 
 - !!만약 원격 레포지토리에서 수정한 후 로컬 저장소에서 수정하지 않고 commit 한다면 log 가 맞지않고 오류가 생기기 때문에 반드시 아래의 코드 실행!!
+- 참고로 3-1 만 사용해도 좋다. 단 학습을 위해 3-2 도 인지하자.
 
 <br>
 
-**3-1. 코드 순차 입력**
+**3-1. pull = fetch + merge**
+
+```
+git pull (remote repository name) (branch)
+ex) git pull origin sub
+```
+
+**3-2. 코드 순차 입력**
 
 ```
 git fetch origin
