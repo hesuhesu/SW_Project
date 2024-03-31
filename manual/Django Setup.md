@@ -65,6 +65,13 @@ deactivate
 
 <br>
 
+**1-7. CORS(Crosss-Origin Resource Sharing) 설치**
+```
+pip install django-cors-headers
+```
+
+<br>
+
 ___
 
 ### 2. 자주 쓰게 될 명령어
