@@ -16,16 +16,11 @@ pip install virtualenv
 python -m virtualenv myenv
 ```
 
-<br>
-
-**1-2. 가상화 활성화**
-```
-C:\myenv\Scripts\activate
-```
+- 이후 cmd 나 명령 프롬프트 종료 후 PyCharm 세팅 시작
 
 <br>
 
-**1-3. PyCharm Install & Interpreter Setup**
+**1-2. PyCharm Install & Interpreter Setup**
 
 - PyCharm 설치
 - PyCharm 시작 화면에 open 에서 fork 한 local repository 의 backend 경로로 설정
@@ -41,6 +36,13 @@ C:\myenv\Scripts\activate
 - Environment Existing 으로 변경
 - 우측에 ... 모양 클릭 후 경로창에 C:\myenv\Scripts\python.exe 입력하고 ok
 - 나머지도 ok 하면 Interpreter setup 종료
+
+<br>
+ 
+**1-3. 가상화 활성화(PyCharm 터미널에 (myenv) 가 없을 시 실행)**
+```
+C:\myenv\Scripts\activate
+```
 
 <br>
 
@@ -61,7 +63,7 @@ pip install djangorestframework
 
 **1-6. Django REST Framework 토큰 기반 인증 구현 패키지 설치**
 ```
-pip install djangorestframework djangorestframework-simplejwt
+pip install djangorestframework-simplejwt
 ```
 
 <br>
@@ -76,13 +78,6 @@ pip install django-rest-framework-docs
 **1-8. CORS(Crosss-Origin Resource Sharing) 설치**
 ```
 pip install django-cors-headers
-```
-
-<br>
-
-**1-9. 가상화 종료**
-```
-deactivate
 ```
 
 <br>
