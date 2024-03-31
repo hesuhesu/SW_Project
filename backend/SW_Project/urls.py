@@ -24,4 +24,5 @@ urlpatterns = [
     path('hello/', hello),
     path('api/hello/', hello_rest_api, name='hello_rest_api'),
     path('', include('app.urls')),
+    path('users/', include('users.urls')),
 ]
