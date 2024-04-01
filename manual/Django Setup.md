@@ -16,18 +16,14 @@ pip install virtualenv
 python -m virtualenv myenv
 ```
 
-<br>
-
-**1-2. 가상화 활성화**
-```
-C:\myenv\Scripts\activate
-```
+- 이후 cmd 나 명령 프롬프트 종료 후 PyCharm 세팅 시작
 
 <br>
 
-**1-3. PyCharm Install & Interpreter Setup**
+**1-2. PyCharm Install & Interpreter Setup**
 
 - PyCharm 설치
+- PyCharm 시작 화면에 open 에서 fork 한 local repository 의 backend 경로로 설정
 - 실행 후 좌측 상단에 File - settings 실행
 
 <img src = "/images/Python_Interpreter_Setup_1.png">
@@ -40,6 +36,13 @@ C:\myenv\Scripts\activate
 - Environment Existing 으로 변경
 - 우측에 ... 모양 클릭 후 경로창에 C:\myenv\Scripts\python.exe 입력하고 ok
 - 나머지도 ok 하면 Interpreter setup 종료
+
+<br>
+ 
+**1-3. 가상화 활성화(PyCharm 터미널에 (myenv) 가 없을 시 실행)**
+```
+C:\myenv\Scripts\activate
+```
 
 <br>
 
@@ -58,9 +61,23 @@ pip install djangorestframework
 
 <br>
 
-**1-6. 가상화 종료**
+**1-6. Django REST Framework 토큰 기반 인증 구현 패키지 설치**
 ```
-deactivate
+pip install djangorestframework-simplejwt
+```
+
+<br>
+
+**1-7. Django REST Framework DRF Docs 설치**
+```
+pip install django-rest-framework-docs
+```
+
+<br>
+
+**1-8. CORS(Crosss-Origin Resource Sharing) 설치**
+```
+pip install django-cors-headers
 ```
 
 <br>
@@ -72,8 +89,8 @@ ___
 <br>
 
 - 위의 설정이 끝났다면 PyCharm 터미널에서 작동하면 무난하게 사용된다
-- PyCharm 터미널의 경로가 backend 로 끝나는지 잘 확인해보자
-- 특별한 일이 없다면 해당 명령어만 터미널에 사용하여 실행할 것
+- PyCharm 의 터미널이 내가 fork 한 파일의 backend 폴더인지 확인하고 실행하자.
+- 특별한 일이 없다면 해당 명령어만 PyCharm 터미널에 사용하여 실행할 것
 ```
 python manage.py runserver // 종료시 ctrl+c
 ```
