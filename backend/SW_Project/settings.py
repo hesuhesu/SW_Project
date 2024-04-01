@@ -74,6 +74,8 @@ CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'SW_Project.urls'
 
+SITE_ID = 1
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
