@@ -72,6 +72,8 @@ MIDDLEWARE = [
 CORS_ORIGIN_WHITELIST = ('http://127.0.0.1:3000', 'http://localhost:3000')
 CORS_ALLOW_CREDENTIALS = True
 
+SITE_ID = 1
+
 ROOT_URLCONF = 'SW_Project.urls'
 
 TEMPLATES = [
