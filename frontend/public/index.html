@@ -28,7 +28,6 @@
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <h1>Dong-A 3D Model WYSIWYG Editor</h1>
     <div id="root"></div>
     <!--
       This HTML file is a template.
@@ -40,5 +39,18 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+    <script>
+      function noEvent() {
+        if (event.keyCode == 116) {
+          event.keyCode= 2;
+          return false;
+        }
+        else if(event.ctrlKey && (event.keyCode==78 || event.keyCode == 82))
+        {
+          return false;
+        }
+      }
+      document.onkeydown = noEvent;
+    </script>
   </body>
 </html>

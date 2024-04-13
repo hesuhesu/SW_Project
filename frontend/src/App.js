@@ -1,21 +1,31 @@
-import React, { useEffect } from 'react';
-import TextEdit from './components/TextEdit';
-import Toolbar from './components/Toolbar';
-import FontEdit from './components/FontEdit';
+import React from 'react';
+import Header from './components/Header';
+import MyEditor from './components/MyEditor';
+import ThreeModelButton from './components/ThreeModelButton';
+import 'bootstrap/dist/css/bootstrap.min.css'; // bootstrap 적용
+import './quillstyle.css'
 
-function App() {
-  // useEffect(() => {
-  //   document.title = "Dong-A 3D Model WYSIWYG Editor";
+/*import { Canvas } from "react-three-fiber";
+import { OrbitControls, Stats } from "@react-three/drei";
+import { Suspense } from 'react';
+import Plane from "./components/model";*/
 
-  // }, []);
-  
+const App = () => {
   return (
-    <div className="App">
-      <Toolbar />
-      <FontEdit />
-      <TextEdit />
+    <div>
+      <Header/>
+      <MyEditor />
+      <ThreeModelButton />
     </div>
+    /*<Canvas style={{ height: 400, width: 400 }}>
+        <pointLight position={[5, 5, 5]} />
+        <Suspense fallback={null}>
+        <Plane rotation={[0, Math.PI * 1.25, 0]} />
+        </Suspense>
+        <OrbitControls />
+        <Stats />
+      </Canvas>*/
   );
-}
+};
 
 export default App;
