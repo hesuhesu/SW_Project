@@ -55,7 +55,7 @@ export const formats = [
 export const QuillToolbar = () => (
     <div id="toolbar">
     <span className="ql-formats">
-      <select className="ql-font" defaultValue="arial">
+      <select className="ql-font" defaultValue="arial" title="서체 변경">
         <option value="arial">Arial</option>
         <option value="serif">serif</option>
         <option value="monospace">monospace</option>
@@ -65,7 +65,7 @@ export const QuillToolbar = () => (
         <option value="끄트머리체">끄트머리체</option>
         <option value="할아버지의나눔">할아버지의나눔</option>
       </select>
-      <select className="ql-size" defaultValue="medium">
+      <select className="ql-size" defaultValue="medium" title="글자 크기 변경">
         <option value="8px">8px</option>
         <option value="10px">10px</option>
         <option value="12px">12px</option>
@@ -81,7 +81,7 @@ export const QuillToolbar = () => (
         <option value="96px">96px</option>
         <option value="120px">120px</option>
       </select>
-      <select className="ql-header" defaultValue="3">
+      <select className="ql-header" defaultValue="3" title="문단 서식 변경">
         <option value="1">Heading-1</option>
         <option value="2">Heading-2</option>
         <option value="3">Heading-3</option>
@@ -91,38 +91,38 @@ export const QuillToolbar = () => (
       </select>
     </span>
     <span className="ql-formats">
-      <button variant="primary" className="ql-bold" />
-      <button className="ql-italic" />
-      <button className="ql-underline" />
-      <button className="ql-strike" />
+      <button variant="primary" className="ql-bold" title="굵기"/>
+      <button className="ql-italic" title="기울이기"/>
+      <button className="ql-underline" title="밑줄"/>
+      <button className="ql-strike" title="취소선"/>
     </span>
     <span className="ql-formats">
-      <button className="ql-list" value="ordered" />
-      <button className="ql-list" value="bullet" />
-      <button className="ql-indent" value="-1" />
-      <button className="ql-indent" value="+1" />
+      <button className="ql-list" value="ordered" title="숫자 목록"/>
+      <button className="ql-list" value="bullet" title="기호 목록"/>
+      <button className="ql-indent" value="-1" title="왼쪽 이동"/>
+      <button className="ql-indent" value="+1" title="오른쪽 이동"/>
     </span>
     <span className="ql-formats">
-      <button className="ql-script" value="super" />
-      <button className="ql-script" value="sub" />
-      <button className="ql-blockquote" />
-      <button className="ql-direction" />
+      <button className="ql-script" value="super" title="위 첨자"/>
+      <button className="ql-script" value="sub" title="아래 첨자"/>
+      <button className="ql-blockquote" title="단락 들여쓰기"/>
+      <button className="ql-direction" title="한 번에 정렬"/>
     </span>
     <span className="ql-formats">
-      <select className="ql-align" />
-      <select className="ql-color" />
-      <select className="ql-background" />
+      <select className="ql-align" title="정렬"/>
+      <select className="ql-color" title="글자색 변경"/>
+      <select className="ql-background" title="배경색 변경"/>
       
     </span>
     <span className="ql-formats">
-      <button className="ql-link" />
-      <button className="ql-image" />
-      <button className="ql-video" />
+      <button className="ql-link" title="링크 삽입"/>
+      <button className="ql-image" title="사진 추가"/>
+      <button className="ql-video" title="비디오 추가"/>
     </span>
     <span className="ql-formats">
-      <button className="ql-formula" />
-      <button className="ql-code-block" />
-      <button className="ql-clean" />
+      <button className="ql-formula" title="수식 추가"/>
+      <button className="ql-code-block" title="문장 블록"/>
+      <button className="ql-clean" title="초기화"/>
     </span>
     <span className="ql-formats">
       <button className="ql-undo">
