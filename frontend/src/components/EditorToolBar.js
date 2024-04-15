@@ -1,9 +1,49 @@
 import { Quill } from "react-quill";
 
+// from 'quill/assets/icons/undo.svg' but I found that a number of loaders do not
+// handle them correctly
+const CustomUndo = () => (
+  <svg viewBox="0 0 18 18">
+    <polygon className="ql-fill ql-stroke" points="6 10 4 12 2 10 6 10" />
+    <path
+      className="ql-stroke"
+      d="M8.09,13.91A4.6,4.6,0,0,0,9,14,5,5,0,1,0,4,9"
+    />
+  </svg>
+);
+
+// Redo button icon component for Quill editor
+const CustomRedo = () => (
+  <svg viewBox="0 0 18 18">
+    <polygon className="ql-fill ql-stroke" points="12 10 14 12 16 10 12 10" />
+    <path
+      className="ql-stroke"
+      d="M9.91,13.91A4.6,4.6,0,0,1,9,14a5,5,0,1,1,5-5"
+    />
+  </svg>
+);
+
+// Undo and redo functions for Custom Toolbar
+function undoChange() {
+  this.quill.history.undo();
+}
+function redoChange() {
+  this.quill.history.redo();
+}
+
 export const modules = {
     toolbar: {
       container: "#toolbar",
-      handlers: {},
+      handlers: {
+        "undo": undoChange,
+        "redo": redoChange
+      },
+    },
+    // undo, redo history
+    history: {
+      delay: 500,
+      maxStack: 100,
+      userOnly: true
     },
     // image resize 추가
     ImageResize: {
@@ -11,24 +51,7 @@ export const modules = {
     },
     // imageDrop 추가
     imageDrop: true,
-    /*
-    videoResize: {
-      handleStyles: {
-        backgroundColor: 'black',
-        border: 'none',
-        color: white
-        // other camelCase styles for size display
-      }
-      displayStyles: {
-        backgroundColor: 'black',
-        border: 'none',
-        color: white
-        // other camelCase styles for size display
-      }
-    }
-    */
-  };
-
+};
 export const formats = [
     "header",
     "font",
@@ -106,13 +129,12 @@ export const QuillToolbar = () => (
       <button className="ql-script" value="super" title="위 첨자"/>
       <button className="ql-script" value="sub" title="아래 첨자"/>
       <button className="ql-blockquote" title="단락 들여쓰기"/>
-      <button className="ql-direction" title="한 번에 정렬"/>
+      <button className="ql-direction" value = "rtl" title="한 번에 정렬"/>
     </span>
     <span className="ql-formats">
-      <select className="ql-align" title="정렬"/>
+      <select className="ql-align" defaultValue="justify" title="정렬"/>
       <select className="ql-color" title="글자색 변경"/>
       <select className="ql-background" title="배경색 변경"/>
-      
     </span>
     <span className="ql-formats">
       <button className="ql-link" title="링크 삽입"/>
@@ -125,9 +147,11 @@ export const QuillToolbar = () => (
       <button className="ql-clean" title="초기화"/>
     </span>
     <span className="ql-formats">
-      <button className="ql-undo">
+      <button className="ql-undo" title = "뒤로 되돌리기">
+        <CustomUndo />
       </button>
-      <button className="ql-redo">
+      <button className="ql-redo" title = "앞으로 복구하기">
+        <CustomRedo />
       </button>
     </span>
   </div>
