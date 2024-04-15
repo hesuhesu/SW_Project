@@ -2,7 +2,7 @@ import React from "react";
 import { useGLTF } from "@react-three/drei";
 
 export default function Plane(props) {
-  const { nodes, materials } = useGLTF("shiba/small-airplane-v3.gltf");
+  const { nodes, materials } = useGLTF("small-airplane-v3.gltf");
 
   return (
     <group {...props}>
@@ -28,4 +28,4 @@ export default function Plane(props) {
   );
 }
 
-useGLTF.preload("shiba/small-airplane-v3.gltf");
+useGLTF.preload("small-airplane-v3.gltf");

@@ -106,13 +106,12 @@ export const QuillToolbar = () => (
       <button className="ql-script" value="super" title="위 첨자"/>
       <button className="ql-script" value="sub" title="아래 첨자"/>
       <button className="ql-blockquote" title="단락 들여쓰기"/>
-      <button className="ql-direction" title="한 번에 정렬"/>
+      <button className="ql-direction" value = "rtl" title="한 번에 정렬"/>
     </span>
     <span className="ql-formats">
-      <select className="ql-align" title="정렬"/>
+      <select className="ql-align" defaultValue="justify" title="정렬"/>
       <select className="ql-color" title="글자색 변경"/>
       <select className="ql-background" title="배경색 변경"/>
-      
     </span>
     <span className="ql-formats">
       <button className="ql-link" title="링크 삽입"/>
