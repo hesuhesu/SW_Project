@@ -1,4 +1,9 @@
 import { Quill } from "react-quill";
+import htmlEditButton from "quill-html-edit-button";
+
+Quill.register({
+  "modules/htmlEditButton":htmlEditButton
+})
 
 // from 'quill/assets/icons/undo.svg' but I found that a number of loaders do not
 // handle them correctly
@@ -51,6 +56,17 @@ export const modules = {
     },
     // imageDrop 추가
     imageDrop: true,
+    htmlEditButton: {
+      debug: true, // logging, default:false
+      msg: "Edit the content in HTML format", //Custom message to display in the editor, default: Edit HTML here, when you click "OK" the quill editor's contents will be replaced
+      okText: "Ok", // Text to display in the OK button, default: Ok,
+      cancelText: "Cancel", // Text to display in the cancel button, default: Cancel
+      buttonHTML: "&lt;&gt;", // Text to display in the toolbar button, default: <>
+      buttonTitle: "Show HTML source", // Text to display as the tooltip for the toolbar button, default: Show HTML source
+      syntax: false, // Show the HTML with syntax highlighting. Requires highlightjs on window.hljs (similar to Quill itself), default: false
+      prependSelector: 'div#myelement', // a string used to select where you want to insert the overlayContainer, default: null (appends to body),
+      editorModules: {} // The default mod
+    }
 };
 export const formats = [
     "header",

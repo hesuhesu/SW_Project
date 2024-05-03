@@ -8,7 +8,7 @@ import katex from 'katex';
 import 'katex/dist/katex.min.css'; // formular 활성화
 import 'react-quill/dist/quill.snow.css'; // Quill snow스타일 시트 불러오기
 
-// npm install react-quill quill-image-resize quill-image-drop-module react-bootstrap bootstrap three @react-three/drei @react-three/fiber katex express axios
+// npm install react-quill quill-image-resize quill-image-drop-module react-bootstrap bootstrap three @react-three/drei @react-three/fiber katex express axios multer quill-html-edit-button
  
 // 설치해야 할 모듈
 // npm install react-quill
@@ -22,6 +22,10 @@ import 'react-quill/dist/quill.snow.css'; // Quill snow스타일 시트 불러�
 // npm install katex
 // npm install express
 // npm install axios
+
+// 24.05.04 추가한 모듈
+// npm install multer
+// npm install quill-html-edit-button
 
 // katex 추가
 window.katex = katex;
@@ -67,6 +71,7 @@ const MyEditor = () => {
         modules={modules}
         formats={formats}
       />
+      <div></div>
     </div>
   );
 };
