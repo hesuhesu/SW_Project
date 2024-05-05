@@ -54,33 +54,24 @@ django-admin --version
 
 <br>
 
-**1-5. Django REST Framework 설치**
+**1-5. Django REST Framework 기본 설치**
 ```
-pip install djangorestframework
-```
-
-<br>
-
-**1-6. Django REST Framework 토큰 기반 인증 구현 패키지 설치**
-```
-pip install djangorestframework-simplejwt
+pip install djangorestframework django-cors-headers djangorestframework-simplejwt PyJWT
 ```
 
 <br>
 
-**1-7. Django REST Framework DRF Docs 설치**
+**1-6. Django REST Framework DRF Docs 설치**
 ```
 pip install django-rest-framework-docs
 ```
 
 <br>
 
-**1-8. CORS(Crosss-Origin Resource Sharing) 설치**
+**1-7. requirements.txt 생성**
 ```
-pip install django-cors-headers
+pip freeze > requirements.txt
 ```
-
-<br>
 
 ___
 
