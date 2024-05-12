@@ -96,6 +96,11 @@ export const QuillToolbar = () => (
     <span className="ql-formats">
       <select className="ql-font" defaultValue="arial" title="서체 변경">
         <option value="arial">Arial</option>
+        <option value="나눔고딕">나눔고딕</option>
+        <option value="궁서체">궁서체</option>
+        <option value="굴림체">굴림체</option>
+        <option value="바탕체">바탕체</option>
+        <option value="바탕체">돋움체</option>
         <option value="serif">serif</option>
         <option value="monospace">monospace</option>
         <option value="Quill">Quill</option>
@@ -103,6 +108,7 @@ export const QuillToolbar = () => (
         <option value="gangwon">강원</option>
         <option value="끄트머리체">끄트머리체</option>
         <option value="할아버지의나눔">할아버지의나눔</option>
+
       </select>
       <select className="ql-size" defaultValue="medium" title="글자 크기 변경">
         <option value="8px">8px</option>
@@ -121,12 +127,12 @@ export const QuillToolbar = () => (
         <option value="120px">120px</option>
       </select>
       <select className="ql-header" defaultValue="3" title="문단 서식 변경">
-        <option value="1">Heading-1</option>
-        <option value="2">Heading-2</option>
-        <option value="3">Heading-3</option>
-        <option value="4">Heading-4</option>
-        <option value="5">Heading-5</option>
-        <option value="6">Heading-6</option>
+        <option value="1">h1</option>
+        <option value="2">h2</option>
+        <option value="3">h3</option>
+        <option value="4">h4</option>
+        <option value="5">h5</option>
+        <option value="6">h6</option>
       </select>
     </span>
     <span className="ql-formats">
