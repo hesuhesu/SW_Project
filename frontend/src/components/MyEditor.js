@@ -43,7 +43,7 @@ Quill.register(Size, true);
 
 // 폰트 추가
 const Font = Quill.import("attributors/class/font");
-Font.whitelist = ["arial", "buri", "gangwon", "Quill", "serif", "monospace", "끄트머리체", "할아버지의나눔"];
+Font.whitelist = ["arial", "buri", "gangwon", "Quill", "serif", "monospace", "끄트머리체", "할아버지의나눔", "나눔고딕", "궁서체", "굴림체", "바탕체", "돋움체"];
 Quill.register(Font, true);
 
 // align & icon 변경
