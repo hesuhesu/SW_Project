@@ -28,69 +28,6 @@ const CustomRedo = () => (
   </svg>
 );
 
-// Undo and redo functions for Custom Toolbar
-function undoChange() {
-  this.quill.history.undo();
-}
-function redoChange() {
-  this.quill.history.redo();
-}
-
-export const modules = {
-    toolbar: {
-      container: "#toolbar",
-      handlers: {
-        "undo": undoChange,
-        "redo": redoChange
-      },
-    },
-    // undo, redo history
-    history: {
-      delay: 500,
-      maxStack: 100,
-      userOnly: true
-    },
-    // image resize 추가
-    ImageResize: {
-      parchment: Quill.import('parchment')
-    },
-    // imageDrop 추가
-    imageDrop: true,
-    htmlEditButton: {
-      debug: true, // logging, default:false
-      msg: "Edit the content in HTML format", //Custom message to display in the editor, default: Edit HTML here, when you click "OK" the quill editor's contents will be replaced
-      okText: "Ok", // Text to display in the OK button, default: Ok,
-      cancelText: "Cancel", // Text to display in the cancel button, default: Cancel
-      buttonHTML: "&lt;&gt;", // Text to display in the toolbar button, default: <>
-      buttonTitle: "Show HTML source", // Text to display as the tooltip for the toolbar button, default: Show HTML source
-      syntax: false, // Show the HTML with syntax highlighting. Requires highlightjs on window.hljs (similar to Quill itself), default: false
-      prependSelector: 'div#myelement', // a string used to select where you want to insert the overlayContainer, default: null (appends to body),
-      editorModules: {} // The default mod
-    }
-};
-export const formats = [
-    "header",
-    "font",
-    "size",
-    "bold",
-    "italic",
-    "underline",
-    "align",
-    "strike",
-    "script",
-    "blockquote",
-    "background",
-    "list",
-    "bullet",
-    "indent",
-    "link",
-    "image",
-    "video",
-    "color",
-    "code-block",
-    "formula",
-    "direction"
-];
 export const QuillToolbar = () => (
     <div id="toolbar">
     <span className="ql-formats">

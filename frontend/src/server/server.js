@@ -1,3 +1,5 @@
+// 현 소스코드 폴더 터미널에서 node server.js 실행
+
 // 패키지 참조
 const express = require('express');
 const multer = require('multer');
@@ -21,10 +23,11 @@ app.get('/', (req, res) => {
 
 // multer 설정
 const upload = multer({
+  
   storage: multer.diskStorage({
     // 저장할 장소
     destination(req, file, cb) {
-      cb(null, 'public/uploads');
+      cb(null, 'public/uploads'); // public/uploads
     },
     // 저장할 이미지의 파일명
     filename(req, file, cb) {
@@ -46,12 +49,12 @@ app.post('/img', upload.single('img'), (req, res) => {
   console.log('저장된 파일의 이름', req.file.filename);
 
   // 파일이 저장된 경로를 클라이언트에게 반환해준다.
-  const IMG_URL = `http://localhost:4050/uploads/${req.file.filename}`;
+  const IMG_URL = `http://localhost:3001/uploads/${req.file.filename}`;
   console.log(IMG_URL);
   res.json({ url: IMG_URL });
 });
 
-// 포트는 임의로 4050으로 사용
-app.listen(4050, () => {
-  console.log('4050번 포트에서 대기 중~');
+// 포트는 임의로 3001으로 사용
+app.listen(3001, () => {
+  console.log('3001번 포트에서 대기 중~');
 });
