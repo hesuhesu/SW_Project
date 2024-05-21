@@ -118,11 +118,11 @@ const MyEditor = () => {
 //dnd 처리 핸들러
   const imageDropHandler = useCallback(async (dataUrl) => {
   try {
-    // dataUrl을 이용하여 dim 객체를 생성
-    const dim = await fetch(dataUrl).then(res => res.dim());
-    // FormData 객체를 생성하고 'img' 필드에 dim을 추가
+    // dataUrl을 이용하여 blob 객체를 생성
+    const blob = await fetch(dataUrl).then(res => res.blob());
+    // FormData 객체를 생성하고 'img' 필드에 blob을 추가
     const formData = new FormData();
-    formData.append('img', dim);
+    formData.append('img', blob);
     // FormData를 서버로 POST 요청을 보내 이미지 업로드를 처리
     const result = await axios.post('http://localhost:3001/img', formData);
     console.log('성공 시, 백엔드가 보내주는 데이터', result.data.url);
