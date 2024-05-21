@@ -132,10 +132,10 @@ const MyEditor = () => {
     const editor = quillRef.current.getEditor();
     // 현재 커서 위치를 가져옵니다.
     const range = editor.getSelection();
-    // 현재 커서 위치에 이미지 URL을 이용해 이미지 삽입
+    // 현재 커서 위치에 이미지 URL을 이용해 이미지 삽입.
     editor.insertEmbed(range.index, 'image', IMG_URL);
   } catch (error) {
-    // 이미지 업로드 중 에러가 발생할 경우 콘솔에 에러를 출력
+    // 이미지 업로드 중 에러가 발생할 경우 콘솔에 에러를 출력합니다.
     console.log('이미지 업로드 실패', error);
   }
 }, []);
