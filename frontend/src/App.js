@@ -4,6 +4,9 @@ import MyEditor from './components/MyEditor';
 import ThreeModelButton from './components/ThreeModelButton';
 import 'bootstrap/dist/css/bootstrap.min.css'; // bootstrap 적용
 import './quillstyle.css'
+import Navbar from "./components/Navbar";
+import {Routes, Route} from "react-router-dom";
+import Home from "./components/Home";
 
 /*import { Canvas } from "react-three-fiber";
 import { OrbitControls, Stats } from "@react-three/drei";
@@ -14,6 +17,10 @@ const App = () => {
   return (
     <div>
       <Header/>
+      <Navbar /> 
+      <Routes>
+        <Route path = "/home" element = {<Home />}/>
+      </Routes>  
       <MyEditor />
       <ThreeModelButton />
     </div>
