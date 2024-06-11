@@ -6,7 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'; // bootstrap 적용
 import './quillstyle.css'
 import Navbar from "./components/Navbar";
 import {Routes, Route} from "react-router-dom";
-import Home from "./components/Home";
+import Home from "./mainpage/Home";
 
 /*import { Canvas } from "react-three-fiber";
 import { OrbitControls, Stats } from "@react-three/drei";
@@ -19,9 +19,9 @@ const App = () => {
       <Header/>
       <Navbar /> 
       <Routes>
-        <Route path = "/home" element = {<Home />}/>
+        <Route path = "/" element = {<Home />}/>
+        <Route path = "/editor" element = {<MyEditor />}/>
       </Routes>  
-      <MyEditor />
       <ThreeModelButton />
     </div>
     /*<Canvas style={{ height: 400, width: 400 }}>

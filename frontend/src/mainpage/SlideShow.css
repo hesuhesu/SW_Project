@@ -1,0 +1,42 @@
+.slideShow {   
+  clear:both;   /* 플로팅 해제 */
+  width:1473px;    /* 너비 */ 
+  height:400px;   /* 높이 */ 
+  
+  position: relative;
+  padding-top : 20px;
+}
+.slides {
+  position: absolute; 
+}
+.slides > img {
+  width:100%;  /* 너비 */
+  float:left;  /* 가로로 배치 */
+  
+}
+.buttons {
+  position: absolute;
+  bottom: 85px; /* 슬라이드쇼 하단에서 10px 위로 */
+  left: 50%;
+  transform: translateX(-50%); /* 버튼들을 중앙에 정렬 */
+  display: flex;
+  gap: 10px; /* 버튼 사이 간격 */
+}
+
+.buttons button {
+  width: 15px; /* 버튼 크기 */
+  height: 15px;
+  border-radius: 50%;
+  background-color: grey; /* 버튼 배경색 */
+  border: none;
+  cursor: pointer;
+  
+}
+
+.buttons button:hover {
+  background-color: black; /* 호버 시 버튼 배경색 */
+}
+
+.buttons button.active {
+  background-color: black; /* 활성화된 버튼 배경색 */
+}

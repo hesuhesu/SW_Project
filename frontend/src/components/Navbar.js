@@ -8,7 +8,7 @@ export default function Navbar() {
       <nav>
         <ul id="topMenu">
           <li>
-            <Link className="navbar" to="/home">
+            <Link className="navbar" to="/">
               Home 
             </Link>
           </li>
@@ -16,7 +16,7 @@ export default function Navbar() {
             <Link className = "navbar">사이트 게시판 <span>▼</span></Link>
             <ul>
               <li><Link className = "navbar_">게시판 바로가기</Link></li>
-              <li><Link className = "navbar_">작업하기</Link></li>
+              <li><Link className = "navbar_" to = "/editor">작업하기</Link></li>
             </ul>
           </li>
           <li><Link className = "navbar">마이페이지</Link></li>
