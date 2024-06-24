@@ -1,11 +1,15 @@
 import React, { useState, useRef, useCallback, useMemo} from 'react';
 import ReactQuill, {Quill} from 'react-quill';
 import EditorToolBar from "./EditorToolBar";
-import ImageResize from 'quill-image-resize'; // import image resize
+import ThreeModelButton from "./ThreeModelButton";
+import ImageResize from 'quill-image-resize';
 import { ImageDrop } from "quill-image-drop-module";
 import axios from "axios";
 import katex from 'katex';
 import QuillImageDropAndPaste from 'quill-image-drop-and-paste'
+import DragDrop from './DragDrop'
+
+import htmlEditButton from "quill-html-edit-button";
 
 import 'katex/dist/katex.min.css'; // formular 활성화
 import 'react-quill/dist/quill.snow.css'; // Quill snow스타일 시트 불러오기
@@ -34,6 +38,9 @@ import 'react-quill/dist/quill.snow.css'; // Quill snow스타일 시트 불러�
 // npm install cors --save
 // npm install quill-image-drop-and-paste --save
 
+// 24.06.22 추가한 모듈
+// npm i cors
+
 // katex 추가
 window.katex = katex;
 // 모듈 등록
@@ -59,7 +66,10 @@ Align.whitelist = ["left", "center", "right", "justify"];
 const Icons = ReactQuill.Quill.import("ui/icons");
 Icons.align["left"] = Icons.align[""];
 
-
+// htmlEditButton 적용
+Quill.register({
+  "modules/htmlEditButton":htmlEditButton
+});
 
 const MyEditor = () => {
   const [editorHtml, setEditorHtml] = useState('');
@@ -68,7 +78,7 @@ const MyEditor = () => {
   const handleChange = useCallback((html) => {
     setEditorHtml(html);
   }, []);
-
+  
   // 이미지 처리를 하는 핸들러
   const imageHandler = () => {
     console.log('에디터에서 이미지 버튼을 클릭하면 이미지 핸들러가 시작됩니다!');
@@ -77,7 +87,7 @@ const MyEditor = () => {
     const input = document.createElement('input');
     // 속성 써주기
     input.setAttribute('type', 'file');
-    input.setAttribute('accept', 'image/*');
+    input.setAttribute('accept', 'image/*'); // 원래 image/*
     input.click(); // 에디터 이미지버튼을 클릭하면 이 input이 클릭된다.
     // input이 클릭되면 파일 선택창이 나타난다.
 
@@ -139,6 +149,7 @@ const MyEditor = () => {
     console.log('이미지 업로드 실패', error);
   }
 }, []);
+
 // Undo and redo functions for Custom Toolbar
   function undoChange() {
     this.quill.history.undo();
@@ -147,13 +158,15 @@ const MyEditor = () => {
     this.quill.history.redo();
   }
 
+// 새로운 3D 모델 블록 추가
+  
   const modules = useMemo(() => ({
     toolbar: {
       container: "#toolbar",
       handlers: {
         "undo": undoChange,
         "redo": redoChange,
-        "image": imageHandler
+        "image": imageHandler,
       },
     },
     // undo, redo history
@@ -163,12 +176,8 @@ const MyEditor = () => {
       userOnly: true
     },
     // image resize 추가
-    ImageResize: {
-      parchment: Quill.import('parchment')
-    },
-    imageDropAndPaste: {
-      handler: imageDropHandler
-    },
+    ImageResize: { parchment: Quill.import('parchment') },
+    imageDropAndPaste: { handler: imageDropHandler },
     htmlEditButton: {
         debug: true, // logging, default:false
         msg: "Edit the content in HTML format", //Custom message to display in the editor, default: Edit HTML here, when you click "OK" the quill editor's contents will be replaced
@@ -179,16 +188,18 @@ const MyEditor = () => {
         syntax: false, // Show the HTML with syntax highlighting. Requires highlightjs on window.hljs (similar to Quill itself), default: false
         prependSelector: 'div#myelement', // a string used to select where you want to insert the overlayContainer, default: null (appends to body),
         editorModules: {} // The default mod
-      }
+      },
   }), [imageDropHandler]);
 
   const formats = [
     "header", "font", "size", "bold", "italic", "underline", "align", "strike", "script", "blockquote", "background", "list", "bullet", "indent",
-    "link", "image", "video", "color", "code-block", "formula", "direction"
+    "link", "image", "video", "color", "code-block", "formula", "direction", "3d-model"
   ];
 
   return (
     <div className="text-editor">
+      <div className="ThreeD-Views">
+      </div>
       <EditorToolBar />
       <ReactQuill
         theme="snow"// 테마 설정 (여기서는 snow를 사용)
@@ -198,6 +209,8 @@ const MyEditor = () => {
         modules={modules}
         formats={formats}
       />
+      <ThreeModelButton />
+      <DragDrop />
     </div>
   );
 };

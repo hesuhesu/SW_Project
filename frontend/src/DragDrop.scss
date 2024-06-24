@@ -1,0 +1,59 @@
+.DragDrop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 150px;
+
+  &-File {
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: absolute; // 추가
+    top: 0; // 추가
+    width: 100%; // 추가
+    box-sizing: border-box; // 추가
+    &-Dragging {
+      @extend .DragDrop-File;
+      border-color: #4CAF50;
+    }
+  }
+
+  &-Files {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 20px;
+    max-height: 200px;
+    overflow-y: auto;
+    width: 100%;
+
+    &-Item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #f1f1f1;
+      padding: 10px;
+      margin: 5px;
+      border-radius: 4px;
+      width: calc(50% - 10px);
+
+      .DragDrop-Files-Filter {
+        cursor: pointer;
+        color: #888;
+
+        &:hover {
+          color: #333;
+        }
+      }
+    }
+  }
+}
+
+.DragDrop-File {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
