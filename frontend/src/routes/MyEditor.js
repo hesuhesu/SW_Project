@@ -1,16 +1,16 @@
 import React, { useState, useRef, useCallback, useMemo} from 'react';
 import ReactQuill, {Quill} from 'react-quill';
-import EditorToolBar from "./EditorToolBar";
-import ThreeModelButton from "./ThreeModelButton";
 import ImageResize from 'quill-image-resize';
 import { ImageDrop } from "quill-image-drop-module";
-import axios from "axios";
+import axios from 'axios';
 import katex from 'katex';
 import QuillImageDropAndPaste from 'quill-image-drop-and-paste'
-import DragDrop from './DragDrop'
-
 import htmlEditButton from "quill-html-edit-button";
+import EditorToolBar, {insertHeart, insert3DButton} from "../components/EditorToolBar";
+import ThreeModelButton from '../components/ThreeModelButton';
+import DragDrop from '../components/DragDrop'
 
+import '../css/quillstyle.css'
 import 'katex/dist/katex.min.css'; // formular 활성화
 import 'react-quill/dist/quill.snow.css'; // Quill snow스타일 시트 불러오기
 
@@ -158,8 +158,6 @@ const MyEditor = () => {
     this.quill.history.redo();
   }
 
-// 새로운 3D 모델 블록 추가
-  
   const modules = useMemo(() => ({
     toolbar: {
       container: "#toolbar",
@@ -167,6 +165,8 @@ const MyEditor = () => {
         "undo": undoChange,
         "redo": redoChange,
         "image": imageHandler,
+        insertHeart : insertHeart,
+        insert3DButton : insert3DButton,
       },
     },
     // undo, redo history
@@ -189,11 +189,12 @@ const MyEditor = () => {
         prependSelector: 'div#myelement', // a string used to select where you want to insert the overlayContainer, default: null (appends to body),
         editorModules: {} // The default mod
       },
+      
   }), [imageDropHandler]);
 
   const formats = [
     "header", "font", "size", "bold", "italic", "underline", "align", "strike", "script", "blockquote", "background", "list", "bullet", "indent",
-    "link", "image", "video", "color", "code-block", "formula", "direction", "3d-model"
+    "link", "image", "video", "color", "code-block", "formula", "direction"
   ];
 
   return (

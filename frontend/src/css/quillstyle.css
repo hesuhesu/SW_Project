@@ -85,7 +85,7 @@ font-size: 14px !important;
 
 @font-face { 
   font-family: "할아버지의나눔";
-  src: url("../public/할아버지의나눔.ttf") format("truetype");
+  src: url("../../public/할아버지의나눔.ttf") format("truetype");
 } 
 .ql-font-할아버지의나눔 {
   font-family: "할아버지의나눔";
@@ -93,7 +93,7 @@ font-size: 14px !important;
 
 @font-face { 
   font-family: "끄트머리체";
-  src: url("../public/끄트머리체.ttf") format("truetype");
+  src: url("../../public/끄트머리체.ttf") format("truetype");
 }
 .ql-font-끄트머리체 {
   font-family: "끄트머리체";
@@ -101,7 +101,7 @@ font-size: 14px !important;
 
 @font-face { 
   font-family: "나눔고딕";
-  src: url("../public/NanumGothic.ttf") format("truetype");
+  src: url("../../public/NanumGothic.ttf") format("truetype");
 }
 .ql-font-나눔고딕 {
   font-family: "나눔고딕";
@@ -109,7 +109,7 @@ font-size: 14px !important;
 
 @font-face { 
   font-family: "궁서체";
-  src: url("../public/ChosunGs.TTF") format("truetype");
+  src: url("../../public/ChosunGs.TTF") format("truetype");
 }
 .ql-font-궁서체 {
   font-family: "궁서체";
@@ -117,7 +117,7 @@ font-size: 14px !important;
 
 @font-face { 
   font-family: "굴림체";
-  src: url("../public/ChosunGu.TTF") format("truetype");
+  src: url("../../public/ChosunGu.TTF") format("truetype");
 }
 .ql-font-굴림체 {
   font-family: "굴림체";
@@ -125,7 +125,7 @@ font-size: 14px !important;
 
 @font-face { 
   font-family: "바탕체";
-  src: url("../public/HCRBatang.ttf") format("truetype");
+  src: url("../../public/HCRBatang.ttf") format("truetype");
 }
 .ql-font-바탕체 {
   font-family: "바탕체";
@@ -133,7 +133,7 @@ font-size: 14px !important;
 
 @font-face { 
   font-family: "돋움체";
-  src: url("../public/HCRDotum.ttf") format("truetype");
+  src: url("../../public/HCRDotum.ttf") format("truetype");
 }
 .ql-font-돋움체 {
   font-family: "돋움체";
@@ -141,7 +141,7 @@ font-size: 14px !important;
 
 @font-face { 
   font-family: "Quill";
-  src: url("../public/Quill.ttf") format("truetype");
+  src: url("../../public/Quill.ttf") format("truetype");
 }
 
 .ql-font-Quill {

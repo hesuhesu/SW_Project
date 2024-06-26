@@ -1,9 +1,10 @@
 /* eslint-disable no-unused-vars */
 import React from 'react';
-// import * as THREE from 'three';
-// import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-// import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-// import axios from "axios";
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import axios from "axios";
+import Button from 'react-bootstrap/Button';
 
 // handle them correctly
 const CustomUndo = () => (
@@ -36,7 +37,8 @@ const Custom3D = () => (
   </svg>
 );
 
-/*
+const CustomHeart = () => <span>♥</span>;
+
 const loadModel = (url, Canvas) => {
   const loader = new GLTFLoader();
   loader.load(
@@ -81,12 +83,16 @@ const loadModel = (url, Canvas) => {
       }
   );
 };
-*/
 
 let count = 0;
-// custom button
-const handleCustomButtonClick = () => {
-  
+
+export function insertHeart() {
+  const cursorPosition = this.quill.getSelection().index;
+  this.quill.insertText(cursorPosition, "♥");
+  this.quill.setSelection(cursorPosition + 1);
+}
+
+export function insert3DButton(){
   // Quill Editor 내부에 3D 뷰어 추가
   const quillContainer = document.querySelector('.ThreeD-Views');
   if (quillContainer.childElementCount > 9){
@@ -98,9 +104,8 @@ const handleCustomButtonClick = () => {
   canvas$count$.width = 400;
   canvas$count$.height = 400;
   quillContainer.appendChild(canvas$count$);
-
+  
   /*
-  // 1. 이미지를 저장할 input type=file DOM을 만든다.
   const input = document.createElement('input');
   // 속성 써주기
   input.setAttribute('type', 'file');
@@ -110,7 +115,7 @@ const handleCustomButtonClick = () => {
 
   // input에 변화가 생긴다면 = 이미지를 선택
   input.addEventListener('change', async () => {
-    console.log('온체인지');
+    console.log('3d file 찾기 시작');
     const file = input.files[0];
     // multer에 맞는 형식으로 데이터 만들어준다.
     const formData = new FormData();
@@ -147,8 +152,7 @@ const handleCustomButtonClick = () => {
     // ...
   });
   count++;
-  
-};
+}
 
 export const QuillToolbar = () => (
     <div id="toolbar">
@@ -233,7 +237,10 @@ export const QuillToolbar = () => (
       <button className="ql-redo" title = "앞으로 복구하기">
         <CustomRedo />
       </button>
-      <button className="ql-my-custom-button" type="file" title = "3D Viewer" onClick={handleCustomButtonClick} accept=".gltf, .glb, .bin">
+      <Button variant="warning" className="ql-insertHeart" title = "heart">
+        <CustomHeart />
+      </Button>
+      <button className="ql-insert3DButton" title = "3D Input">
         <Custom3D />
       </button>
     </span>
