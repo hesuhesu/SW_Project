@@ -42,45 +42,49 @@ const CustomHeart = () => <span>♥</span>;
 const loadModel = (url, Canvas) => {
   const loader = new GLTFLoader();
   loader.load(
-      url,
-      (gltf) => {
-          if (gltf.scene) {
-              const scene = gltf.scene;
-              scene.scale.set(0.5, 0.5, 0.5);
+    url,
+    (gltf) => {
+      if (gltf.scene) {
+        const scene = gltf.scene;
+        scene.scale.set(0.5, 0.5, 0.5);
 
-              const camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 0.1, 1000);
-              camera.position.set(0, 0, 5);
+        const camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 0, 5);
 
-              const renderer = new THREE.WebGLRenderer({
-                  canvas: Canvas.current,
-                  antialias: true,
-              });
-              renderer.setSize(600, 600);
+        const renderer = new THREE.WebGLRenderer({
+          canvas: Canvas,
+          antialias: true,
+          alpha: true,
+          preserveDrawingBuffer: true,
+        });
+        renderer.setSize(400, 400);
 
-              const controls = new OrbitControls(camera, renderer.domElement);
-              controls.enableDamping = true;
+        const controls = new OrbitControls(camera, renderer.domElement);
+        // controls.enableDamping = true;
 
-              const ambientLight = new THREE.AmbientLight(0xffffff, 1);
-              scene.add(ambientLight);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+        scene.add(ambientLight);
 
-              const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-              directionalLight.position.set(0, 1, 0);
-              scene.add(directionalLight);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(0, 1, 0);
+        scene.add(directionalLight);
 
-              const animate = () => {
-                  requestAnimationFrame(animate);
-                  controls.update();
-                  renderer.render(scene, camera);
-              };
-              animate();
-          } else {
-              console.error('Failed to load GLTF file: scene is undefined');
-          }
-      },
-      undefined,
-      (error) => {
-          console.error('Failed to load GLTF file:', error);
+        const clock = new THREE.Clock();
+        const animate = () => {
+          requestAnimationFrame(animate);
+          controls.update(clock.getDelta());
+          renderer.render(scene, camera);
+        };
+        animate();
+        console.log("Success Load Gltf!!", Canvas.current);
+      } else {
+        console.error('Failed to load GLTF file: scene is undefined');
       }
+    },
+    undefined,
+    (error) => {
+      console.error('Failed to load GLTF file:', error);
+    }
   );
 };
 
@@ -100,47 +104,39 @@ export function insert3DButton(){
     return;
   }
   const canvas$count$ = document.createElement('canvas');
-  canvas$count$.id = '3d-viewer';
-  canvas$count$.width = 400;
-  canvas$count$.height = 400;
+  canvas$count$.tabIndex = count;
   quillContainer.appendChild(canvas$count$);
   
-  /*
   const input = document.createElement('input');
   // 속성 써주기
   input.setAttribute('type', 'file');
-  input.setAttribute('accept', '*'); // 원래 image/*
-  input.click(); // 에디터 이미지버튼을 클릭하면 이 input이 클릭된다.
-  // input이 클릭되면 파일 선택창이 나타난다.
+  input.setAttribute('accept', '*');
+  input.click();
 
-  // input에 변화가 생긴다면 = 이미지를 선택
+  // 버튼 클릭 시 해당 이벤트
   input.addEventListener('change', async () => {
     console.log('3d file 찾기 시작');
     const file = input.files[0];
-    // multer에 맞는 형식으로 데이터 만들어준다.
     const formData = new FormData();
-    formData.append('gltf', file); // formData는 키-밸류 구조
-    // 백엔드 multer라우터에 이미지를 보낸다.
+    formData.append('gltf', file);
     try {
       const result = await axios.post('http://localhost:3001/gltf', formData);
       const GLTF_URL = result.data.url;
       console.log('성공 시, 백엔드가 보내주는 데이터', result.data.url);
-      
       loadModel(GLTF_URL, canvas$count$);
     } catch (error) {
       console.log('이미지 불러오기 실패');
     }
   });
-  */
-
+  
   // 추가 버튼 생성
   const deleteButton$count$ = document.createElement('button');
   deleteButton$count$.textContent = 'X';
   quillContainer.appendChild(deleteButton$count$);
   deleteButton$count$.addEventListener('click', () => {
     // 3D 뷰어 삭제
-    quillContainer.removeChild(editButton$count$);
     quillContainer.removeChild(deleteButton$count$);
+    quillContainer.removeChild(editButton$count$);
     quillContainer.removeChild(canvas$count$);
   });
 
@@ -150,7 +146,7 @@ export function insert3DButton(){
   editButton$count$.addEventListener('click', () => {
     // 3D 뷰어 수정 기능 구현
     // ...
-  });
+  });  
   count++;
 }
 

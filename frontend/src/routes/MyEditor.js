@@ -199,8 +199,6 @@ const MyEditor = () => {
 
   return (
     <div className="text-editor">
-      <div className="ThreeD-Views">
-      </div>
       <EditorToolBar />
       <ReactQuill
         theme="snow"// 테마 설정 (여기서는 snow를 사용)
@@ -210,7 +208,7 @@ const MyEditor = () => {
         modules={modules}
         formats={formats}
       />
-      <ThreeModelButton />
+      <div className="ThreeD-Views"></div>
       <DragDrop />
     </div>
   );
