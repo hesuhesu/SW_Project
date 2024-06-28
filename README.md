@@ -55,28 +55,48 @@ ___
 > ### 24.03.06
 >> #### project 생성
 
+<br>
+
 > ### 24.03.07
 >> #### basic Manual 정립
+
+<br>
 
 > ### 24.03.12
 >> #### 역할 분담 및 기술 토의
 
+<br>
+
 > ### 24.03.25
 >> #### 요구 사항 확인 및 발표 완료
 
+<br>
+
 > ### 24.04.22
 >> #### 중간 발표
+
+<br>
 
 > ### 24.05.13
 >> #### Image Handler & 3D Function Testing
 
 <img src="/images/3D_Handling.png">
 
+<br>
+
+___
+
 > ### 24.06.03
 >> #### 배너 & frontend 기본 틀 완성
 
 <img src="/images/Frontend_1.png">
 <img src="/images/Frontend_2.png">
+
+<br>
+
+___
+
+<br>
 
 > ### 24.06.17
 >> #### 기말 발표
