@@ -1,4 +1,5 @@
-import SlideShow from "./SlideShow";
+import SlideShow from "../components/SlideShow";
+import '../css/SlideShow.css'
 
 const Home = () => {
   return (

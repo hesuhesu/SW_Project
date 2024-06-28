@@ -1,4 +1,5 @@
 import React, { ChangeEvent, useCallback, useRef, useState, useEffect } from "react";
+import '../css/DragDrop.scss'
 
 interface IFileTypes {
   id: number;
