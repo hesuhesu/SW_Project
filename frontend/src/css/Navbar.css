@@ -5,7 +5,7 @@ nav{
   padding-top:40px;  
 }
 #topMenu {  
-  background-color : rgb(104, 103, 103);
+  background-color : rgb(211, 211, 211);
   height:60px; 
 }
 #topMenu > li {
@@ -14,9 +14,9 @@ nav{
   list-style-type: none; /* ul 점없에기 */
 }
 #topMenu > li > .navbar{
-  font-size: 17px;
+  font-size: 1.1rem;
   display:block;  
-  color:#292828;  
+  color:#fff;  
   font-weight:600;   
   padding:15px 80px; 
   text-decoration: none /* Link 줄 없에기 */
@@ -31,11 +31,28 @@ nav{
   padding:15px 80px; 
 }
 #topMenu > li > .navbar > span {
-  font-size : 1.0em;   
+  font-size : 1.1rem;   
 }
 #topMenu > li > .navbar:hover {
   color:  black;  
 }
+#topMenu > li > .navbar::before{
+  content: "";
+    position: absolute;
+    width: 0;
+    height: 3px;
+    bottom: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #9b50cc;
+    visibility: hidden;
+    transition: all 0.3s ease-in-out 0s;
+}
+#topMenu > li > .navbar:hover::before{
+  visibility: visible;
+    width: 100%;
+}
+
 
 #topMenu > li > ul { 
   display: none;  
@@ -61,5 +78,5 @@ nav{
   z-index:10;  
 }
 #topMenu > li > ul > li > .navbar_:hover {
-  color: red;  
+  color: #9b50cc;  
 } 
