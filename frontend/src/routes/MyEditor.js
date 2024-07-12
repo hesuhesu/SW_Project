@@ -1,5 +1,7 @@
-import React, { useState, useRef, useCallback, useMemo} from 'react';
+import React, { useState, useRef, useCallback, useMemo, useEffect} from 'react';
 import ReactQuill, {Quill} from 'react-quill';
+import { useNavigate } from "react-router-dom";
+import "react-toastify/dist/ReactToastify.css";
 import ImageResize from 'quill-image-resize';
 import { ImageDrop } from "quill-image-drop-module";
 import axios from 'axios';
@@ -7,39 +9,13 @@ import katex from 'katex';
 import QuillImageDropAndPaste from 'quill-image-drop-and-paste'
 import htmlEditButton from "quill-html-edit-button";
 import EditorToolBar, {insertHeart, insert3DButton} from "../components/EditorToolBar";
-import ThreeModelButton from '../components/ThreeModelButton';
 import DragDrop from '../components/DragDrop'
+import Toast from '../components/Toast'
 
+import Button from 'react-bootstrap/Button';
 import '../css/quillstyle.css'
 import 'katex/dist/katex.min.css'; // formular 활성화
 import 'react-quill/dist/quill.snow.css'; // Quill snow스타일 시트 불러오기
-
-// npm install react-quill quill-image-resize quill-image-drop-module react-bootstrap bootstrap three @react-three/drei @react-three/fiber katex express axios multer quill-html-edit-button react-router-dom cors --save
- 
-// 설치해야 할 모듈
-// npm install react-quill
-// npm install react-quill --legacy-peer-deps
-// npm install quill-image-resize
-// npm install quill-image-drop-module
-// npm install react-bootstrap bootstrap
-// npm install three
-// npm install @react-three/drei
-// npm install @react-three/fiber
-// npm install katex
-// npm install express
-// npm install axios
-
-// 24.05.04 추가한 모듈
-// npm install multer
-// npm install quill-html-edit-button
-
-// 24.05.17 추가한 모듈
-// npm install react-router-dom
-// npm install cors --save
-// npm install quill-image-drop-and-paste --save
-
-// 24.06.22 추가한 모듈
-// npm i cors
 
 // katex 추가
 window.katex = katex;
@@ -75,6 +51,13 @@ const MyEditor = () => {
   const [editorHtml, setEditorHtml] = useState('');
   const quillRef = useRef();
 
+  useEffect(() => { // 수정해야 할 사안
+    const storedEmail = localStorage.key(0);
+    const storedPassword = localStorage.getItem('hesuhesu@naver.com');
+
+    if (storedEmail && storedPassword){}
+  }, []);
+
   const handleChange = useCallback((html) => {
     setEditorHtml(html);
   }, []);
@@ -104,20 +87,13 @@ const MyEditor = () => {
         
         console.log('성공 시, 백엔드가 보내주는 데이터', result.data.url);
         const IMG_URL = result.data.url;
-        // 이 URL을 img 태그의 src에 넣은 요소를 현재 에디터의 커서에 넣어주면 에디터 내에서 이미지가 나타난다
-        // src가 base64가 아닌 짧은 URL이기 때문에 데이터베이스에 에디터의 전체 글 내용을 저장할 수있게된다
-        // 이미지는 꼭 로컬 백엔드 uploads 폴더가 아닌 다른 곳에 저장해 URL로 사용하면된다.
 
         // 이미지 태그를 에디터에 써주기 - 여러 방법이 있다.
         const editor = quillRef.current.getEditor(); // 에디터 객체 가져오기
-        // 1. 에디터 root의 innerHTML을 수정해주기
-        // editor의 root는 에디터 컨텐츠들이 담겨있다. 거기에 img태그를 추가해준다.
-        // 이미지를 업로드하면 -> 멀터에서 이미지 경로 URL을 받아와 -> 이미지 요소로 만들어 에디터 안에 넣어준다.
-        // editor.root.innerHTML =
-        //   editor.root.innerHTML + `<img src=${IMG_URL} /><br/>`; // 현재 있는 내용들 뒤에 써줘야한다.
-
-        // 2. 현재 에디터 커서 위치값을 가져온다
+        
+        // 현재 에디터 커서 위치값을 가져온다
         const range = editor.getSelection();
+        
         // 가져온 위치에 이미지를 삽입한다
         editor.insertEmbed(range.index, 'image', IMG_URL);
       } catch (error) {
@@ -197,6 +173,17 @@ const MyEditor = () => {
     "link", "image", "video", "color", "code-block", "formula", "direction"
   ];
 
+  const navigate = useNavigate();
+  const Home = () => {
+    const description = quillRef.current.getEditor().getText();
+      console.log(description + "이다.");
+      if (description === "" || description === null){
+        alert("내용이 없음");
+      }
+      else {
+          navigate("/");
+      }
+  };
   return (
     <div className="text-editor">
       <EditorToolBar />
@@ -210,6 +197,8 @@ const MyEditor = () => {
       />
       <div className="ThreeD-Views"></div>
       <DragDrop />
+      <Button variant="warning" onClick={Home}>Home</Button>
+      <Toast/>
     </div>
   );
 };

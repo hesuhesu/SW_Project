@@ -1,5 +1,6 @@
 import Badge from 'react-bootstrap/Badge';
 import Button from 'react-bootstrap/Button';
+import { Outlet } from "react-router-dom";
 
 function Header() {
     return (
@@ -9,6 +10,7 @@ function Header() {
                  Made By React
                 </Badge>
             </h1>
+            <Outlet/>
         </div>
     )
 }
