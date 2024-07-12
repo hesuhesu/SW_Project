@@ -30,7 +30,6 @@
   background-color: grey; /* 버튼 배경색 */
   border: none;
   cursor: pointer;
-  
 }
 
 .buttons button:hover {

@@ -1,8 +1,34 @@
-import { Link } from "react-router-dom";
-import React from "react";
+import { Link, Outlet } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+
 import '../css/Navbar.css'
+import Swal from "sweetalert2";
 
 export default function Navbar() {
+  
+  const [isActive, setIsActive] = useState(false);
+
+  useEffect(() => {
+    if (localStorage.length > 0){
+      setIsActive(true);
+    }
+  }, []);
+  
+  const handleLogout = () => {
+    localStorage.clear();
+    setIsActive(false);
+    Swal.fire({
+      title: "알림",
+      html: `로그아웃.`,
+      icon:'success',
+      showCancelButton: false,
+      confirmButtonText: "확인",
+    }).then(() => {
+      window.location.href = '/'; 
+    });
+    return;
+  };
+
   return (
     <>
       <nav>
@@ -19,12 +45,11 @@ export default function Navbar() {
               <li><Link className = "navbar_" to = "/myeditor">작업하기</Link></li>
             </ul>
           </li>
-          <li><Link className = "navbar" to = "/mypage">마이페이지</Link></li>
-          <li><Link className = "navbar" to = "/register">회원가입</Link></li>
-          <li><Link className = "navbar" to = "/login">로그인</Link></li>
-          <li><Link className = "navbar" to = "/logout">로그아웃</Link></li>
+          {isActive ? <li><Link className = "navbar" to = "/mypage">마이페이지</Link></li> : <li></li>}
+          {isActive ? <li><Link className = "navbar" onClick={handleLogout}>로그아웃</Link></li>: <li><Link className = "navbar" to = "/register">회원가입 / 로그인</Link></li>}
         </ul>
       </nav>
+      <Outlet/>
     </>
   );
 }
