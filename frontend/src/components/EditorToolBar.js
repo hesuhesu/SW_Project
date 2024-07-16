@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React from 'react';
+// import ReactQuill, {Quill} from 'react-quill';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
@@ -38,6 +39,29 @@ const Custom3D = () => (
 );
 
 const CustomHeart = () => <span>♥</span>;
+
+/*
+// 사용자 정의 모듈 정의
+const CustomCanvas = Quill.import('blots/embed');
+class CanvasBlot extends CustomCanvas {
+  static create(value) {
+    const node = super.create();
+    node.setAttribute('width', value.width);
+    node.setAttribute('height', value.height);
+    return node;
+  }
+
+  static value(node) {
+    return {
+      width: node.getAttribute('width'),
+      height: node.getAttribute('height'),
+    };
+  }
+}
+CanvasBlot.blotName = 'canvas';
+CanvasBlot.tagName = 'canvas';
+Quill.register(CanvasBlot);
+*/
 
 const loadModel = (url, Canvas) => {
   const loader = new GLTFLoader();

@@ -1,6 +1,6 @@
-import React, { useState, useRef, useCallback, useMemo, useEffect} from 'react';
+import React, { useState, useRef, useCallback, useMemo, useEffect } from 'react';
 import ReactQuill, {Quill} from 'react-quill';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import ImageResize from 'quill-image-resize';
 import { ImageDrop } from "quill-image-drop-module";
@@ -10,7 +10,7 @@ import QuillImageDropAndPaste from 'quill-image-drop-and-paste'
 import htmlEditButton from "quill-html-edit-button";
 import EditorToolBar, {insertHeart, insert3DButton} from "../components/EditorToolBar";
 import DragDrop from '../components/DragDrop'
-import Toast from '../components/Toast'
+import { ToastContainer, toast } from "react-toastify";
 
 import Button from 'react-bootstrap/Button';
 import '../css/quillstyle.css'
@@ -50,12 +50,14 @@ Quill.register({
 const MyEditor = () => {
   const [editorHtml, setEditorHtml] = useState('');
   const quillRef = useRef();
+  const { id: postId } = useParams();
 
   useEffect(() => { // 수정해야 할 사안
-    const storedEmail = localStorage.key(0);
-    const storedPassword = localStorage.getItem('hesuhesu@naver.com');
-
-    if (storedEmail && storedPassword){}
+    const now = new Date();
+    if (now.getTime() >= localStorage.getItem(localStorage.key(0))) {
+      localStorage.clear();
+      window.location.href = '/';
+    }
   }, []);
 
   const handleChange = useCallback((html) => {
@@ -174,15 +176,32 @@ const MyEditor = () => {
   ];
 
   const navigate = useNavigate();
-  const Home = () => {
-    const description = quillRef.current.getEditor().getText();
-      console.log(description + "이다.");
-      if (description === "" || description === null){
-        alert("내용이 없음");
-      }
-      else {
-          navigate("/");
-      }
+  /*
+  const handleSubmit = async () => {
+    const description = quillRef.current.getEditor().getText(); //태그를 제외한 순수 text만을 받아온다. 검색기능을 구현하지 않을 거라면 굳이 text만 따로 저장할 필요는 없다.
+    if (description.trim()==="") {
+        alert("내용을 입력해주세요.")
+        return;
+    }
+    if (postId) {
+        //기존 게시글 업데이트
+        await api.updatePost({postId,description,htmlContent});
+        //history.push(`/@${user.name}/post/${postId}`);
+    } else {
+        //새로운 게시글 생성
+        await api.createNewPost({description,htmlContent});
+        //history.push(`/@${user.name}/posts?folder=${selectedFolder}`);
+    }
+}
+  */
+  const Save = async () => {
+    const description = quillRef.current.getEditor().getText(); //태그를 제외한 순수 text만을 받아온다. 검색기능을 구현하지 않을 거라면 굳이 text만 따로 저장할 필요는 없다.
+    if (description.trim()===""){
+      toast("빈칸입니다.");
+    }
+    else {
+      navigate("/");
+    }
   };
   return (
     <div className="text-editor">
@@ -197,8 +216,18 @@ const MyEditor = () => {
       />
       <div className="ThreeD-Views"></div>
       <DragDrop />
-      <Button variant="warning" onClick={Home}>Home</Button>
-      <Toast/>
+      <Button variant="warning" onClick={Save}>저장하기</Button>
+      <ToastContainer
+            limit={1}
+            autoClose={1000}
+            /*
+            position="top-right"
+            limit={1}
+            closeButton={false}
+            autoClose={2000}
+            hideProgressBar
+            */
+        />
     </div>
   );
 };
