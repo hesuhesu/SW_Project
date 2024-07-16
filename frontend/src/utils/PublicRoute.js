@@ -1,18 +1,12 @@
 import { Navigate, Outlet } from "react-router-dom";
-import Swal from "sweetalert2";
+import { errorMessage } from "./SweetAlertEvent";
 
-const PublicRoute = () => {
+const PrivateRoute = () => {
     const user = localStorage.key(0);
     if (user){
-        Swal.fire({
-            title: "알림",
-            icon:'error',
-            html: `잘못된 접근입니다..`,
-            showCancelButton: false,
-            confirmButtonText: "확인",
-          }).then(() => {});
+        errorMessage("잘못된 접근입니다..");
     }
     return user ? <Navigate to="/" /> : <Outlet />;
 };
 
-export default PublicRoute;
+export default PrivateRoute;

@@ -5,7 +5,7 @@ import { Outlet } from "react-router-dom";
 function Header() {
     return (
         <div>
-            <h1>Dong-A 3D Model WYSIWYG Editor &nbsp;
+            <h1 style={{ display: 'flex', justifyContent: 'center'}}>Dong-A 3D Model WYSIWYG Editor &nbsp;
                 <Badge bg="secondary" as={Button}>
                  Made By React
                 </Badge>

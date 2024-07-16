@@ -2,9 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/Register.css';
 import Swal from "sweetalert2";
+import { errorMessage, successMessage } from '../utils/SweetAlertEvent';
+import axios from 'axios';
 
 function Register() {
   const [register_email, setRegisterEmail] = useState('');
+  const [register_name, setRegisterName] = useState('');
   const [login_email, setLoginEmail] = useState('');
   const [register_password, setRegisterPassword] = useState('');
   const [register_password2, setRegisterPassword2] = useState('');
@@ -13,72 +16,65 @@ function Register() {
   const [isActive, setIsActive] = useState(false);
 
   const navigate = useNavigate();
-
+  
   const handleRegister = async (e) => {
     e.preventDefault();
     if (register_password !== register_password2) {
-      Swal.fire({
-        title: "알림",
-        icon:'error',
-        html: `비밀번호를 다시 입력하세요!`,
-        showCancelButton: false,
-        confirmButtonText: "확인",
-      })
+      errorMessage("비밀번호를 다시 입력하세요!");
       document.getElementById('register_password2').value = '';
       return;
     }
-
-    if (register_email === "hesuhesu@naver.com"){
-      Swal.fire({
-        title: "알림",
-        icon:'error',
-        html: `접근 금지`,
-        showCancelButton: false,
-        confirmButtonText: "확인",
+    axios
+      .post('http://localhost:5000/api/auth/register', {
+        name: register_name,
+        email: register_email,
+        password: register_password,
       })
-      document.getElementById('register_email').value = '';
-      document.getElementById('register_password').value = '';
-      document.getElementById('register_password2').value = '';
-      return;
-    }
-    Swal.fire({
-      title: "알림",
-      icon:'success',
-      html: register_email + ` 님 가입을 환영합니다!`,
-      showCancelButton: false,
-      confirmButtonText: "확인",
-    })
-    setIsActive(false);
-    document.getElementById('register_email').value = '';
-    document.getElementById('register_password').value = '';
-    document.getElementById('register_password2').value = '';
+      .then((res) => {
+        successMessage(register_email + "님 가입을 환영합니다!");
+        setIsActive(false);
+        document.getElementById('register_email').value = '';
+        document.getElementById('register_name').value = '';
+        document.getElementById('register_password').value = '';
+        document.getElementById('register_password2').value = '';
+      })
+      .catch((e) => {
+        errorMessage("접근 금지");
+        document.getElementById('register_email').value = '';
+        document.getElementById('register_name').value = '';
+        document.getElementById('register_password').value = '';
+        document.getElementById('register_password2').value = '';
+      });
   };
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    if (login_email === "hesuhesu@naver.com" && login_password === "hesuhesu"){
-      Swal.fire({
-        title: "알림",
-        icon:'success',
-        html: `관리자님 환영합니다!`,
-        showCancelButton: false,
-        confirmButtonText: "확인",
-      }).then(() => {
-        localStorage.clear();
-        localStorage.setItem("hesuhesu@naver.com", "hesuhesu");
-        navigate('/');
+    axios
+      .post('http://localhost:5000/api/auth/login', {
+        email: login_email,
+        password: login_password,
+      })
+      .then((res) => {
+        Swal.fire({ // then 조건문 필요로 함수호출 안함. 확인을 눌러야 home 으로 이동되는 구조로 설계
+          title: "알림",
+          icon:'success',
+          html: `환영합니다!`,
+          showCancelButton: false,
+          confirmButtonText: "확인",
+        }).then(() => {
+          localStorage.clear();
+          const now = new Date();
+          localStorage.setItem(login_email, now.getTime() + 5 * 60 *1000);
+          // const item = {value: login_email, expires : now.getTime() + 5 * 60 *1000} // 5분
+          // localStorage.setItem(login_email, JSON.stringify(item));
+          navigate('/');
+        });
+      })
+      .catch((e) => {
+        errorMessage("없는 회원입니다.");
+        document.getElementById('login_email').value = '';
+        document.getElementById('login_password').value = '';
       });
-      return;
-    }
-    Swal.fire({
-      title: "알림",
-      icon:'error',
-      html: `없는 회원입니다.`,
-      showCancelButton: false,
-      confirmButtonText: "확인",
-    })
-    document.getElementById('login_email').value = '';
-    document.getElementById('login_password').value = '';
   };
 
   const handleHome = async (e) => {
@@ -94,9 +90,16 @@ function Register() {
           <h2>Create Account</h2>
           <input
             type="text"
-            placeholder="Username"
+            placeholder="Email"
             id="register_email"
             onChange={(e) => setRegisterEmail(e.target.value)}
+            required
+          />
+          <input
+            type="text"
+            placeholder="Name"
+            id="register_name"
+            onChange={(e) => setRegisterName(e.target.value)}
             required
           />
           <input

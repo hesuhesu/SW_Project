@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
 
 function MyPage() {
-
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [time, setTime] = useState('');
 
   useEffect(() => {
-    const storedEmail = localStorage.key(0);
-    const storedPassword = localStorage.getItem('hesuhesu@naver.com');
 
-    setEmail(storedEmail);
-    setPassword(storedPassword);
-    if (storedEmail && storedPassword) {
-      
+    setEmail(localStorage.key(0));
+    setTime(localStorage.getItem(localStorage.key(0)));
+
+    const now = new Date();
+    if (now.getTime() >= localStorage.getItem(localStorage.key(0))) {
+      localStorage.clear();
+      window.location.href = '/';
     }
   }, []);
 
@@ -22,7 +22,7 @@ function MyPage() {
       <dt>Email</dt>
       <dd>{email}</dd>
       <dt>Password</dt>
-      <dd>{password}</dd>
+      <dd>{time}</dd>
     </>
   );
 }
