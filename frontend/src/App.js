@@ -2,9 +2,11 @@ import React from 'react';
 import {Routes, Route} from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Header from './components/Header';
+import Footer from './components/Footer';
 import Navbar from "./components/Navbar";
 import Home from "./routes/Home";
 import Board from "./routes/Board";
+// import BoardDetail from "./routes/BoardDetail";
 import MyEditor from './routes/MyEditor';
 import MyPage from "./routes/MyPage";
 import Register from "./routes/Register";
@@ -54,6 +56,9 @@ import PublicRoute from './utils/PublicRoute'
 // 24.07.12 추가한 모듈
 // npm install sweetalert2
 
+// 24.07.20 추가한 모듈
+// npm install react-typed-animation
+
 const App = () => {
   return (
     <div>
@@ -72,6 +77,7 @@ const App = () => {
           <Route path="/register" element={<Register />} />
         </Route>
       </Routes>
+      <Footer/>
     </div>
   );
 };

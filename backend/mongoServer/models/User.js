@@ -10,9 +10,8 @@ const UserSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
-    minlength: 5,
-    maxlength: 255,
     unique: true,
+    match: [/^([\w-.]+@([\w-]+\.)+[\w-]{2,4})?$/, '올바른 이메일 형식을 입력해 주세요.']
   },
   password: {
     type: String,

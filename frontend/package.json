@@ -38,6 +38,7 @@
     "react-scripts": "5.0.1",
     "react-three-fiber": "^6.0.13",
     "react-toastify": "^10.0.5",
+    "react-type-animation": "^3.2.0",
     "redux": "^5.0.1",
     "sass": "^1.77.6",
     "simple-zustand-devtools": "^1.1.0",
