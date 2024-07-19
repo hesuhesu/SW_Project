@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback, useMemo, useEffect } from 'react';
 import ReactQuill, {Quill} from 'react-quill';
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import ImageResize from 'quill-image-resize';
 import { ImageDrop } from "quill-image-drop-module";
@@ -11,9 +11,10 @@ import htmlEditButton from "quill-html-edit-button";
 import EditorToolBar, {insertHeart, insert3DButton} from "../components/EditorToolBar";
 import DragDrop from '../components/DragDrop'
 import { ToastContainer, toast } from "react-toastify";
+import { successMessage, errorMessage } from '../utils/SweetAlertEvent';
 
 import Button from 'react-bootstrap/Button';
-import '../css/quillstyle.css'
+import '../css/MyEditor.css'
 import 'katex/dist/katex.min.css'; // formular 활성화
 import 'react-quill/dist/quill.snow.css'; // Quill snow스타일 시트 불러오기
 
@@ -49,14 +50,18 @@ Quill.register({
 
 const MyEditor = () => {
   const [editorHtml, setEditorHtml] = useState('');
+  const [title, setTitle] = useState('');
   const quillRef = useRef();
-  const { id: postId } = useParams();
+
+  const navigate = useNavigate();
 
   useEffect(() => { // 수정해야 할 사안
     const now = new Date();
-    if (now.getTime() >= localStorage.getItem(localStorage.key(0))) {
+    const obj = JSON.parse(localStorage.getItem(localStorage.key(0)));
+
+    if (now.getTime() >= obj.expire) {
       localStorage.clear();
-      window.location.href = '/';
+      window.location.href = "/";
     }
   }, []);
 
@@ -175,7 +180,6 @@ const MyEditor = () => {
     "link", "image", "video", "color", "code-block", "formula", "direction"
   ];
 
-  const navigate = useNavigate();
   /*
   const handleSubmit = async () => {
     const description = quillRef.current.getEditor().getText(); //태그를 제외한 순수 text만을 받아온다. 검색기능을 구현하지 않을 거라면 굳이 text만 따로 저장할 필요는 없다.
@@ -194,17 +198,39 @@ const MyEditor = () => {
     }
 }
   */
-  const Save = async () => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
     const description = quillRef.current.getEditor().getText(); //태그를 제외한 순수 text만을 받아온다. 검색기능을 구현하지 않을 거라면 굳이 text만 따로 저장할 필요는 없다.
-    if (description.trim()===""){
-      toast("빈칸입니다.");
-    }
-    else {
-      navigate("/");
-    }
+      if (description.trim()===""){
+        toast("빈칸입니다. 다시 입력하세요");
+      }
+      else {
+        axios.post('http://localhost:5000/board/write', {
+            _id: localStorage.key(0),
+            title: title,
+            content: description,
+            realContent: editorHtml
+        })
+        .then((res) => {
+          successMessage("저장되었습니다!!");
+          navigate("/");
+        })
+        .catch((e) => {
+          errorMessage("에러!!");
+        });
+      }
   };
+
   return (
-    <div className="text-editor">
+    <form onSubmit={handleSubmit}>
+      <div className="text-editor">
+      <input
+            type="text"
+            placeholder="Title"
+            id="title"
+            onChange={(e) => setTitle(e.target.value)}
+            required
+        />
       <EditorToolBar />
       <ReactQuill
         theme="snow"// 테마 설정 (여기서는 snow를 사용)
@@ -216,10 +242,10 @@ const MyEditor = () => {
       />
       <div className="ThreeD-Views"></div>
       <DragDrop />
-      <Button variant="warning" onClick={Save}>저장하기</Button>
+      <Button variant="warning" type="submit">저장하기</Button>
       <ToastContainer
             limit={1}
-            autoClose={1000}
+            autoClose={2000}
             /*
             position="top-right"
             limit={1}
@@ -229,6 +255,7 @@ const MyEditor = () => {
             */
         />
     </div>
+    </form>
   );
 };
 

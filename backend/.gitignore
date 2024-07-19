@@ -1,4 +1,4 @@
 # backend except
 /.idea
-/mongoServer/node_modules
-/mongoServer/.env
+mongoServer/node_modules
+mongoServer/.env

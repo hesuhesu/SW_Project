@@ -5,7 +5,7 @@ const User = require('../models/User');
 // Register
 router.post('/register', async (req, res) => {
   const { name, email, password } = req.body;
-  console.log('Register request received:', req.body); // 로그 추가
+  // console.log('Register request received:', req.body); // 로그 추가
 
   try {
     // Check if user already exists
@@ -23,7 +23,7 @@ router.post('/register', async (req, res) => {
     await user.save();
     res.status(201).json({ msg: 'User registered successfully' });
   } catch (err) {
-    console.error('Error during registration:', err); // 에러 로그 추가
+    // console.error('Error during registration:', err); // 에러 로그 추가
     res.status(500).json({ error: err.message });
   }
 });
@@ -31,7 +31,7 @@ router.post('/register', async (req, res) => {
 // Login
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
-  console.log('Login request received:', req.body); // 로그 추가
+  // console.log('Login request received:', req.body); // 로그 추가
 
   try {
     // Check if user exists
@@ -48,7 +48,33 @@ router.post('/login', async (req, res) => {
 
     res.status(200).json({ msg: 'Logged in successfully' });
   } catch (err) {
-    console.error('Error during login:', err); // 에러 로그 추가
+    // console.error('Error during login:', err); // 에러 로그 추가
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Change Password
+router.post('/changePassword', async (req, res) => {
+  const { email, before_password, after_password } = req.body;
+  // console.log('Login request received:', req.body); // 로그 추가
+
+  try {
+    // Check if user data
+    const user = await User.findOne({ email });
+    // Check password
+    const isMatch = await bcrypt.compare(before_password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ msg: 'Invalid credentials' });
+    }
+
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(after_password, salt);
+
+    await User.updateOne({email: email}, {$set:{password: hashedPassword}})
+    res.status(200).json({ msg: 'Change successfully' });
+  } catch (err) {
+    // console.error('Error during login:', err); // 에러 로그 추가
     res.status(500).json({ error: err.message });
   }
 });
