@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import CommonTable from '../components/CommonTable';
 import CommonTableColumn from '../components/CommonTableColumn';
 import CommonTableRow from '../components/CommonTableRow'
@@ -11,6 +12,7 @@ function MyPage() {
   const [time, setTime] = useState('');
 
   const [data, setData] = useState([]);
+
   const [password, setPassword] = useState({
     email: localStorage.key(0),
     before_password: '',
@@ -25,7 +27,7 @@ function MyPage() {
       localStorage.clear();
       window.location.href = "/";
     }
-    axios.get('http://localhost:5000/board/MyBoardList', {
+    axios.get('http://localhost:5000/board/my_board_list', {
       params: {
         writer: localStorage.key(0)
       }
@@ -36,9 +38,7 @@ function MyPage() {
       .catch((error) => {
         console.error(error);
     });
-
     setTime(obj.time);
-
   }, []);
 
   const handleChangePassword = async (e) => {
@@ -49,7 +49,7 @@ function MyPage() {
       return;
     }
     try {
-      await axios.post('http://localhost:5000/auth/changePassword', password);
+      await axios.post('http://localhost:5000/auth/change_password', password);
       successMessage('비밀번호가 변경되었습니다!');
       document.getElementById('before_password').value = '';
       document.getElementById('after_password').value = '';
@@ -59,11 +59,12 @@ function MyPage() {
       document.getElementById('after_password').value = '';
     }
   }
+
   return (
     <div className = "MyPage">
       <div className = "MyPage_No1">
         <div className = "MyPage_Inf">
-          <h1>Profile</h1>
+          <h2>Profile</h2>
           <dt>Email</dt>
           <dd>
           <TypeAnimation
@@ -80,7 +81,7 @@ function MyPage() {
           <dd>{time}</dd>
         </div>
         <form className = "MyPage_Change_Password" onSubmit={handleChangePassword}>
-          <h1>Change Password</h1>
+          <h2>Change Password</h2>
           <input
             type="password"
             placeholder="원래 비밀번호"
@@ -99,17 +100,19 @@ function MyPage() {
         </form>
       </div>
       
-        <h1>My Board</h1>
-        {data.length > 0 && (
-          <CommonTable headersName={['제목', '내용', '등록일']}>
+        {data.length > 0 && (<>
+          <h1>My Board</h1>
+          <CommonTable headersName={['제목[클릭]', '내용', '등록일']}>
             {data.map((item) => (
               <CommonTableRow key={item._id}>
-                <CommonTableColumn>{item.title}</CommonTableColumn>
+                <CommonTableColumn>
+                  <Link to={`/board_detail/${item._id}`}>{item.title}</Link>
+                </CommonTableColumn>
                 <CommonTableColumn>{item.content}</CommonTableColumn>
                 <CommonTableColumn>{item.createdAt}</CommonTableColumn>
               </CommonTableRow>
             ))}
-          </CommonTable>
+          </CommonTable></>
         )}
     </div>
   );

@@ -6,7 +6,7 @@ import Footer from './components/Footer';
 import Navbar from "./components/Navbar";
 import Home from "./routes/Home";
 import Board from "./routes/Board";
-// import BoardDetail from "./routes/BoardDetail";
+import BoardDetail from "./routes/BoardDetail";
 import MyEditor from './routes/MyEditor';
 import MyPage from "./routes/MyPage";
 import Register from "./routes/Register";
@@ -58,6 +58,9 @@ import PublicRoute from './utils/PublicRoute'
 
 // 24.07.20 추가한 모듈
 // npm install react-typed-animation
+// npm install @material-ui/core
+// npm install @material-ui/icons
+// 에러 시 npm install typescript --save-dev 후 npm install
 
 const App = () => {
   return (
@@ -67,6 +70,7 @@ const App = () => {
           <Route element={<Navbar/>}>
             <Route path = "/" element = {<Home />}/>
             <Route path = "/board" element = {<Board />}/>
+            <Route exact path = "/board_detail/:_id" element = {<BoardDetail/>}/>
             <Route element={<PrivateRoute />}>
                   <Route path="/myeditor" element={<MyEditor />} />
                   <Route path="/mypage" element={<MyPage />} />

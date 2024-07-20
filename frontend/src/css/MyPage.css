@@ -6,6 +6,17 @@
   justify-content: space-between;
 }
 
+.MyPage h1 {
+  font-family: 'Playfair Display', serif;
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: #222;
+    text-align: center;
+    margin-top: 3rem;
+    margin-bottom: 2rem;
+    text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.2);
+}
+
 .MyPage_No1 {
   display: flex;
   justify-content: space-between;
@@ -33,10 +44,12 @@
   src: url("../../public/Quill.ttf") format("truetype");
 }
 
-.MyPage_Inf h1 {
+.MyPage_Inf h2 {
   font-family: "Quill";
   margin-top: 0;
   font-size: 50px;
+  font-weight: bold;
+  margin-bottom: 20px;
 }
 
 .MyPage_Inf dt {
@@ -49,10 +62,12 @@
   margin-top: 5px;
 }
 
-.MyPage_Change_Password h1 {
+.MyPage_Change_Password h2 {
   font-family: "Quill";
   margin-top: 0;
-  font-size: 50px;
+  font-size: 40px;
+  font-weight: bold;
+  margin-bottom: 20px;
 }
 
 .MyPage_Change_Password button {
@@ -60,4 +75,8 @@
   padding: 10px 20px; /* 버튼 스타일 추가 */
   border-radius: 5px; /* 버튼 스타일 추가 */
   cursor: pointer; /* 버튼 스타일 추가 */
+}
+a {
+  text-decoration: none;
+  color: inherit;
 }

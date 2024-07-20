@@ -54,7 +54,7 @@ router.post('/login', async (req, res) => {
 });
 
 // Change Password
-router.post('/changePassword', async (req, res) => {
+router.post('/change_password', async (req, res) => {
   const { email, before_password, after_password } = req.body;
   // console.log('Login request received:', req.body); // 로그 추가
 
