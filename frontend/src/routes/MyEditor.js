@@ -201,7 +201,7 @@ const MyEditor = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const description = quillRef.current.getEditor().getText(); //태그를 제외한 순수 text만을 받아온다. 검색기능을 구현하지 않을 거라면 굳이 text만 따로 저장할 필요는 없다.
-      if (description.trim()===""){
+      if (description ===""){ // description.trim()
         toast("빈칸입니다. 다시 입력하세요");
       }
       else {
