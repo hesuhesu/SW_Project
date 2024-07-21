@@ -6,7 +6,7 @@ import '../css/Header.css'
 function Header() {
     return (
         <div className = "Header">
-            <h1 style={{ display: 'flex', justifyContent: 'center'}}>Dong-A 3D Model WYSIWYG Editor &nbsp;
+            <h1 className = "Header-h1" style={{ display: 'flex', justifyContent: 'center'}}>Dong-A 3D Model WYSIWYG Editor &nbsp;
                 <Badge bg="secondary" as={Button}>
                  React & Node
                 </Badge>

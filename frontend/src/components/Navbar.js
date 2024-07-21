@@ -1,4 +1,4 @@
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import React, { useState, useEffect } from 'react';
 
 import '../css/Navbar.css'
@@ -7,12 +7,14 @@ import Swal from "sweetalert2";
 export default function Navbar() {
   
   const [isActive, setIsActive] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     if (localStorage.length > 0){
       setIsActive(true);
     }
-  }, []);
+    else { setIsActive(false); }
+  }, [location.pathname]);
   
   const handleLogout = () => {
     localStorage.clear();

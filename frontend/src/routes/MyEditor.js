@@ -12,8 +12,9 @@ import EditorToolBar, {insertHeart, insert3DButton} from "../components/EditorTo
 import DragDrop from '../components/DragDrop'
 import { ToastContainer, toast } from "react-toastify";
 import { successMessage, errorMessage } from '../utils/SweetAlertEvent';
-
+import { timeCheck} from '../utils/TimeCheck';
 import Button from 'react-bootstrap/Button';
+
 import '../css/MyEditor.css'
 import 'katex/dist/katex.min.css'; // formular 활성화
 import 'react-quill/dist/quill.snow.css'; // Quill snow스타일 시트 불러오기
@@ -55,13 +56,11 @@ const MyEditor = () => {
 
   const navigate = useNavigate();
 
-  useEffect(() => { // 수정해야 할 사안
-    const now = new Date();
-    const obj = JSON.parse(localStorage.getItem(localStorage.key(0)));
-
-    if (now.getTime() >= obj.expire) {
-      localStorage.clear();
-      window.location.href = "/";
+  useEffect(() => { 
+    if (timeCheck() === 0){ 
+      errorMessage("로그인 만료!");
+      navigate("/");
+      return; 
     }
   }, []);
 
@@ -200,6 +199,11 @@ const MyEditor = () => {
   */
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (timeCheck() === 0){ 
+      errorMessage("로그인 만료!");
+      navigate("/");
+      return; 
+    }
     const description = quillRef.current.getEditor().getText(); //태그를 제외한 순수 text만을 받아온다. 검색기능을 구현하지 않을 거라면 굳이 text만 따로 저장할 필요는 없다.
       if (description ===""){ // description.trim()
         toast("빈칸입니다. 다시 입력하세요");

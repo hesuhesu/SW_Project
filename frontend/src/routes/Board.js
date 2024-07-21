@@ -25,7 +25,7 @@ function Board() {
       
       {data.length > 0 && (
         <>
-        <h1>Board</h1>
+        <h1 className="Board-h1">Board</h1>
         <CommonTable headersName={['제목[클릭]', '내용', '작성자', '등록일']}>
           {data.map((item) => (
             <CommonTableRow key={item._id}>

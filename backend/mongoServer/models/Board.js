@@ -12,11 +12,9 @@ const BoardSchema = new mongoose.Schema({
   },
   content: {
     type: String,
-    required: true
   },
   realContent:{
     type: String,
-    required: true
   },
   createdAt: {
     type: Date,

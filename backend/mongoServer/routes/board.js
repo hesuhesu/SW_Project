@@ -91,4 +91,13 @@ router.put("/update", async (req,res) => {
      }
  });
 
+ router.delete("/delete_user_all_board", async(req,res) => {
+    try {
+       await Board.deleteMany({writer: req.query.writer })
+       res.json({ message: true });
+    } catch (error) {
+       res.json({ message: false });
+    }
+});
+
 module.exports = router ;
