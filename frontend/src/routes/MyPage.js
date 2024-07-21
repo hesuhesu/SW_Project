@@ -1,32 +1,34 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import CommonTable from '../components/CommonTable';
 import CommonTableColumn from '../components/CommonTableColumn';
 import CommonTableRow from '../components/CommonTableRow'
 import axios from 'axios';
 import { TypeAnimation } from 'react-type-animation';
 import { errorMessage, successMessage } from '../utils/SweetAlertEvent';
+import Swal from "sweetalert2"; // 로직간 반환 기능 실패로 직접 구현
+import { timeCheck} from '../utils/TimeCheck';
+
 import '../css/MyPage.css';
 
 function MyPage() {
   const [time, setTime] = useState('');
-
   const [data, setData] = useState([]);
-
   const [password, setPassword] = useState({
     email: localStorage.key(0),
     before_password: '',
     after_password: '',
   });
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    const now = new Date();
-    const obj = JSON.parse(localStorage.getItem(localStorage.key(0)));
-
-    if (now.getTime() >= obj.expire) {
-      localStorage.clear();
-      window.location.href = "/";
+  useEffect(() => { // 탈퇴 기능이 있는데, 입장 시 인증을 받지 않는가 -> 사용자의 자율성에 맡김
+    const checkTime = timeCheck();
+    if (checkTime === 0){ 
+      errorMessage("로그인 만료!");
+      navigate("/");
+      return; 
     }
+    setTime(checkTime);
     axios.get('http://localhost:5000/board/my_board_list', {
       params: {
         writer: localStorage.key(0)
@@ -38,12 +40,16 @@ function MyPage() {
       .catch((error) => {
         console.error(error);
     });
-    setTime(obj.time);
   }, []);
 
   const handleChangePassword = async (e) => {
     e.preventDefault();
-    if (password.before_password === password.after_password){
+    if (timeCheck() === 0){ 
+      errorMessage("로그인 만료!");
+      navigate("/");
+      return; 
+    }
+    else if (password.before_password === password.after_password){
       errorMessage('비밀번호가 같습니다! 다르게 입력하세요!');
       document.getElementById('after_password').value = '';
       return;
@@ -58,6 +64,46 @@ function MyPage() {
       document.getElementById('before_password').value = '';
       document.getElementById('after_password').value = '';
     }
+  }
+
+  const handleDeleteRegister = async (e) => {
+    e.preventDefault();
+    if (timeCheck() === 0){ 
+      errorMessage("로그인 만료!");
+      navigate("/");
+      return; 
+    }
+    Swal.fire({ // 해당 부분 로직을 utils 에 넣으려 했으나 return 반환이 안되서 실패
+      title: "질문",
+      icon:'question',
+      html: "정말 탈퇴하시겠습니까?",
+      showCancelButton:true,
+      confirmButtonText: '예', 
+      cancelButtonText: '아니오',
+    }).then((result) => {
+      if (result.isConfirmed){
+        axios.delete('http://localhost:5000/board/delete_user_all_board', {
+            params: {
+              writer : localStorage.key(0)
+            }
+          }).then((response) => {})
+          .catch((error) => {
+            errorMessage("삭제 실패");    
+          })
+          axios.delete('http://localhost:5000/auth/delete', {
+            params: {
+              email : localStorage.key(0)
+            }
+          }).then((response) => {
+            successMessage("회원 탈퇴 되었습니다..");
+              localStorage.clear();
+              navigate("/");
+          })
+            .catch((error) => {
+              errorMessage("삭제 실패");    
+          })
+        }
+    });
   }
 
   return (
@@ -97,9 +143,9 @@ function MyPage() {
             required
           />
           <button type = "submit">비밀번호 변경</button>
+          <button onClick={handleDeleteRegister}>회원 탈퇴</button>
         </form>
       </div>
-      
         {data.length > 0 && (<>
           <h1>My Board</h1>
           <CommonTable headersName={['제목[클릭]', '내용', '등록일']}>

@@ -6,6 +6,7 @@ import '../css/BoardDetail.css';
 import 'react-quill/dist/quill.snow.css'; // Quill snow스타일 시트 불러오기
 import Button from '@material-ui/core/Button';
 import { errorMessage, successMessage } from '../utils/SweetAlertEvent';
+import { timeCheck } from '../utils/TimeCheck';
 
 const BoardDetail = () => {
   const [ data, setData ] = useState({});
@@ -14,6 +15,7 @@ const BoardDetail = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    timeCheck();
     axios.get('http://localhost:5000/board/board_detail', {
       params: {
         _id: params
@@ -25,12 +27,17 @@ const BoardDetail = () => {
       .catch((error) => {
         console.error(error);
     });
-  }, []);
+  }, [params]);
 
   function modifiedBoard() {
     
   }
   function deleteBoard() {
+    if (timeCheck(params) === 0){ 
+      errorMessage("로그인 만료!");
+      navigate(-1);
+      return; 
+    }
       axios.delete('http://localhost:5000/board/delete', {
         params: {
           _id : params
@@ -50,7 +57,7 @@ const BoardDetail = () => {
 
   return (
     <div className="board-detail">
-      <h1>Board Detail</h1>
+      <h1 className="board-detail-h1">Board Detail</h1>
         {
           data ? (
             <div className = "post-view-wrapper">

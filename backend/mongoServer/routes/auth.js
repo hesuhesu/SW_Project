@@ -79,4 +79,14 @@ router.post('/change_password', async (req, res) => {
   }
 });
 
+ // 아이디 삭제 ======================================================================================================================
+ router.delete("/delete", async(req,res) => {
+  try {
+     await User.deleteOne({ email : req.query.email })
+     res.json({ message: true });
+  } catch (error) {
+     res.json({ message: false });
+  }
+});
+
 module.exports = router;
