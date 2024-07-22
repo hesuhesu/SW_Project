@@ -12,7 +12,7 @@ router.get("/my_board_list", async (req, res) => {
     }
   });
 
-// 내 글 목록 조회 ======================================================================================================================
+// 글 상세 조회 ======================================================================================================================
 router.get("/board_detail", async (req, res) => {
     try {
         const board = await Board.findOne({ _id : req.query._id });
@@ -37,11 +37,14 @@ router.get("/all_board_list", async(req, res) => {
 router.post("/write", async (req, res) => {
     try {
       let obj;
+      const now = new Date();
+      const createdAt = now.toLocaleString();
       obj = {
         writer: req.body._id,
         title: req.body.title,
         content: req.body.content,
-        realContent: req.body.realContent
+        realContent: req.body.realContent,
+        createdAt: createdAt
       };
       const board = new Board(obj);
       await board.save();

@@ -14,12 +14,17 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ msg: 'User already exists' });
     }
 
+    if (password.trim() === ''){
+      return res.status(400).json({ msg: 'Not Allow Blank' });
+    }
     // Hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    const now = new Date();
+    const createdAt = now.toLocaleString();
     // Create new user
-    user = new User({ name, email, password: hashedPassword });
+    user = new User({ name, email, password: hashedPassword, createdAt :createdAt });
     await user.save();
     res.status(201).json({ msg: 'User registered successfully' });
   } catch (err) {
@@ -79,6 +84,15 @@ router.post('/change_password', async (req, res) => {
   }
 });
 
+// 내 정보 보기 ======================================================================================================================
+router.get("/my_inf", async(req,res) => {
+    try {
+        const board = await User.findOne({email : req.query.email});
+        res.json({ list : board });
+    } catch (error) {
+        res.json({ message: false });
+    }
+});
  // 아이디 삭제 ======================================================================================================================
  router.delete("/delete", async(req,res) => {
   try {

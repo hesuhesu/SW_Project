@@ -14,6 +14,7 @@ import '../css/MyPage.css';
 function MyPage() {
   const [time, setTime] = useState('');
   const [data, setData] = useState([]);
+  const [myInf, setMyInf] = useState([]);
   const [password, setPassword] = useState({
     email: localStorage.key(0),
     before_password: '',
@@ -29,6 +30,17 @@ function MyPage() {
       return; 
     }
     setTime(checkTime);
+    axios.get('http://localhost:5000/auth/my_inf', {
+      params: {
+        email: localStorage.key(0)
+      }
+    })
+      .then((response) => {
+        setMyInf(response.data.list);
+      })
+      .catch((error) => {
+        console.error(error);
+    });
     axios.get('http://localhost:5000/board/my_board_list', {
       params: {
         writer: localStorage.key(0)
@@ -51,6 +63,11 @@ function MyPage() {
     }
     else if (password.before_password === password.after_password){
       errorMessage('비밀번호가 같습니다! 다르게 입력하세요!');
+      document.getElementById('after_password').value = '';
+      return;
+    }
+    else if (password.after_password.trim() === ''){
+      errorMessage('공백 금지.');
       document.getElementById('after_password').value = '';
       return;
     }
@@ -105,7 +122,7 @@ function MyPage() {
         }
     });
   }
-
+// myInf.createdAt
   return (
     <div className = "MyPage">
       <div className = "MyPage_No1">
@@ -123,6 +140,8 @@ function MyPage() {
           speed={50}
           cursor={false}/>
           </dd>
+          <dt>Register Time</dt>
+          <dd>{myInf.createdAt}</dd>
           <dt>Logout Time</dt>
           <dd>{time}</dd>
         </div>

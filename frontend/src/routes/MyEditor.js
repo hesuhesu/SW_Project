@@ -205,24 +205,20 @@ const MyEditor = () => {
       return; 
     }
     const description = quillRef.current.getEditor().getText(); //태그를 제외한 순수 text만을 받아온다. 검색기능을 구현하지 않을 거라면 굳이 text만 따로 저장할 필요는 없다.
-      if (description ===""){ // description.trim()
-        toast("빈칸입니다. 다시 입력하세요");
-      }
-      else {
-        axios.post('http://localhost:5000/board/write', {
-            _id: localStorage.key(0),
-            title: title,
-            content: description,
-            realContent: editorHtml
-        })
-        .then((res) => {
-          successMessage("저장되었습니다!!");
-          navigate("/");
-        })
-        .catch((e) => {
-          errorMessage("에러!!");
-        });
-      }
+    // description.trim()
+    axios.post('http://localhost:5000/board/write', {
+      _id: localStorage.key(0),
+      title: title,
+      content: description,
+      realContent: editorHtml,
+    })
+    .then((res) => {
+      successMessage("저장되었습니다!!");
+      navigate("/");
+    })
+    .catch((e) => {
+      errorMessage("에러!!");
+    });  
   };
 
   return (

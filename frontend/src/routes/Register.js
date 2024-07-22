@@ -24,7 +24,7 @@ function Register() {
     e.preventDefault();
     if (registerData.password !== registerData.confirmPassword) {
       errorMessage('비밀번호를 다시 입력하세요!');
-      setRegisterData((prevState) => ({ ...prevState, confirmPassword: '' }));
+      document.getElementById('register_password2').value = '';
       return;
     }
     try {
@@ -36,7 +36,7 @@ function Register() {
       document.getElementById('register_password').value = '';
       document.getElementById('register_password2').value = '';
     } catch (e) {
-      errorMessage('이미 가입된 회원입니다.');
+      errorMessage(`형식이 잘못되었습니다.<br><br>1. 중복 금지 + 이메일 형식<br>2. 이름 2글자 이상<br>3. 비밀번호 공백 금지 입니다.`);
       document.getElementById('register_email').value = '';
       document.getElementById('register_name').value = '';
       document.getElementById('register_password').value = '';
@@ -57,16 +57,16 @@ function Register() {
       }).then(() => {
         localStorage.clear();
         const now = new Date();
-        const next = new Date(now.getTime() + 10 * 60 * 60 * 1000);
+        const nextTime = new Date(now.setHours(now.getHours() + 1));
         const obj = {    
-          time : next,    
-          expire : now.getTime() + 60 * 60 * 1000
+          time : nextTime.toLocaleString(),    
+          expire : nextTime.getTime()
         }
         localStorage.setItem(loginData.email, JSON.stringify(obj));
         navigate('/');
       });
     } catch (e) {
-      errorMessage('없는 회원입니다.');
+      errorMessage('로그인 실패!!');
       document.getElementById('login_email').value = '';
       document.getElementById('login_password').value = '';
     }
