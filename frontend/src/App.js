@@ -7,6 +7,7 @@ import Navbar from "./components/Navbar";
 import Home from "./routes/Home";
 import Board from "./routes/Board";
 import BoardDetail from "./routes/BoardDetail";
+import BoardUpdate from "./routes/BoardUpdate";
 import MyEditor from './routes/MyEditor';
 import MyPage from "./routes/MyPage";
 import Register from "./routes/Register";
@@ -62,6 +63,9 @@ import PublicRoute from './utils/PublicRoute'
 // npm install @material-ui/icons
 // 에러 시 npm install typescript --save-dev 후 npm install
 
+// 24.07.26 추가한 모듈
+// npm install react-paginate
+
 const App = () => {
   return (
     <div>
@@ -74,6 +78,7 @@ const App = () => {
             <Route element={<PrivateRoute />}>
                   <Route path="/myeditor" element={<MyEditor />} />
                   <Route path="/mypage" element={<MyPage />} />
+                  <Route exact path = "/board_update/:_id" element = {<BoardUpdate/>}/>
             </Route>
           </Route>
         </Route>

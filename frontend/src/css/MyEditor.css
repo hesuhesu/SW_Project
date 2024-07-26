@@ -160,3 +160,7 @@ font-size: 14px !important;
 .text-editor {
     margin-bottom: 150px;
 }
+
+.text-editor Button {
+  margin-top: 30px;
+}

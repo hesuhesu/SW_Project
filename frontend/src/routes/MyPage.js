@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import ReactPaginate from 'react-paginate';
 import CommonTable from '../components/CommonTable';
 import CommonTableColumn from '../components/CommonTableColumn';
 import CommonTableRow from '../components/CommonTableRow'
@@ -11,9 +12,13 @@ import { timeCheck} from '../utils/TimeCheck';
 
 import '../css/MyPage.css';
 
+const ITEMS_PER_PAGE = 10; // 페이지당 항목 수
+
 function MyPage() {
   const [time, setTime] = useState('');
   const [data, setData] = useState([]);
+  const [pageCount, setPageCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
   const [myInf, setMyInf] = useState([]);
   const [password, setPassword] = useState({
     email: localStorage.key(0),
@@ -48,11 +53,12 @@ function MyPage() {
     })
       .then((response) => {
         setData(response.data.list);
+        setPageCount(Math.ceil(response.data.list.length / ITEMS_PER_PAGE)); // 총 페이지 수 계산
       })
       .catch((error) => {
         console.error(error);
     });
-  }, []);
+  }, [navigate]);
 
   const handleChangePassword = async (e) => {
     e.preventDefault();
@@ -122,7 +128,15 @@ function MyPage() {
         }
     });
   }
-// myInf.createdAt
+
+   // 페이지 변경 핸들러
+   const handlePageClick = (data) => {
+    setCurrentPage(data.selected); // 현재 페이지 업데이트
+  };
+
+  // 현재 페이지에 해당하는 데이터
+  const displayedData = data.slice(currentPage * ITEMS_PER_PAGE, (currentPage + 1) * ITEMS_PER_PAGE);
+
   return (
     <div className = "MyPage">
       <div className = "MyPage_No1">
@@ -168,7 +182,7 @@ function MyPage() {
         {data.length > 0 && (<>
           <h1>My Board</h1>
           <CommonTable headersName={['제목[클릭]', '내용', '등록일']}>
-            {data.map((item) => (
+            {displayedData.map((item) => (
               <CommonTableRow key={item._id}>
                 <CommonTableColumn>
                   <Link to={`/board_detail/${item._id}`}>{item.title}</Link>
@@ -177,7 +191,19 @@ function MyPage() {
                 <CommonTableColumn>{item.createdAt}</CommonTableColumn>
               </CommonTableRow>
             ))}
-          </CommonTable></>
+          </CommonTable>
+          <ReactPaginate
+            previousLabel={'이전'}
+            nextLabel={'다음'}
+            breakLabel={'...'}
+            pageCount={pageCount}
+            marginPagesDisplayed={2}
+            pageRangeDisplayed={5}
+            onPageChange={handlePageClick}
+            containerClassName={'pagination'}
+            activeClassName={'active'}
+          />
+          </>
         )}
     </div>
   );

@@ -40,7 +40,7 @@ router.post("/write", async (req, res) => {
       const now = new Date();
       const createdAt = now.toLocaleString();
       obj = {
-        writer: req.body._id,
+        writer: req.body.writer,
         title: req.body.title,
         content: req.body.content,
         realContent: req.body.realContent,
@@ -69,12 +69,14 @@ router.post("/detail", async(req,res) => {
  // 게시글 업데이트 ======================================================================================================================
 router.put("/update", async (req,res) => {
     try {
+        
         await Board.updateOne(
             {_id: req.body._id},
             {
                 $set: {
                     title: req.body.title,
-                    content: req.body.content
+                    content: req.body.content,
+                    realContent: req.body.realContent
                 }
             }
         );

@@ -1,11 +1,68 @@
 /* eslint-disable no-unused-vars */
 import React from 'react';
-// import ReactQuill, {Quill} from 'react-quill';
+import ReactQuill, {Quill} from 'react-quill';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import axios from "axios";
 import Button from 'react-bootstrap/Button';
+import ImageResize from 'quill-image-resize';
+import { ImageDrop } from "quill-image-drop-module";
+import katex from 'katex';
+import QuillImageDropAndPaste from 'quill-image-drop-and-paste'
+import htmlEditButton from "quill-html-edit-button";
+import 'katex/dist/katex.min.css'; // formular 활성화
+
+// katex 추가
+window.katex = katex;
+// 모듈 등록
+Quill.register("modules/imageDrop", ImageDrop);
+Quill.register('modules/imageDropAndPaste', QuillImageDropAndPaste);
+Quill.register('modules/ImageResize', ImageResize);
+
+// 폰트 사이즈 추가
+const Size = Quill.import("attributors/style/size");
+Size.whitelist = ["8px", "10px", "12px", 
+"14px", "20px", "24px", "30px", "36px", "48px",
+"60px", "72px", "84px", "96px", "120px"];
+Quill.register(Size, true);
+
+// 폰트 추가
+const Font = Quill.import("attributors/class/font");
+Font.whitelist = ["arial", "buri", "gangwon", "Quill", "serif", "monospace", "끄트머리체", "할아버지의나눔", "나눔고딕", "궁서체", "굴림체", "바탕체", "돋움체"];
+Quill.register(Font, true);
+
+// align & icon 변경
+const Align = ReactQuill.Quill.import("formats/align");
+Align.whitelist = ["left", "center", "right", "justify"];
+const Icons = ReactQuill.Quill.import("ui/icons");
+Icons.align["left"] = Icons.align[""];
+
+// htmlEditButton 적용
+Quill.register({
+  "modules/htmlEditButton":htmlEditButton
+});
+
+// 3D 삽입 기술 정의
+const CustomCanvas = Quill.import('blots/embed');
+class CanvasBlot extends CustomCanvas {
+  static create(value) {
+    const node = super.create();
+    node.setAttribute('width', value.width);
+    node.setAttribute('height', value.height);
+    return node;
+  }
+
+  static value(node) {
+    return {
+      width: node.getAttribute('width'),
+      height: node.getAttribute('height'),
+    };
+  }
+}
+CanvasBlot.blotName = 'canvas';
+CanvasBlot.tagName = 'canvas';
+Quill.register(CanvasBlot);
 
 // handle them correctly
 const CustomUndo = () => (
@@ -39,29 +96,6 @@ const Custom3D = () => (
 );
 
 const CustomHeart = () => <span>♥</span>;
-
-/*
-// 사용자 정의 모듈 정의
-const CustomCanvas = Quill.import('blots/embed');
-class CanvasBlot extends CustomCanvas {
-  static create(value) {
-    const node = super.create();
-    node.setAttribute('width', value.width);
-    node.setAttribute('height', value.height);
-    return node;
-  }
-
-  static value(node) {
-    return {
-      width: node.getAttribute('width'),
-      height: node.getAttribute('height'),
-    };
-  }
-}
-CanvasBlot.blotName = 'canvas';
-CanvasBlot.tagName = 'canvas';
-Quill.register(CanvasBlot);
-*/
 
 const loadModel = (url, Canvas) => {
   const loader = new GLTFLoader();
