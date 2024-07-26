@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback, useMemo, useEffect } from 'react';
 import ReactQuill, {Quill} from 'react-quill';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import axios from 'axios';
 import EditorToolBar, {insertHeart, insert3DButton} from "../components/EditorToolBar";
@@ -13,10 +13,10 @@ import 'react-quill/dist/quill.snow.css'; // Quill snow스타일 시트 불러�
 import '../css/MyEditor.css'
 
 const MyEditor = () => {
-  const [editorHtml, setEditorHtml] = useState('');
-  const [title, setTitle] = useState('');
+  const [ data, setData ] = useState([]);
   const quillRef = useRef();
 
+  const params = useParams()._id
   const navigate = useNavigate();
 
   useEffect(() => { 
@@ -25,10 +25,26 @@ const MyEditor = () => {
       navigate("/");
       return; 
     }
-  }, [navigate]);
+    axios.get('http://localhost:5000/board/board_detail', {
+      params: {
+        _id: params
+      }
+    })
+      .then((response) => {
+        setData(response.data.list);
+        if (response.data.list.writer !== localStorage.key(0)){ // 다른 회원이 접근하는 것 방지
+          errorMessage("잘못된 접근입니다!");
+          navigate("/");
+          return; 
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+    });
+  }, [navigate, params]);
 
   const handleChange = useCallback((html) => {
-    setEditorHtml(html);
+    setData({realContent: html});
   }, []);
   
   // 이미지 처리를 하는 핸들러
@@ -142,24 +158,6 @@ const MyEditor = () => {
     "link", "image", "video", "color", "code-block", "formula", "direction"
   ];
 
-  /*
-  const handleSubmit = async () => {
-    const description = quillRef.current.getEditor().getText(); //태그를 제외한 순수 text만을 받아온다. 검색기능을 구현하지 않을 거라면 굳이 text만 따로 저장할 필요는 없다.
-    if (description.trim()==="") {
-        alert("내용을 입력해주세요.")
-        return;
-    }
-    if (postId) {
-        //기존 게시글 업데이트
-        await api.updatePost({postId,description,htmlContent});
-        //history.push(`/@${user.name}/post/${postId}`);
-    } else {
-        //새로운 게시글 생성
-        await api.createNewPost({description,htmlContent});
-        //history.push(`/@${user.name}/posts?folder=${selectedFolder}`);
-    }
-}
-  */
   const handleSubmit = (e) => {
     e.preventDefault();
     if (timeCheck() === 0){ 
@@ -169,15 +167,15 @@ const MyEditor = () => {
     }
     const description = quillRef.current.getEditor().getText(); //태그를 제외한 순수 text만을 받아온다. 검색기능을 구현하지 않을 거라면 굳이 text만 따로 저장할 필요는 없다.
     // description.trim()
-    axios.post('http://localhost:5000/board/write', {
-      writer: localStorage.key(0),
-      title: title,
+    axios.put('http://localhost:5000/board/update', {
+      _id: params,
+      title: document.getElementById('update_title').value, // 이 부분은 해결되었지만, 최적화해야할 과제 기존 data.title -> 해당 방식
       content: description,
-      realContent: editorHtml,
+      realContent: data.realContent,
     })
     .then((res) => {
-      successMessage("저장되었습니다!!");
-      navigate("/");
+      successMessage("수정되었습니다!!");
+      navigate(-1);
     })
     .catch((e) => {
       errorMessage("에러!!");
@@ -193,14 +191,15 @@ const MyEditor = () => {
       <input
             type="text"
             placeholder="Title"
-            id="title"
-            onChange={(e) => setTitle(e.target.value)}
+            id="update_title"
+            value={data.title}
+            onChange={(e) => setData((prevState) => ({ ...prevState, title: e.target.value }))}
             required
         />
       <EditorToolBar />
       <ReactQuill
         theme="snow"// 테마 설정 (여기서는 snow를 사용)
-        value={editorHtml}
+        value={data.realContent}
         onChange={handleChange}
         ref={quillRef}
         modules={modules}

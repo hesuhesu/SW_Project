@@ -30,7 +30,7 @@ const BoardDetail = () => {
   }, [params]);
 
   function modifiedBoard() {
-    
+    navigate(`/board_update/${params}`);
   }
   function deleteBoard() {
     if (timeCheck(params) === 0){ 
