@@ -4,9 +4,13 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter';
 import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter';
 
-// 설치해야 할 모듈
+
+// npm install 해야함
+
+// 설치한 모듈
 // npm install react react-dom
 // npm install three
+// npm install web-vitals
 
 const defaultCode = `
 // 정점 정의하기
