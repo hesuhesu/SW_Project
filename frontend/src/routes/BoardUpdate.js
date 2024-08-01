@@ -14,8 +14,9 @@ import '../css/MyEditor.css'
 
 const MyEditor = () => {
   const [ data, setData ] = useState([]);
+  const [threeD, setThreeD] = useState(''); // 아직 기술 할당 안함
+  const [imgData, setImgData] = useState([]);
   const quillRef = useRef();
-
   const params = useParams()._id
   const navigate = useNavigate();
 
@@ -32,6 +33,7 @@ const MyEditor = () => {
     })
       .then((response) => {
         setData(response.data.list);
+        setImgData(response.data.list.imgData); // api 데이터 + 이후 넣을 데이터
         if (response.data.list.writer !== localStorage.key(0)){ // 다른 회원이 접근하는 것 방지
           errorMessage("잘못된 접근입니다!");
           navigate("/");
@@ -68,17 +70,14 @@ const MyEditor = () => {
       formData.append('img', file); // formData는 키-밸류 구조
       // 백엔드 multer라우터에 이미지를 보낸다.
       try {
-        const result = await axios.post('http://localhost:3001/img', formData);
-        
+        const result = await axios.post('http://localhost:5000/img', formData);
+        setImgData(prevFiles => [...prevFiles, result.data.realName]);
         console.log('성공 시, 백엔드가 보내주는 데이터', result.data.url);
         const IMG_URL = result.data.url;
-
         // 이미지 태그를 에디터에 써주기 - 여러 방법이 있다.
         const editor = quillRef.current.getEditor(); // 에디터 객체 가져오기
-        
         // 현재 에디터 커서 위치값을 가져온다
         const range = editor.getSelection();
-        
         // 가져온 위치에 이미지를 삽입한다
         editor.insertEmbed(range.index, 'image', IMG_URL);
       } catch (error) {
@@ -95,7 +94,8 @@ const MyEditor = () => {
     const formData = new FormData();
     formData.append('img', blob);
     // FormData를 서버로 POST 요청을 보내 이미지 업로드를 처리
-    const result = await axios.post('http://localhost:3001/img', formData);
+    const result = await axios.post('http://localhost:5000/img', formData);
+    setImgData(prevFiles => [...prevFiles, result.data.realName]);
     console.log('성공 시, 백엔드가 보내주는 데이터', result.data.url);
     // 서버에서 반환된 이미지 URL을 변수에 저장
     const IMG_URL = result.data.url;
@@ -172,6 +172,8 @@ const MyEditor = () => {
       title: document.getElementById('update_title').value, // 이 부분은 해결되었지만, 최적화해야할 과제 기존 data.title -> 해당 방식
       content: description,
       realContent: data.realContent,
+      imgData: imgData,
+      threeD: data.threeD
     })
     .then((res) => {
       successMessage("수정되었습니다!!");

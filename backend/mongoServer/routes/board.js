@@ -38,12 +38,22 @@ router.post("/write", async (req, res) => {
     try {
       let obj;
       const now = new Date();
-      const createdAt = now.toLocaleString();
+      const createdAt = now.toLocaleString('ko-KR', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+              hour: '2-digit',
+              minute: '2-digit',
+              second: '2-digit',
+              hour12: false
+      });
       obj = {
         writer: req.body.writer,
         title: req.body.title,
         content: req.body.content,
         realContent: req.body.realContent,
+        imgData: req.body.imgData,
+        threeD: req.body.threeD,
         createdAt: createdAt
       };
       const board = new Board(obj);
@@ -76,7 +86,9 @@ router.put("/update", async (req,res) => {
                 $set: {
                     title: req.body.title,
                     content: req.body.content,
-                    realContent: req.body.realContent
+                    realContent: req.body.realContent,
+                    imgData: req.body.imgData,
+                    threeD: req.body.threeD,
                 }
             }
         );

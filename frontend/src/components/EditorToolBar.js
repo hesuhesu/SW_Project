@@ -43,27 +43,6 @@ Quill.register({
   "modules/htmlEditButton":htmlEditButton
 });
 
-// 3D 삽입 기술 정의
-const CustomCanvas = Quill.import('blots/embed');
-class CanvasBlot extends CustomCanvas {
-  static create(value) {
-    const node = super.create();
-    node.setAttribute('width', value.width);
-    node.setAttribute('height', value.height);
-    return node;
-  }
-
-  static value(node) {
-    return {
-      width: node.getAttribute('width'),
-      height: node.getAttribute('height'),
-    };
-  }
-}
-CanvasBlot.blotName = 'canvas';
-CanvasBlot.tagName = 'canvas';
-Quill.register(CanvasBlot);
-
 // handle them correctly
 const CustomUndo = () => (
   <svg viewBox="0 0 18 18">
@@ -178,7 +157,7 @@ export function insert3DButton(){
     const formData = new FormData();
     formData.append('gltf', file);
     try {
-      const result = await axios.post('http://localhost:3001/gltf', formData);
+      const result = await axios.post('http://localhost:5000/gltf', formData);
       const GLTF_URL = result.data.url;
       console.log('성공 시, 백엔드가 보내주는 데이터', result.data.url);
       loadModel(GLTF_URL, canvas$count$);
@@ -207,6 +186,18 @@ export function insert3DButton(){
   });  
   count++;
 }
+/*
+const insertCanvas = () => {
+  const quill = quillRef.current.getEditor();
+  const canvasElement = document.createElement('canvas');
+  canvasElement.width = 400;
+  canvasElement.height = 400;
+  quill.insertEmbed(quill.getSelection().index, 'canvas', {
+    width: canvasElement.width,
+    height: canvasElement.height,
+  });
+};
+*/
 
 export const QuillToolbar = () => (
     <div id="toolbar">

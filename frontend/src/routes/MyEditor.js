@@ -15,8 +15,9 @@ import '../css/MyEditor.css'
 const MyEditor = () => {
   const [editorHtml, setEditorHtml] = useState('');
   const [title, setTitle] = useState('');
+  const [threeD, setThreeD] = useState(''); // 아직 기술 할당 안함
+  const [imgData, setImgData] = useState([]);
   const quillRef = useRef();
-
   const navigate = useNavigate();
 
   useEffect(() => { 
@@ -52,17 +53,14 @@ const MyEditor = () => {
       formData.append('img', file); // formData는 키-밸류 구조
       // 백엔드 multer라우터에 이미지를 보낸다.
       try {
-        const result = await axios.post('http://localhost:3001/img', formData);
-        
+        const result = await axios.post('http://localhost:5000/img', formData);
         console.log('성공 시, 백엔드가 보내주는 데이터', result.data.url);
+        setImgData(prevFiles => [...prevFiles, result.data.realName]);
         const IMG_URL = result.data.url;
-
         // 이미지 태그를 에디터에 써주기 - 여러 방법이 있다.
         const editor = quillRef.current.getEditor(); // 에디터 객체 가져오기
-        
         // 현재 에디터 커서 위치값을 가져온다
         const range = editor.getSelection();
-        
         // 가져온 위치에 이미지를 삽입한다
         editor.insertEmbed(range.index, 'image', IMG_URL);
       } catch (error) {
@@ -79,8 +77,9 @@ const MyEditor = () => {
     const formData = new FormData();
     formData.append('img', blob);
     // FormData를 서버로 POST 요청을 보내 이미지 업로드를 처리
-    const result = await axios.post('http://localhost:3001/img', formData);
+    const result = await axios.post('http://localhost:5000/img', formData);
     console.log('성공 시, 백엔드가 보내주는 데이터', result.data.url);
+    setImgData(prevFiles => [...prevFiles, result.data.realName]);
     // 서버에서 반환된 이미지 URL을 변수에 저장
     const IMG_URL = result.data.url;
     // Quill 에디터 인스턴스를 호출
@@ -111,7 +110,7 @@ const MyEditor = () => {
         "redo": redoChange,
         "image": imageHandler,
         insertHeart : insertHeart,
-        insert3DButton : insert3DButton,
+        insert3DButton : insert3DButton
       },
     },
     // undo, redo history
@@ -142,24 +141,6 @@ const MyEditor = () => {
     "link", "image", "video", "color", "code-block", "formula", "direction"
   ];
 
-  /*
-  const handleSubmit = async () => {
-    const description = quillRef.current.getEditor().getText(); //태그를 제외한 순수 text만을 받아온다. 검색기능을 구현하지 않을 거라면 굳이 text만 따로 저장할 필요는 없다.
-    if (description.trim()==="") {
-        alert("내용을 입력해주세요.")
-        return;
-    }
-    if (postId) {
-        //기존 게시글 업데이트
-        await api.updatePost({postId,description,htmlContent});
-        //history.push(`/@${user.name}/post/${postId}`);
-    } else {
-        //새로운 게시글 생성
-        await api.createNewPost({description,htmlContent});
-        //history.push(`/@${user.name}/posts?folder=${selectedFolder}`);
-    }
-}
-  */
   const handleSubmit = (e) => {
     e.preventDefault();
     if (timeCheck() === 0){ 
@@ -174,6 +155,8 @@ const MyEditor = () => {
       title: title,
       content: description,
       realContent: editorHtml,
+      imgData: imgData,
+      threeD: threeD
     })
     .then((res) => {
       successMessage("저장되었습니다!!");
@@ -183,8 +166,24 @@ const MyEditor = () => {
       errorMessage("에러!!");
     });  
   };
-  function modifyCancel() {
+
+  const modifyCancel = async () =>{
+    if (imgData.length > 0){
+        axios.delete('http://localhost:5000/all_img_delete', {
+          params: {
+            imgData: imgData
+          }
+        })
+          .then((response) => {
+            navigate(-1);
+            return;
+          })
+          .catch((error) => {
+            errorMessage("에러!!");
+        });
+    }
     navigate(-1);
+    return;
   }
 
   return (
