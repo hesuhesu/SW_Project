@@ -36,7 +36,7 @@ function Board() {
 
   return (
     <div className="Board">
-      {data.length > 0 && (
+      {data.length > 0 ? (
         <>
           <h1 className="Board-h1">Board</h1>
           <CommonTable headersName={['제목[클릭]', '내용', '작성자', '등록일']}>
@@ -63,7 +63,7 @@ function Board() {
             activeClassName={'active'}
           />
         </>
-      )}
+      ): <div>게시물 없음</div>}
     </div>
   );
 }

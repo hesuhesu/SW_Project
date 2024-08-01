@@ -59,7 +59,15 @@ function Register() {
         const now = new Date();
         const nextTime = new Date(now.setHours(now.getHours() + 1));
         const obj = {    
-          time : nextTime.toLocaleString(),    
+          time : nextTime.toLocaleString('ko-KR', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+              hour: '2-digit',
+              minute: '2-digit',
+              second: '2-digit',
+              hour12: false
+          }),    
           expire : nextTime.getTime()
         }
         localStorage.setItem(loginData.email, JSON.stringify(obj));

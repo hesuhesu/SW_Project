@@ -10,7 +10,6 @@ import { timeCheck } from '../utils/TimeCheck';
 
 const BoardDetail = () => {
   const [ data, setData ] = useState({});
-  
   const params = useParams()._id
   const navigate = useNavigate();
 
@@ -38,6 +37,11 @@ const BoardDetail = () => {
       navigate(-1);
       return; 
     }
+    axios.delete('http://localhost:5000/all_img_delete', {
+      params: {
+        imgData : data.imgData
+      }
+    }).then((response) => {
       axios.delete('http://localhost:5000/board/delete', {
         params: {
           _id : params
@@ -49,6 +53,10 @@ const BoardDetail = () => {
         .catch((error) => {
           errorMessage("삭제 실패");    
       })
+    })
+      .catch((error) => {
+        errorMessage("삭제 실패");    
+    })
   }
 
   const modules = {
