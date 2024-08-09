@@ -3,20 +3,25 @@ import ReactQuill, {Quill} from 'react-quill';
 import { useNavigate, useParams } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import axios from 'axios';
-import EditorToolBar, {insertHeart, insert3DButton} from "../components/EditorToolBar";
+import EditorToolBar, {insertHeart, formats, undoChange, redoChange} from "../components/EditorToolBar";
 import { ToastContainer } from "react-toastify";
 import { successMessage, errorMessage } from '../utils/SweetAlertEvent';
 import { timeCheck} from '../utils/TimeCheck';
 import Button from '@material-ui/core/Button';
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 import 'react-quill/dist/quill.snow.css'; // Quill snow스타일 시트 불러오기
 import '../css/MyEditor.css'
 
 const MyEditor = () => {
   const [ data, setData ] = useState([]);
-  const [threeD, setThreeD] = useState(''); // 아직 기술 할당 안함
   const [imgData, setImgData] = useState([]);
+  const [threeD, setThreeD] = useState([]);
   const quillRef = useRef();
+  const canvasRef = useRef();
+  const [threeDTrue,setThreeDTrue] = useState(0);
   const params = useParams()._id
   const navigate = useNavigate();
 
@@ -27,22 +32,21 @@ const MyEditor = () => {
       return; 
     }
     axios.get('http://localhost:5000/board/board_detail', {
-      params: {
-        _id: params
-      }
-    })
-      .then((response) => {
+      params: { _id: params }
+    }).then((response) => {
         setData(response.data.list);
         setImgData(response.data.list.imgData); // api 데이터 + 이후 넣을 데이터
+        setThreeD(response.data.list.threeD);
+        setThreeDTrue(response.data.list.threeDTrue);
         if (response.data.list.writer !== localStorage.key(0)){ // 다른 회원이 접근하는 것 방지
           errorMessage("잘못된 접근입니다!");
           navigate("/");
           return; 
         }
-      })
-      .catch((error) => {
-        console.error(error);
-    });
+        if (response.data.list.threeDTrue !== 0){ // 마지막 3D file 랜더링
+          loadModel(`http://localhost:5000/uploads/${response.data.list.threeD[response.data.list.threeD.length - 1]}`);
+        }
+      }).catch((error) => { console.error(error); });
   }, [navigate, params]);
 
   const handleChange = useCallback((html) => {
@@ -51,24 +55,19 @@ const MyEditor = () => {
   
   // 이미지 처리를 하는 핸들러
   const imageHandler = () => {
-    console.log('에디터에서 이미지 버튼을 클릭하면 이미지 핸들러가 시작됩니다!');
-
     // 1. 이미지를 저장할 input type=file DOM을 만든다.
     const input = document.createElement('input');
     // 속성 써주기
     input.setAttribute('type', 'file');
     input.setAttribute('accept', 'image/*'); // 원래 image/*
     input.click(); // 에디터 이미지버튼을 클릭하면 이 input이 클릭된다.
-    // input이 클릭되면 파일 선택창이 나타난다.
 
-    // input에 변화가 생긴다면 = 이미지를 선택
     input.addEventListener('change', async () => {
-      console.log('온체인지');
       const file = input.files[0];
-      // multer에 맞는 형식으로 데이터 만들어준다.
+      if (!file) return; // 파일이 선택되지 않은 경우
+
       const formData = new FormData();
       formData.append('img', file); // formData는 키-밸류 구조
-      // 백엔드 multer라우터에 이미지를 보낸다.
       try {
         const result = await axios.post('http://localhost:5000/img', formData);
         setImgData(prevFiles => [...prevFiles, result.data.realName]);
@@ -80,9 +79,7 @@ const MyEditor = () => {
         const range = editor.getSelection();
         // 가져온 위치에 이미지를 삽입한다
         editor.insertEmbed(range.index, 'image', IMG_URL);
-      } catch (error) {
-        console.log('이미지 불러오기 실패');
-      }
+      } catch (error) { console.log('이미지 불러오기 실패'); }
     });
   };
 //dnd 처리 핸들러
@@ -105,18 +102,87 @@ const MyEditor = () => {
     const range = editor.getSelection();
     // 현재 커서 위치에 이미지 URL을 이용해 이미지 삽입
     editor.insertEmbed(range.index, 'image', IMG_URL);
-  } catch (error) {
-    // 이미지 업로드 중 에러가 발생할 경우 콘솔에 에러를 출력
-    console.log('이미지 업로드 실패', error);
-  }
+  } catch (error) { console.log('이미지 업로드 실패', error); }
 }, []);
 
-// Undo and redo functions for Custom Toolbar
-  function undoChange() {
-    this.quill.history.undo();
+const loadModel = (url) => {
+  const loader = new GLTFLoader();
+  loader.load(url, (gltf) => {
+      if (gltf.scene) {
+        const scene = gltf.scene;
+        scene.scale.set(0.5, 0.5, 0.5);
+        scene.position.set(0, 0, 0);
+
+        const camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 0, 5);
+
+        const renderer = new THREE.WebGLRenderer({
+          canvas: canvasRef.current,
+          antialias: true,
+          alpha: false,
+          preserveDrawingBuffer: true,
+        });
+        renderer.setSize(500, 500);
+        renderer.setClearColor(0x000000, 1);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        // controls.enableDamping = true;
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(0, 1, 0);
+        scene.add(directionalLight);
+
+        // const clock = new THREE.Clock();
+        const animate = () => {
+          requestAnimationFrame(animate);
+          controls.update(); // clock.getDelta() 안에 추가할려면 추가
+          renderer.render(scene, camera);
+        };
+        animate();
+        console.log("Success Load GLTF!!", canvasRef.current);
+      } else { console.error('Failed to load GLTF file: scene is undefined'); }},
+    undefined, (error) => { console.error('Failed to load GLTF file:', error); });
+};
+
+function insert3DButton(){
+  const input = document.createElement('input');
+  // 속성 써주기
+  input.setAttribute('type', 'file');
+  input.setAttribute('accept', '*');
+  input.click();
+
+  // 버튼 클릭 시 해당 이벤트
+  input.addEventListener('change', async () => {
+    const file = input.files[0];
+
+    // 파일 확장자 확인
+    const fileExtension = file.name.substring(file.name.lastIndexOf('.') + 1).toLowerCase(); // 마지막 점 이후의 문자열 추출
+    if (!file) return; // 파일이 선택되지 않은 경우
+    else if (fileExtension !== 'gltf' && fileExtension !== 'glb' && fileExtension !== 'obj' && fileExtension !== 'fbx') {
+      errorMessage(`지원하지 않는 3D 파일 확장자입니다.<br> 지원 확장자 : [gltf, glb, obj, fbx]`);
+      return;
+    }
+    const formData = new FormData();
+    formData.append('gltf', file);
+    await axios.post('http://localhost:5000/gltf', formData)
+      .then((res) => { 
+        setThreeD(prevFiles => [...prevFiles, res.data.realName]);
+        setThreeDTrue(threeDTrue => threeDTrue + 1);
+        loadModel(res.data.url); // 3D Model rendering
+      }).catch((e) => { errorMessage("GLTF 업로드 실패"); });
+    });
   }
-  function redoChange() {
-    this.quill.history.redo();
+
+  const modify3D = () =>{
+    // 앞으로 구현해야 할 부분
+  }
+
+  const delete3D = async () =>{
+    setThreeDTrue(0);
+    return; 
   }
 
   const modules = useMemo(() => ({
@@ -150,13 +216,7 @@ const MyEditor = () => {
         prependSelector: 'div#myelement', // a string used to select where you want to insert the overlayContainer, default: null (appends to body),
         editorModules: {} // The default mod
       },
-      
   }), [imageDropHandler]);
-
-  const formats = [
-    "header", "font", "size", "bold", "italic", "underline", "align", "strike", "script", "blockquote", "background", "list", "bullet", "indent",
-    "link", "image", "video", "color", "code-block", "formula", "direction"
-  ];
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -173,17 +233,15 @@ const MyEditor = () => {
       content: description,
       realContent: data.realContent,
       imgData: imgData,
-      threeD: data.threeD
-    })
-    .then((res) => {
+      threeD: threeD,
+      threeDTrue: threeDTrue
+    }).then((res) => {
       successMessage("수정되었습니다!!");
       navigate(-1);
-    })
-    .catch((e) => {
-      errorMessage("에러!!");
-    });  
+    }).catch((e) => { errorMessage("에러!!"); });  
   };
-  function modifyCancel() {
+
+  function handleCancel() {
     navigate(-1);
   }
 
@@ -207,9 +265,13 @@ const MyEditor = () => {
         modules={modules}
         formats={formats}
       />
-      <div className="ThreeD-Views"></div>
+      {threeDTrue !== 0 ? <>
+      <div><canvas ref={canvasRef}/></div>
+      <Button variant="contained" onClick = {modify3D}>3D 수정하기</Button>
+      <Button variant="contained" onClick = {delete3D}>3D 삭제하기</Button>
+      </>: ''}
       <Button variant="contained" type="submit">저장하기</Button>
-      <Button variant="contained" onClick = {modifyCancel}>취소하기</Button>
+      <Button variant="contained" onClick = {handleCancel}>취소하기</Button>
       <ToastContainer
             limit={1}
             autoClose={2000}

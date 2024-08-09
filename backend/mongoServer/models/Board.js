@@ -16,10 +16,11 @@ const BoardSchema = new mongoose.Schema({
   realContent:{
     type: String,
   },
-  threeD:{
-    type: String
-  },
+  threeD:[String],
   imgData:[String],
+  threeDTrue: {
+    type: Number,
+  },
   createdAt: {
     type: String,
   }

@@ -54,6 +54,7 @@ router.post("/write", async (req, res) => {
         realContent: req.body.realContent,
         imgData: req.body.imgData,
         threeD: req.body.threeD,
+        threeDTrue: req.body.threeDTrue,
         createdAt: createdAt
       };
       const board = new Board(obj);
@@ -89,6 +90,7 @@ router.put("/update", async (req,res) => {
                     realContent: req.body.realContent,
                     imgData: req.body.imgData,
                     threeD: req.body.threeD,
+                    threeDTrue: req.body.threeDTrue
                 }
             }
         );
