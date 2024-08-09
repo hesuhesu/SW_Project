@@ -3,11 +3,14 @@ import ReactQuill, {Quill} from 'react-quill';
 import { useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import axios from 'axios';
-import EditorToolBar, {insertHeart, insert3DButton} from "../components/EditorToolBar";
+import EditorToolBar, {insertHeart, formats, undoChange, redoChange} from "../components/EditorToolBar";
 import { ToastContainer } from "react-toastify";
 import { successMessage, errorMessage } from '../utils/SweetAlertEvent';
 import { timeCheck} from '../utils/TimeCheck';
 import Button from '@material-ui/core/Button';
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 import 'react-quill/dist/quill.snow.css'; // Quill snow스타일 시트 불러오기
 import '../css/MyEditor.css'
@@ -15,11 +18,13 @@ import '../css/MyEditor.css'
 const MyEditor = () => {
   const [editorHtml, setEditorHtml] = useState('');
   const [title, setTitle] = useState('');
-  const [threeD, setThreeD] = useState(''); // 아직 기술 할당 안함
+  const [threeDTrue, setThreeDTrue] = useState(0);
+  const [threeD, setThreeD] = useState([]);
   const [imgData, setImgData] = useState([]);
   const quillRef = useRef();
+  const canvasRef = useRef();
   const navigate = useNavigate();
-
+  
   useEffect(() => { 
     if (timeCheck() === 0){ 
       errorMessage("로그인 만료!");
@@ -34,24 +39,19 @@ const MyEditor = () => {
   
   // 이미지 처리를 하는 핸들러
   const imageHandler = () => {
-    console.log('에디터에서 이미지 버튼을 클릭하면 이미지 핸들러가 시작됩니다!');
-
     // 1. 이미지를 저장할 input type=file DOM을 만든다.
     const input = document.createElement('input');
     // 속성 써주기
     input.setAttribute('type', 'file');
     input.setAttribute('accept', 'image/*'); // 원래 image/*
     input.click(); // 에디터 이미지버튼을 클릭하면 이 input이 클릭된다.
-    // input이 클릭되면 파일 선택창이 나타난다.
 
-    // input에 변화가 생긴다면 = 이미지를 선택
     input.addEventListener('change', async () => {
-      console.log('온체인지');
       const file = input.files[0];
-      // multer에 맞는 형식으로 데이터 만들어준다.
+      if (!file) return; // 파일이 선택되지 않은 경우
+
       const formData = new FormData();
       formData.append('img', file); // formData는 키-밸류 구조
-      // 백엔드 multer라우터에 이미지를 보낸다.
       try {
         const result = await axios.post('http://localhost:5000/img', formData);
         console.log('성공 시, 백엔드가 보내주는 데이터', result.data.url);
@@ -63,43 +63,112 @@ const MyEditor = () => {
         const range = editor.getSelection();
         // 가져온 위치에 이미지를 삽입한다
         editor.insertEmbed(range.index, 'image', IMG_URL);
-      } catch (error) {
-        console.log('이미지 불러오기 실패');
-      }
+      } catch (error) { console.log('이미지 불러오기 실패'); }
     });
   };
-//dnd 처리 핸들러
+  //dnd 처리 핸들러
   const imageDropHandler = useCallback(async (dataUrl) => {
-  try {
-    // dataUrl을 이용하여 blob 객체를 생성
-    const blob = await fetch(dataUrl).then(res => res.blob());
-    // FormData 객체를 생성하고 'img' 필드에 blob을 추가
-    const formData = new FormData();
-    formData.append('img', blob);
-    // FormData를 서버로 POST 요청을 보내 이미지 업로드를 처리
-    const result = await axios.post('http://localhost:5000/img', formData);
-    console.log('성공 시, 백엔드가 보내주는 데이터', result.data.url);
-    setImgData(prevFiles => [...prevFiles, result.data.realName]);
-    // 서버에서 반환된 이미지 URL을 변수에 저장
-    const IMG_URL = result.data.url;
-    // Quill 에디터 인스턴스를 호출
-    const editor = quillRef.current.getEditor();
-    // 현재 커서 위치를 가져옵니다.
-    const range = editor.getSelection();
-    // 현재 커서 위치에 이미지 URL을 이용해 이미지 삽입
-    editor.insertEmbed(range.index, 'image', IMG_URL);
-  } catch (error) {
-    // 이미지 업로드 중 에러가 발생할 경우 콘솔에 에러를 출력
-    console.log('이미지 업로드 실패', error);
-  }
-}, []);
+    try {
+      // dataUrl을 이용하여 blob 객체를 생성
+      const blob = await fetch(dataUrl).then(res => res.blob());
+      // FormData 객체를 생성하고 'img' 필드에 blob을 추가
+      const formData = new FormData();
+      formData.append('img', blob);
+      // FormData를 서버로 POST 요청을 보내 이미지 업로드를 처리
+      const result = await axios.post('http://localhost:5000/img', formData);
+      console.log('성공 시, 백엔드가 보내주는 데이터', result.data.url);
+      setImgData(prevFiles => [...prevFiles, result.data.realName]);
+      // 서버에서 반환된 이미지 URL을 변수에 저장
+      const IMG_URL = result.data.url;
+      // Quill 에디터 인스턴스를 호출
+      const editor = quillRef.current.getEditor();
+      // 현재 커서 위치를 가져옵니다.
+      const range = editor.getSelection();
+      // 현재 커서 위치에 이미지 URL을 이용해 이미지 삽입
+      editor.insertEmbed(range.index, 'image', IMG_URL);
+    } catch (error) { console.log('이미지 업로드 실패', error); }
+  }, []);
 
-// Undo and redo functions for Custom Toolbar
-  function undoChange() {
-    this.quill.history.undo();
+  // 3D Model load
+  const loadModel = (url) => {
+    const loader = new GLTFLoader();
+    loader.load(url, (gltf) => {
+        if (gltf.scene) {
+          const scene = gltf.scene;
+          scene.scale.set(0.5, 0.5, 0.5);
+          scene.position.set(0, 0, 0);
+  
+          const camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 0.1, 1000);
+          camera.position.set(0, 0, 5);
+  
+          const renderer = new THREE.WebGLRenderer({
+            canvas: canvasRef.current,
+            antialias: true,
+            alpha: false,
+            preserveDrawingBuffer: true,
+          });
+          renderer.setSize(500, 500);
+          renderer.setClearColor(0x000000, 1);
+  
+          const controls = new OrbitControls(camera, renderer.domElement);
+          // controls.enableDamping = true;
+  
+          const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+          scene.add(ambientLight);
+  
+          const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+          directionalLight.position.set(0, 1, 0);
+          scene.add(directionalLight);
+  
+          // const clock = new THREE.Clock();
+          const animate = () => {
+            requestAnimationFrame(animate);
+            controls.update(); // clock.getDelta() 안에 추가할려면 추가
+            renderer.render(scene, camera);
+          };
+          animate();
+          console.log("Success Load GLTF!!", canvasRef.current);
+        } else { console.error('Failed to load GLTF file: scene is undefined'); }},
+      undefined, (error) => { console.error('Failed to load GLTF file:', error); });
+  };
+  
+  const insert3DButton = async () => {
+    const input = document.createElement('input');
+    // 속성 써주기
+    input.setAttribute('type', 'file');
+    input.setAttribute('accept', '*'); // input.setAttribute('accept', '.gltf, .glb'); // GLTF 및 GLB 파일만 허용
+    input.click();
+    // 버튼 클릭 시 해당 이벤트
+    input.addEventListener('change', async () => {
+      const file = input.files[0];
+      
+      // 파일 확장자 확인
+      const fileExtension = file.name.substring(file.name.lastIndexOf('.') + 1).toLowerCase(); // 마지막 점 이후의 문자열 추출
+      if (!file) return; // 파일이 선택되지 않은 경우
+      else if (fileExtension !== 'gltf' && fileExtension !== 'glb' && fileExtension !== 'obj' && fileExtension !== 'fbx') {
+        errorMessage(`지원하지 않는 3D 파일 확장자입니다.<br> 지원 확장자 : [gltf, glb, obj, fbx]`);
+        return;
+      }
+      const formData = new FormData();
+      formData.append('gltf', file);
+      await axios.post('http://localhost:5000/gltf', formData)
+      .then((res) => { 
+        console.log(res.data.url);
+        console.log(res.data.realName);
+        setThreeD(prevFiles => [...prevFiles, res.data.realName]);
+        setThreeDTrue(threeDTrue => threeDTrue + 1);
+        loadModel(res.data.url, `http://localhost:5000/uploads/${res.data.realName}`); // 3D Model rendering
+      }).catch((e) => { errorMessage("GLTF 업로드 실패"); });
+    });
   }
-  function redoChange() {
-    this.quill.history.redo();
+
+  const modify3D = async () =>{
+    // 앞으로 구현해야 할 부분
+  }
+
+  const delete3D = async () =>{
+    setThreeDTrue(0);
+    return; 
   }
 
   const modules = useMemo(() => ({
@@ -136,11 +205,6 @@ const MyEditor = () => {
       
   }), [imageDropHandler]);
 
-  const formats = [
-    "header", "font", "size", "bold", "italic", "underline", "align", "strike", "script", "blockquote", "background", "list", "bullet", "indent",
-    "link", "image", "video", "color", "code-block", "formula", "direction"
-  ];
-
   const handleSubmit = (e) => {
     e.preventDefault();
     if (timeCheck() === 0){ 
@@ -156,34 +220,23 @@ const MyEditor = () => {
       content: description,
       realContent: editorHtml,
       imgData: imgData,
-      threeD: threeD
-    })
-    .then((res) => {
-      successMessage("저장되었습니다!!");
-      navigate("/");
-    })
-    .catch((e) => {
-      errorMessage("에러!!");
-    });  
+      threeD: threeD,
+      threeDTrue: threeDTrue
+    }).then((res) => { successMessage("저장되었습니다!!"); navigate(-1); })
+    .catch((e) => { errorMessage("에러!!"); });  
   };
 
-  const modifyCancel = async () =>{
-    if (imgData.length > 0){
-        axios.delete('http://localhost:5000/all_img_delete', {
+  const handleCancel = async () =>{
+    if (imgData.length > 0 || threeD !== ''){
+        axios.delete('http://localhost:5000/file_all_delete', {
           params: {
-            imgData: imgData
+            imgData: imgData,
+            threeD: threeD
           }
-        })
-          .then((response) => {
-            navigate(-1);
-            return;
-          })
-          .catch((error) => {
-            errorMessage("에러!!");
-        });
+        }).then((response) => { navigate('/'); return; })
+          .catch((error) => { errorMessage("에러!!"); });
     }
-    navigate(-1);
-    return;
+    navigate('/'); return;
   }
 
   return (
@@ -205,9 +258,13 @@ const MyEditor = () => {
         modules={modules}
         formats={formats}
       />
-      <div className="ThreeD-Views"></div>
+      {threeDTrue !== 0 ? <>
+      <div><canvas ref={canvasRef}/></div>
+      <Button variant="contained" onClick = {modify3D}>3D 수정하기</Button>
+      <Button variant="contained" onClick = {delete3D}>3D 삭제하기</Button>
+      </>: ''}
       <Button variant="contained" type="submit">저장하기</Button>
-      <Button variant="contained" onClick = {modifyCancel}>취소하기</Button>
+      <Button variant="contained" onClick = {handleCancel}>취소하기</Button>
       <ToastContainer
             limit={1}
             autoClose={2000}

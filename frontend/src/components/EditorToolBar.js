@@ -1,10 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React from 'react';
 import ReactQuill, {Quill} from 'react-quill';
-import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import axios from "axios";
 import Button from 'react-bootstrap/Button';
 import ImageResize from 'quill-image-resize';
 import { ImageDrop } from "quill-image-drop-module";
@@ -43,6 +39,11 @@ Quill.register({
   "modules/htmlEditButton":htmlEditButton
 });
 
+export const formats = [
+  "header", "font", "size", "bold", "italic", "underline", "align", "strike", "script", "blockquote", "background", "list", "bullet", "indent",
+  "link", "image", "video", "color", "code-block", "formula", "direction"
+];
+
 // handle them correctly
 const CustomUndo = () => (
   <svg viewBox="0 0 18 18">
@@ -76,128 +77,20 @@ const Custom3D = () => (
 
 const CustomHeart = () => <span>♥</span>;
 
-const loadModel = (url, Canvas) => {
-  const loader = new GLTFLoader();
-  loader.load(
-    url,
-    (gltf) => {
-      if (gltf.scene) {
-        const scene = gltf.scene;
-        scene.scale.set(0.5, 0.5, 0.5);
-
-        const camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(0, 0, 5);
-
-        const renderer = new THREE.WebGLRenderer({
-          canvas: Canvas,
-          antialias: true,
-          alpha: true,
-          preserveDrawingBuffer: true,
-        });
-        renderer.setSize(400, 400);
-
-        const controls = new OrbitControls(camera, renderer.domElement);
-        // controls.enableDamping = true;
-
-        const ambientLight = new THREE.AmbientLight(0xffffff, 1);
-        scene.add(ambientLight);
-
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-        directionalLight.position.set(0, 1, 0);
-        scene.add(directionalLight);
-
-        const clock = new THREE.Clock();
-        const animate = () => {
-          requestAnimationFrame(animate);
-          controls.update(clock.getDelta());
-          renderer.render(scene, camera);
-        };
-        animate();
-        console.log("Success Load Gltf!!", Canvas.current);
-      } else {
-        console.error('Failed to load GLTF file: scene is undefined');
-      }
-    },
-    undefined,
-    (error) => {
-      console.error('Failed to load GLTF file:', error);
-    }
-  );
-};
-
-let count = 0;
-
 export function insertHeart() {
   const cursorPosition = this.quill.getSelection().index;
   this.quill.insertText(cursorPosition, "♥");
   this.quill.setSelection(cursorPosition + 1);
 }
 
-export function insert3DButton(){
-  // Quill Editor 내부에 3D 뷰어 추가
-  const quillContainer = document.querySelector('.ThreeD-Views');
-  if (quillContainer.childElementCount > 9){
-    alert('더 이상 항목을 생성할 수 없습니다.');
-    return;
-  }
-  const canvas$count$ = document.createElement('canvas');
-  canvas$count$.tabIndex = count;
-  quillContainer.appendChild(canvas$count$);
-  
-  const input = document.createElement('input');
-  // 속성 써주기
-  input.setAttribute('type', 'file');
-  input.setAttribute('accept', '*');
-  input.click();
-
-  // 버튼 클릭 시 해당 이벤트
-  input.addEventListener('change', async () => {
-    console.log('3d file 찾기 시작');
-    const file = input.files[0];
-    const formData = new FormData();
-    formData.append('gltf', file);
-    try {
-      const result = await axios.post('http://localhost:5000/gltf', formData);
-      const GLTF_URL = result.data.url;
-      console.log('성공 시, 백엔드가 보내주는 데이터', result.data.url);
-      loadModel(GLTF_URL, canvas$count$);
-    } catch (error) {
-      console.log('이미지 불러오기 실패');
-    }
-  });
-  
-  // 추가 버튼 생성
-  const deleteButton$count$ = document.createElement('button');
-  deleteButton$count$.textContent = 'X';
-  quillContainer.appendChild(deleteButton$count$);
-  deleteButton$count$.addEventListener('click', () => {
-    // 3D 뷰어 삭제
-    quillContainer.removeChild(deleteButton$count$);
-    quillContainer.removeChild(editButton$count$);
-    quillContainer.removeChild(canvas$count$);
-  });
-
-  const editButton$count$ = document.createElement('button');
-  editButton$count$.textContent = '수정';
-  quillContainer.appendChild(editButton$count$);
-  editButton$count$.addEventListener('click', () => {
-    // 3D 뷰어 수정 기능 구현
-    // ...
-  });  
-  count++;
+// Undo and redo functions for Custom Toolbar
+export function undoChange() {
+  this.quill.history.undo();
 }
-/*
-const insertCanvas = () => {
-  const quill = quillRef.current.getEditor();
-  const canvasElement = document.createElement('canvas');
-  canvasElement.width = 400;
-  canvasElement.height = 400;
-  quill.insertEmbed(quill.getSelection().index, 'canvas', {
-    width: canvasElement.width,
-    height: canvasElement.height,
-  });
-};
-*/
+
+export function redoChange() {
+  this.quill.history.redo();
+}
 
 export const QuillToolbar = () => (
     <div id="toolbar">

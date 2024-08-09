@@ -46,7 +46,7 @@
     "sass": "^1.77.6",
     "simple-zustand-devtools": "^1.1.0",
     "sweetalert2": "^11.12.2",
-    "three": "^0.163.0",
+    "three": "^0.167.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

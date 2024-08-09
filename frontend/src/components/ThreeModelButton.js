@@ -4,7 +4,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import axios from "axios";
 
-const ThreeModelButton = () => {
+export const ThreeModelButton = () => {
     const canvasRef = useRef();
 
     const handleFileChange = async (event) => {
@@ -15,7 +15,7 @@ const ThreeModelButton = () => {
         formData.append('gltf', file);
 
         try {
-            const result = await axios.post('http://localhost:3001/gltf', formData);
+            const result = await axios.post('http://localhost:5000/gltf', formData);
             console.log('성공 시, 백엔드가 보내주는 데이터', result.data.url);
             const GLTF_URL = result.data.url;
             

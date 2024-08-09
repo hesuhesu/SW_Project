@@ -80,52 +80,76 @@ app.post('/gltf', upload.single('gltf'), (req, res) => {
   res.json({ url: GLTF_URL, realName: req.file.filename });
 });
 
-// 파일 삭제를 위한 /delete 라우터 추가
-app.delete('/img_delete', (req, res) => {
-  const filename = req.body.filename; // 클라이언트에서 파일명을 받아옴
-  const filePath = path.join(__dirname, 'public/uploads', filename); // 파일 경로 설정
+// 파일 다운로드 라우터
+app.get('/download_gltf', (req, res) => {
+  const filename = req.query.filename;
+  const filePath = path.join(__dirname, 'public/uploads', filename);
 
-  // 파일 삭제
-  fs.unlink(filePath, (err) => {
+  // 파일을 클라이언트에게 전송
+  res.download(filePath, (err) => {
     if (err) {
-      console.error('파일 삭제 중 오류 발생:', err);
-      return res.status(500).json({ message: '파일 삭제 실패', error: err });
+      console.error('파일 다운로드 중 오류 발생:', err);
+      res.status(404).send('파일을 찾을 수 없습니다.');
+    } else {
+      console.log('파일 다운로드 성공:', filename);
     }
-    console.log('파일 삭제 완료:', filename);
-    res.json({ message: '파일 삭제 성공' });
   });
 });
 
 // 파일 삭제를 위한 /all_delete 라우터 추가
-app.delete('/all_img_delete', (req, res) => {
-  const filenames = req.query.imgData; // 클라이언트에서 파일명 배열을 받아옴
+app.delete('/file_all_delete', (req, res) => {
+  const imgFile = req.query.imgData; // 클라이언트에서 파일명 배열을 받아옴
+  const threeDFile = req.query.threeD;
+  const deletedImgFiles = [];
+  const deletedThreeDFiles = [];
+  const errorImg = [];
+  const errorThreeD = [];
 
-  // 유효성 검사
-  if (!Array.isArray(filenames) || filenames.length === 0) {
-    return res.status(400).json({ message: '유효한 파일명 배열을 제공해야 합니다.' });
+  // 3D 유효성 검사
+  if (!Array.isArray(threeDFile) || threeDFile.length === 0) {}
+  else {
+    threeDFile.forEach(filename => {
+      const filePath = path.join(__dirname, 'public/uploads', filename); // 파일 경로 설정
+  
+      // 파일 삭제
+      fs.unlink(filePath, (err) => {
+        if (err) {
+          console.error('파일 삭제 중 오류 발생:', err);
+          errorThreeD.push({ filename, error: err });
+        } else {
+          console.log('파일 삭제 완료:', filename);
+          deletedThreeDFiles.push(filename);
+        }
+        // 모든 작업이 끝났는지 확인
+        if (deletedThreeDFiles.length + errorThreeD.length === threeDFile.length) {
+          /*
+          if (errors.length > 0) {
+            // return res.status(500).json({ message: '일부 파일 삭제 실패', errors });
+          }
+          */
+        }
+      });
+    });
   }
-
-  const deletedFiles = [];
-  const errors = [];
-
-  filenames.forEach(filename => {
+  
+  // 이미지 유효성 검사
+  if (!Array.isArray(imgFile) || imgFile.length === 0) {
+    return res.json({ message: '모든 파일 삭제 성공'});
+  }
+  imgFile.forEach(filename => {
     const filePath = path.join(__dirname, 'public/uploads', filename); // 파일 경로 설정
 
     // 파일 삭제
     fs.unlink(filePath, (err) => {
       if (err) {
         console.error('파일 삭제 중 오류 발생:', err);
-        errors.push({ filename, error: err });
+        errorImg.push({ filename, error: err });
       } else {
         console.log('파일 삭제 완료:', filename);
-        deletedFiles.push(filename);
+        deletedImgFiles.push(filename);
       }
-
       // 모든 작업이 끝났는지 확인
-      if (deletedFiles.length + errors.length === filenames.length) {
-        if (errors.length > 0) {
-          // return res.status(500).json({ message: '일부 파일 삭제 실패', errors });
-        }
+      if (deletedImgFiles.length + errorImg.length === imgFile.length) {
         return res.json({ message: '모든 파일 삭제 성공'});
       }
     });

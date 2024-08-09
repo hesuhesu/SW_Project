@@ -1,67 +1,144 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import ReactQuill from 'react-quill';
+import Button from '@material-ui/core/Button';
+import { errorMessage, successMessage, inputNumber } from '../utils/SweetAlertEvent';
+import { timeCheck } from '../utils/TimeCheck';
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+
 import '../css/BoardDetail.css';
 import 'react-quill/dist/quill.snow.css'; // Quill snow스타일 시트 불러오기
-import Button from '@material-ui/core/Button';
-import { errorMessage, successMessage } from '../utils/SweetAlertEvent';
-import { timeCheck } from '../utils/TimeCheck';
 
 const BoardDetail = () => {
   const [ data, setData ] = useState({});
+  const canvasRef = useRef();
   const params = useParams()._id
   const navigate = useNavigate();
+  const [threeDURL, setThreeDURL] = useState('');
+  const [threeDName, setThreeDName] = useState('');
 
   useEffect(() => {
     timeCheck();
     axios.get('http://localhost:5000/board/board_detail', {
-      params: {
-        _id: params
-      }
-    })
-      .then((response) => {
+      params: { _id: params }
+    }).then((response) => {
+        const threeDValue = response.data.list.threeD[response.data.list.threeD.length - 1];
         setData(response.data.list);
-      })
-      .catch((error) => {
-        console.error(error);
-    });
+        setThreeDURL(`http://localhost:5000/uploads/${threeDValue}`);
+        setThreeDName(threeDValue);
+        if (response.data.list.threeDTrue !== 0){ // 마지막 3D file 랜더링
+          loadModel(`http://localhost:5000/uploads/${threeDValue}`);
+        }
+      }).catch((error) => { console.error(error); });
   }, [params]);
 
   function modifiedBoard() {
     navigate(`/board_update/${params}`);
   }
+
   function deleteBoard() {
     if (timeCheck(params) === 0){ 
       errorMessage("로그인 만료!");
       navigate(-1);
       return; 
     }
-    axios.delete('http://localhost:5000/all_img_delete', {
-      params: {
-        imgData : data.imgData
-      }
-    }).then((response) => {
-      axios.delete('http://localhost:5000/board/delete', {
+    if (data.imgData.length > 0 || data.threeD !== ''){
+      axios.delete('http://localhost:5000/file_all_delete', {
         params: {
-          _id : params
+          imgData : data.imgData,
+          threeD: data.threeD
         }
-      }).then((response) => {
-          successMessage("게시물이 삭제되었습니다!");
-          navigate(-1);
-        })
-        .catch((error) => {
-          errorMessage("삭제 실패");    
-      })
-    })
-      .catch((error) => {
-        errorMessage("삭제 실패");    
-    })
+      }).then((response) => {}).catch((error) => { errorMessage("삭제 실패"); })
+    }
+    axios.delete('http://localhost:5000/board/delete', {
+      params: { _id : params }
+    }).then((response) => {
+        successMessage("게시물이 삭제되었습니다!");
+        navigate(-1);
+      }).catch((error) => { errorMessage("삭제 실패"); })
   }
 
+  const loadModel = (url, width = 1050, heigth = 1050) => {
+    const loader = new GLTFLoader();
+    loader.load(url, (gltf) => {
+        if (gltf.scene) {
+          const scene = gltf.scene;
+          scene.scale.set(0.5, 0.5, 0.5);
+          scene.position.set(0, 0, 0);
+  
+          const camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 0.1, 1000);
+          camera.position.set(0, 1, 5); // 카메라를 약간 위로 올려서 보기 좋게 설정
+  
+          const renderer = new THREE.WebGLRenderer({
+            canvas: canvasRef.current,
+            antialias: true,
+            alpha: false, // 배경 투명도
+            preserveDrawingBuffer: true,
+          });
+          renderer.setSize(width, heigth);
+          renderer.setClearColor(0x003300, 1);
+  
+          // 축 선 그리기
+          const axesHelper = new THREE.AxesHelper(5); // 5는 축의 길이
+          scene.add(axesHelper); // 장면에 축 추가
+
+          const controls = new OrbitControls(camera, renderer.domElement);
+          // controls.enableDamping = true; // 관성 움직임
+  
+          const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+          scene.add(ambientLight);
+  
+          const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+          directionalLight.position.set(5, 5, 5);
+          scene.add(directionalLight);
+  
+          // const clock = new THREE.Clock();
+          const animate = () => {
+            requestAnimationFrame(animate);
+            controls.update(); // clock.getDelta() 안에 추가할려면 추가
+            renderer.render(scene, camera);
+          };
+          animate();
+          console.log("Success Load GLTF!!", canvasRef.current);
+        } else { console.error('Failed to load GLTF file: scene is undefined'); }
+      }, undefined, (error) => { console.error('Failed to load GLTF file:', error); }
+    );
+  };
   const modules = {
     toolbar: false, // toolbar 숨기기
   };
+
+  const modifySize = async () => {
+    const width = await inputNumber("너비");
+    const heigth = await inputNumber("높이");
+    if (width === 0 || heigth === 0){
+      errorMessage("가로세로 400~1050 까지만 가능! 숫자만 입력하세요");
+      return;
+    }
+    loadModel(threeDURL, width, heigth);
+  }
+  
+  const downloadThreeD = async () => {
+    await axios.get('http://localhost:5000/download_gltf', {
+      params: {
+        filename : threeDName
+      },
+      responseType: 'blob' // Blob 형식으로 응답 받기responseType: 'blob' // Blob 형식으로 응답 받기
+    }).then((response) => {
+        // Blob 객체를 생성하여 URL을 생성
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', threeDName); // 다운로드할 파일 이름 설정
+        document.body.appendChild(link);
+        link.click(); // 링크 클릭하여 다운로드 시작
+        link.remove(); // 링크 요소 제거
+      })
+      .catch((error) => { errorMessage("저장 실패"); })
+  }
 
   return (
     <div className="board-detail">
@@ -89,11 +166,21 @@ const BoardDetail = () => {
                 readOnly={true} // 읽기 전용 모드
                 modules={modules}
               />
+              {data.threeDTrue !== 0 ? <>
+                <h2 className = "threeD-Model-h2">3D Model</h2>
+                <div className = "threeD-div">
+                  <canvas ref={canvasRef}/>
+                </div>
+              </> : ''}
               {localStorage.key(0) === data.writer ? <>
               <Button variant="contained" onClick={modifiedBoard}>수정하기</Button>
               <Button variant="contained" onClick={deleteBoard}>삭제하기</Button>
               </>: ''}
               <Button variant="contained" onClick={() => navigate(-1)}>목록으로 돌아가기</Button>
+              {data.threeDTrue !== 0 ? <>
+              <Button variant="contained" onClick={modifySize}>3D 크기 수정하기</Button>
+              <Button variant="contained" onClick={downloadThreeD}>3D 파일 다운로드</Button>
+              </> : ''}
             </div>
           ) : '해당 게시글을 찾을 수 없습니다.'
         }

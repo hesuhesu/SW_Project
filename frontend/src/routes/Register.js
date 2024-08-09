@@ -94,6 +94,7 @@ function Register() {
             type="text"
             placeholder="Email"
             id="register_email"
+            autocomplete="off"
             onChange={(e) => setRegisterData((prevState) => ({ ...prevState, email: e.target.value }))}
             required
           />
@@ -101,6 +102,7 @@ function Register() {
             type="text"
             placeholder="Name"
             id="register_name"
+            autocomplete="off"
             onChange={(e) => setRegisterData((prevState) => ({ ...prevState, name: e.target.value }))}
             required
           />
