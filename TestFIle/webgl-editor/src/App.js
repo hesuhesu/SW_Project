@@ -3,6 +3,17 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter';
 import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter';
+import Container from '@mui/material/Container';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import Alert from '@mui/material/Alert';
+
+
 
 
 // npm install 해야함
@@ -11,6 +22,7 @@ import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter';
 // npm install react react-dom
 // npm install three
 // npm install web-vitals
+// npm install @mui/material @emotion/react @emotion/styled
 
 const defaultCode = `
 // 정점 정의하기
@@ -77,7 +89,9 @@ const ThreeJSExample = () => {
   const mountRef = useRef(null);  // DOM 참조를 위한 useRef hook 사용
   const [code, setCode] = useState(defaultCode);  // 코드 상태를 관리하기 위한 useState hook 사용
   const sceneRef = useRef(null);  // 씬 객체를 참조하기 위한 useRef hook 사용
-  //hook : 함수형 컴포넌트에서 상태 관리와 생명주기 기능을 사용할 수 있게 해주는 특별한 함수
+  const [fileFormat, setFileFormat] = React.useState('gltf'); // 기본 파일 포맷 gltf 설정
+  const [alertMessage, setAlertMessage] = useState(''); // 경고 메시지를 위한 상태 추가
+
 
   // 코드 실행 함수
   const handleRunCode = () => {
@@ -100,8 +114,10 @@ const ThreeJSExample = () => {
       : new THREE.OrthographicCamera(window.innerWidth / -2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / -2, 1, 1000);
 
     const renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth / 2, window.innerHeight / 2);
-    document.getElementById('threejs-output').appendChild(renderer.domElement);
+
+    const outputElement = document.getElementById('threejs-output');
+    renderer.setSize(outputElement.clientWidth, outputElement.clientHeight);
+    outputElement.appendChild(renderer.domElement);
 
     // 3D 모드에서의 카메라 컨트롤 설정
     let controls;
@@ -147,9 +163,16 @@ const ThreeJSExample = () => {
     const format = document.getElementById('file-format').value;
     const filename = document.getElementById('file-name').value;
 
+    if (!filename){
+      setAlertMessage("파일명을 입력해 주세요.");
+      return;
+    }
+
+    setAlertMessage('');
+
     const scene = sceneRef.current;
     if (scene) {
-      if (format === 'gltf') {
+      if (fileFormat === 'gltf') {
         const exporter = new GLTFExporter();
         exporter.parse(
           scene,
@@ -161,13 +184,14 @@ const ThreeJSExample = () => {
             console.error('An error occurred during parsing', error);
           }
         );
-      } else if (format === 'obj') {
+      } else if (fileFormat === 'obj') {
         const exporter = new OBJExporter();
         const result = exporter.parse(scene);
         saveString(result, filename + '.obj');
       }
     }
   };
+
 
   // 문자열 저장 함수
   const saveString = (text, filename) => {
@@ -188,22 +212,39 @@ const ThreeJSExample = () => {
   }, []);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-      {/* 코드 입력 영역 */}
-      <textarea
-        value={code}
-        onChange={(e) => setCode(e.target.value)}
-        style={{ flex: 1, fontFamily: 'monospace', fontSize: '16px' }}
-      />
-      <button onClick={handleRunCode} style={{ padding: '10px' }}>Run Code</button>
-      <input type="text" id="file-name" placeholder="Enter file name" style={{ padding: '5px', marginTop: '10px' }} />
-      <select id="file-format" style={{ padding: '5px', marginTop: '10px' }}>
-        <option value="gltf">GLTF</option>
-        <option value="obj">OBJ</option>
-      </select>
-      <button onClick={handleExport} style={{ padding: '10px', marginTop: '10px' }}>Export</button>
-      {/* 3D 렌더링 출력 영역 */}
-      <div id="threejs-output" ref={mountRef} style={{ width: '50%', height: '50%' }} />
+    <div style={{ backgroundColor: '#F9F9F9', height: '100vh' }}>
+      <Container style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+        {/* 코드 입력 영역 */}
+        <textarea
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
+          style={{ flex: 1, fontFamily: 'monospace', fontSize: '16px', resize: 'none', marginTop: '10px' }}
+        />
+        <Button variant="contained" onClick={handleRunCode} style={{ padding: '10px' }}>Run Code</Button>
+        <Grid container>
+            <TextField id="file-name" placeholder="Enter file name" style={{ padding: '5px', marginTop: '10px' }} />
+            
+            <FormControl style={{ padding: '5px', marginTop: '10px' }}>
+              <InputLabel id="file-format-label">File Format</InputLabel>
+              <Select
+                labelId="file-format-label"
+                id="file-format"
+                value={fileFormat}
+                label="File Format"
+                onChange={(e) => setFileFormat(e.target.value)}
+                >
+                <MenuItem value="gltf">GLTF</MenuItem>
+                <MenuItem value="obj">OBJ</MenuItem>
+              </Select>
+            </FormControl>
+
+            <Button variant="outlined" onClick={handleExport} style={{ padding: '10px', marginTop: '14px', height: '57px' }}>Export</Button>
+        </Grid>
+        {/* 경고 메시지 표시 */}
+        {alertMessage && <Alert severity='error'>{alertMessage}</Alert>}
+        {/* 3D 렌더링 출력 영역 */}
+        <div id="threejs-output" ref={mountRef} style={{ flex: 1, height: '100%', marginTop: '10px' }} />
+      </Container>
     </div>
   );
 };
