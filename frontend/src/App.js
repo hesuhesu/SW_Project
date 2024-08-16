@@ -66,6 +66,9 @@ import PublicRoute from './utils/PublicRoute'
 // 24.07.26 추가한 모듈
 // npm install react-paginate
 
+// 24.08.16 추가한 모듈
+// npm install @google/model-viewer
+
 const App = () => {
   return (
     <div>

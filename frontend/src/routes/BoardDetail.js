@@ -95,8 +95,12 @@ const BoardDetail = () => {
           renderer.setClearColor(0x003300, 1);
   
           // 축 선 그리기
-          const axesHelper = new THREE.AxesHelper(100); // 5는 축의 길이
-          scene.add(axesHelper); // 장면에 축 추가
+          const axesHelper = new THREE.AxesHelper(50);
+          scene.add(axesHelper);
+
+          // 그리드 그리기
+          const gridHelper = new THREE.GridHelper(100,100);
+          scene.add(gridHelper);
 
           const controls = new OrbitControls(camera, renderer.domElement);
           // controls.enableDamping = true; // 관성 움직임

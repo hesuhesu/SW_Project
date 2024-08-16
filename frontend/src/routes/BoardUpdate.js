@@ -6,6 +6,7 @@ import axios from 'axios';
 import EditorToolBar, {insertHeart, formats, undoChange, redoChange} from "../components/EditorToolBar";
 import { ToastContainer } from "react-toastify";
 import { successMessage, errorMessage } from '../utils/SweetAlertEvent';
+import Swal from "sweetalert2"; // 로직간 반환 기능 실패로 직접 구현
 import { timeCheck} from '../utils/TimeCheck';
 import Button from '@material-ui/core/Button';
 import * as THREE from 'three';
@@ -139,8 +140,12 @@ const loadModel = (url) => {
         renderer.setClearColor(0xffffff, 1);
 
         // 축 선 그리기
-        const axesHelper = new THREE.AxesHelper(100); // 5는 축의 길이
-        scene.add(axesHelper); // 장면에 축 추가
+        const axesHelper = new THREE.AxesHelper(50);
+        scene.add(axesHelper);
+
+        // 그리드 그리기
+        const gridHelper = new THREE.GridHelper(100,100);
+        scene.add(gridHelper);
 
         const controls = new OrbitControls(camera, renderer.domElement);
         // controls.enableDamping = true;
@@ -182,37 +187,55 @@ const loadModel = (url) => {
     undefined, (error) => { console.error('Failed to load GLTF file:', error); });
 };
 
-function insert3DButton(){
-  const input = document.createElement('input');
-  // 속성 써주기
-  input.setAttribute('type', 'file');
-  input.setAttribute('accept', '*');
-  input.click();
-
-  // 버튼 클릭 시 해당 이벤트
-  input.addEventListener('change', async () => {
-    const file = input.files[0];
-
-    // 파일 확장자 확인
-    const fileExtension = file.name.substring(file.name.lastIndexOf('.') + 1).toLowerCase(); // 마지막 점 이후의 문자열 추출
-    if (!file) return; // 파일이 선택되지 않은 경우
-    else if (fileExtension !== 'gltf' && fileExtension !== 'glb' && fileExtension !== 'obj' && fileExtension !== 'fbx') {
-      errorMessage(`지원하지 않는 3D 파일 확장자입니다.<br> 지원 확장자 : [gltf, glb, obj, fbx]`);
-      return;
+const insert3DButton = async () => {
+  Swal.fire({
+    title: "Choose One",
+    icon:'question',
+    html: "File Upload / WebGL Editor",
+    showDenyButton:true,
+    showCloseButton: true,
+    confirmButtonText: 'File Upload', 
+    denyButtonText: 'WebGL Editor',
+    confirmButtonColor: '#3085d6',
+    denyButtonColor: '#d33',
+    onClose: () => {
+      // X 버튼 클릭 시 아무 이벤트도 발생하지 않도록 빈 함수 설정
+      return false;
     }
-    const formData = new FormData();
-    formData.append('gltf', file);
-    await axios.post('http://localhost:5000/gltf', formData)
-      .then((res) => { 
-        setThreeD(prevFiles => [...prevFiles, res.data.realName]);
-        setThreeDTrue(threeDTrue => threeDTrue + 1);
-        loadModel(res.data.url); // 3D Model rendering
-      }).catch((e) => { errorMessage("GLTF 업로드 실패"); });
+  }).then((result) => {
+    if (result.isConfirmed){ // 업로드 영역
+      const input = document.createElement('input');
+      // 속성 써주기
+      input.setAttribute('type', 'file');
+      input.setAttribute('accept', '*'); // input.setAttribute('accept', '.gltf, .glb'); // GLTF 및 GLB 파일만 허용
+      input.click();
+      // 버튼 클릭 시 해당 이벤트
+      input.addEventListener('change', async () => {
+        const file = input.files[0];
+        
+        // 파일 확장자 확인
+        const fileExtension = file.name.substring(file.name.lastIndexOf('.') + 1).toLowerCase(); // 마지막 점 이후의 문자열 추출
+        if (!file) return; // 파일이 선택되지 않은 경우
+        else if (fileExtension !== 'gltf' && fileExtension !== 'glb' && fileExtension !== 'obj' && fileExtension !== 'fbx') {
+          errorMessage(`지원하지 않는 3D 파일 확장자입니다.<br> 지원 확장자 : [gltf, glb, obj, fbx]`);
+          return;
+        }
+        const formData = new FormData();
+        formData.append('gltf', file);
+        await axios.post('http://localhost:5000/gltf', formData)
+        .then((res) => { 
+          console.log(res.data.url);
+          console.log(res.data.realName);
+          setThreeD(prevFiles => [...prevFiles, res.data.realName]);
+          setThreeDTrue(threeDTrue => threeDTrue + 1);
+          loadModel(res.data.url); // 3D Model rendering
+        }).catch((e) => { errorMessage("GLTF 업로드 실패"); });
+      });
+    }
+      else if (result.isDenied) { // editor 영역
+        
+      }
     });
-  }
-
-  const modify3D = () =>{
-    // 앞으로 구현해야 할 부분
   }
 
   const delete3D = async () =>{
@@ -302,7 +325,6 @@ function insert3DButton(){
       />
       {threeDTrue !== 0 ? <>
       <div><canvas className = "threeD-model" ref={canvasRef}/></div>
-      <Button variant="contained" onClick = {modify3D}>3D 수정하기</Button>
       <Button variant="contained" onClick = {delete3D}>3D 삭제하기</Button>
       </>: ''}
       <Button variant="contained" type="submit">저장하기</Button>

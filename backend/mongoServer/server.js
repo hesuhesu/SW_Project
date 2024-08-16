@@ -7,6 +7,7 @@ const authRoute = require('./routes/auth');
 const boardRoute = require('./routes/board');
 const multer = require('multer');
 const fs = require('fs');
+const {v4: uuidv4} = require('uuid'); // 파일 겹침 방지
 
 dotenv.config();
 
@@ -47,8 +48,8 @@ const upload = multer({
       const ext = path.extname(file.originalname); // 파일의 확장자
       console.log('file.originalname', file.originalname);
       // 파일명이 절대 겹치지 않도록 해줘야한다.
-      // 파일이름 + 현재시간밀리초 + 파일확장자명
-      cb(null, path.basename(file.originalname, ext) + Date.now() + ext);
+      // uuid + 현재시간밀리초 + 파일확장자명
+      cb(null, path.basename(file.originalname, ext) + '-' +uuidv4() + Date.now() + ext);
     },
   }),
   // limits: { fileSize: 5 * 1024 * 1024 } // 파일 크기 제한
