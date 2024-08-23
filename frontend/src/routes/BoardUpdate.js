@@ -20,7 +20,9 @@ import '../css/MyEditor.css'
 const MyEditor = () => {
   const [ data, setData ] = useState([]);
   const [imgData, setImgData] = useState([]);
+  const [imgDataSub, setImgDataSub] = useState([]);
   const [threeD, setThreeD] = useState([]);
+  const [threeDSub, setThreeDSub] = useState([]);
   const quillRef = useRef();
   const canvasRef = useRef();
   const [threeDTrue,setThreeDTrue] = useState(0);
@@ -73,6 +75,7 @@ const MyEditor = () => {
       try {
         const result = await axios.post('http://localhost:5000/img', formData);
         setImgData(prevFiles => [...prevFiles, result.data.realName]);
+        setImgDataSub(prevFiles => [...prevFiles, result.data.realName]);
         console.log('성공 시, 백엔드가 보내주는 데이터', result.data.url);
         const IMG_URL = result.data.url;
         // 이미지 태그를 에디터에 써주기 - 여러 방법이 있다.
@@ -95,6 +98,7 @@ const MyEditor = () => {
     // FormData를 서버로 POST 요청을 보내 이미지 업로드를 처리
     const result = await axios.post('http://localhost:5000/img', formData);
     setImgData(prevFiles => [...prevFiles, result.data.realName]);
+    setImgDataSub(prevFiles => [...prevFiles, result.data.realName]);
     console.log('성공 시, 백엔드가 보내주는 데이터', result.data.url);
     // 서버에서 반환된 이미지 URL을 변수에 저장
     const IMG_URL = result.data.url;
@@ -227,6 +231,7 @@ const insert3DButton = async () => {
           console.log(res.data.url);
           console.log(res.data.realName);
           setThreeD(prevFiles => [...prevFiles, res.data.realName]);
+          setThreeDSub(prevFiles => [...prevFiles, res.data.realName]);
           setThreeDTrue(threeDTrue => threeDTrue + 1);
           loadModel(res.data.url); // 3D Model rendering
         }).catch((e) => { errorMessage("GLTF 업로드 실패"); });
@@ -300,7 +305,16 @@ const insert3DButton = async () => {
   };
 
   function handleCancel() {
-    navigate(-1);
+    if (imgDataSub.length > 0 || threeDSub.length > 0){
+      axios.delete('http://localhost:5000/file_all_delete', {
+        params: {
+          imgData: imgDataSub,
+          threeD: threeDSub
+        }
+      }).then((response) => {})
+        .catch((error) => { errorMessage("에러!!"); });
+    }
+    navigate(-1); return;
   }
 
   return (
