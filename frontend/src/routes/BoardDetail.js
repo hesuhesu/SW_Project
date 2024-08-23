@@ -46,7 +46,7 @@ const BoardDetail = () => {
       navigate(-1);
       return; 
     }
-    if (data.imgData.length > 0 || data.threeD !== ''){
+    if (data.imgData.length > 0 || data.threeD.length > 0){
       axios.delete('http://localhost:5000/file_all_delete', {
         params: {
           imgData : data.imgData,

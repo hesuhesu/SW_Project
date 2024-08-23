@@ -26,7 +26,7 @@ const MyEditor = () => {
   const quillRef = useRef();
   const canvasRef = useRef();
   const navigate = useNavigate();
-  
+
   useEffect(() => { 
     if (timeCheck() === 0){ 
       errorMessage("로그인 만료!");
@@ -321,16 +321,16 @@ const MyEditor = () => {
   };
 
   const handleCancel = async () =>{
-    if (imgData.length > 0 || threeD !== ''){
+    if (imgData.length > 0 || threeD.length > 0){
         axios.delete('http://localhost:5000/file_all_delete', {
           params: {
             imgData: imgData,
             threeD: threeD
           }
-        }).then((response) => { navigate('/'); return; })
+        }).then((response) => { })
           .catch((error) => { errorMessage("에러!!"); });
     }
-    navigate('/'); return;
+    navigate(-1); return;
   }
 
   return (
