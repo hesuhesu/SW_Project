@@ -11,6 +11,7 @@ import { timeCheck} from '../utils/TimeCheck';
 import Button from '@material-ui/core/Button';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
@@ -20,9 +21,9 @@ import '../css/MyEditor.css'
 const MyEditor = () => {
   const [editorHtml, setEditorHtml] = useState('');
   const [title, setTitle] = useState('');
-  const [threeDTrue, setThreeDTrue] = useState(0);
-  const [threeD, setThreeD] = useState([]);
-  const [imgData, setImgData] = useState([]);
+  const [threeDTrue, setThreeDTrue] = useState(0); // 3D 파일 유무
+  const [threeD, setThreeD] = useState([]); // 3D file 배열
+  const [imgData, setImgData] = useState([]); // img 배열
   const quillRef = useRef();
   const canvasRef = useRef();
   const navigate = useNavigate();
@@ -92,7 +93,7 @@ const MyEditor = () => {
   }, []);
 
   // 3D Model load
-  const loadModel = (url) => {
+  const loadModelGLTF = (url) => {
     const loader = new GLTFLoader();
     const dracoLoader = new DRACOLoader();
     dracoLoader.setDecoderConfig({ type: 'js' });
@@ -189,7 +190,6 @@ const MyEditor = () => {
           };
           window.addEventListener('click', onMouseClick);
           */
-          
 
           const clock = new THREE.Clock();
           const animate = () => {
@@ -205,9 +205,100 @@ const MyEditor = () => {
           };
           animate();
           console.log("Success Load GLTF!!", canvasRef.current);
+          // 메모리 누수를 방지하기 위한 cleanup
+          return () => {
+            renderer.dispose();
+            document.body.removeChild(renderer.domElement);
+          };
         } else { console.error('Failed to load GLTF file: scene is undefined'); }},
       undefined, (error) => { console.error('Failed to load GLTF file:', error); });
   };
+
+  const loadModelOBJ = (url) => { // mtl 파일 필요
+  const loader = new OBJLoader();
+  loader.load(url, (obj) => {
+      if (obj) {
+          const scene = obj;
+          scene.scale.set(0.5, 0.5, 0.5);
+          scene.position.set(0, 0, 0);
+
+          // 모델의 bounding box 계산
+          const box = new THREE.Box3().setFromObject(scene);
+          const center = box.getCenter(new THREE.Vector3());
+          const size = box.getSize(new THREE.Vector3());
+
+          // 모든 위치를 정중앙으로 조정
+          scene.position.sub(center);
+          const camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 0.1, 1000);
+          camera.position.set(center.x, center.y, size.z * 2); // 모델 크기에 따라 카메라 위치 조정
+
+          const renderer = new THREE.WebGLRenderer({
+            canvas: canvasRef.current,
+            antialias: true,
+            alpha: true, // 배경을 투명하게 설정
+            preserveDrawingBuffer: true,
+          });
+          renderer.setSize(1000, 1000);
+          renderer.setClearColor(0xffffff, 1);
+
+          // 축 선 그리기
+          const axesHelper = new THREE.AxesHelper(50);
+          scene.add(axesHelper);
+
+          // 그리드 그리기
+          const gridHelper = new THREE.GridHelper(100, 100);
+          scene.add(gridHelper);
+
+          const controls = new OrbitControls(camera, renderer.domElement);
+          // controls.enableDamping = true;
+
+          const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+          scene.add(ambientLight);
+
+          const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+          directionalLight.position.set(0, 1, 0);
+          scene.add(directionalLight);
+
+          // 애니메이션 믹서 추가 (애니메이션이 있는 경우)
+          const mixer = new THREE.AnimationMixer(scene);
+          if (obj.animations) {
+            obj.animations.forEach((clip) => {
+                mixer.clipAction(clip).play(); // 모든 애니메이션 클립 재생
+            });
+          }
+
+          // 두 번 클릭 이벤트 추가
+          let autoRotate = false; // 자동 회전 상태 변수
+          renderer.domElement.addEventListener('dblclick', () => {
+            autoRotate = !autoRotate; // 자동 회전 상태 전환
+          });
+
+          const clock = new THREE.Clock();
+          const animate = () => {
+            requestAnimationFrame(animate);
+            controls.update(); // clock.getDelta() 안에 추가할려면 추가
+            const delta = clock.getDelta(); // 시간 간격 계산
+            mixer.update(delta); // 애니메이션 믹서 업데이트
+            // 자동 회전 기능
+            if (autoRotate) {
+              scene.rotation.y += 0.01; // Y축을 기준으로 회전
+            }
+            renderer.render(scene, camera);
+          };
+          animate();
+          console.log("Success Load OBJ!!", canvasRef.current);
+          // 메모리 누수를 방지하기 위한 cleanup
+          return () => {
+            renderer.dispose();
+            document.body.removeChild(renderer.domElement);
+          };
+      } else {
+          console.error('Failed to load OBJ file: scene is undefined');
+      }
+  }, undefined, (error) => {
+      console.error('Failed to load OBJ file:', error);
+  });
+};
   
   const insert3DButton = async () => {
     Swal.fire({
@@ -238,8 +329,8 @@ const MyEditor = () => {
           // 파일 확장자 확인
           const fileExtension = file.name.substring(file.name.lastIndexOf('.') + 1).toLowerCase(); // 마지막 점 이후의 문자열 추출
           if (!file) return; // 파일이 선택되지 않은 경우
-          else if (fileExtension !== 'gltf' && fileExtension !== 'glb' && fileExtension !== 'obj' && fileExtension !== 'fbx') {
-            errorMessage(`지원하지 않는 3D 파일 확장자입니다.<br> 지원 확장자 : [gltf, glb, obj, fbx]`);
+          else if (fileExtension !== 'gltf' && fileExtension !== 'glb' && fileExtension !== 'obj') {
+            errorMessage(`지원하지 않는 3D 파일 확장자입니다.<br> 지원 확장자 : [gltf, glb, obj]`);
             return;
           }
           const formData = new FormData();
@@ -250,7 +341,8 @@ const MyEditor = () => {
             console.log(res.data.realName);
             setThreeD(prevFiles => [...prevFiles, res.data.realName]);
             setThreeDTrue(threeDTrue => threeDTrue + 1);
-            loadModel(res.data.url); // 3D Model rendering
+            if (fileExtension === 'gltf' || fileExtension === 'glb'){ loadModelGLTF(res.data.url); } // 3D Model rendering 
+            else if (fileExtension === 'obj'){ loadModelOBJ(res.data.url); }
           }).catch((e) => { errorMessage("GLTF 업로드 실패"); });
         });
       }
