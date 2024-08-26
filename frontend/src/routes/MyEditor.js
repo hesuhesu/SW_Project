@@ -347,7 +347,7 @@ const MyEditor = () => {
         });
       }
       else if (result.isDenied) { // editor 영역
-        
+        navigate("/webgl-editor"); 
       }
     });
   }

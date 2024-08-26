@@ -13,6 +13,7 @@ import MyPage from "./routes/MyPage";
 import Register from "./routes/Register";
 import PrivateRoute from './utils/PrivateRoute'
 import PublicRoute from './utils/PublicRoute'
+import WebEditor from './routes/WebEditor';
 
 // npm install 터미널 입력
  
@@ -82,6 +83,7 @@ const App = () => {
                   <Route path="/myeditor" element={<MyEditor />} />
                   <Route path="/mypage" element={<MyPage />} />
                   <Route exact path = "/board_update/:_id" element = {<BoardUpdate/>}/>
+                  <Route path="/webgl-editor" element={<WebEditor />} />
             </Route>
           </Route>
         </Route>
