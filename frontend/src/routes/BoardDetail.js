@@ -14,6 +14,9 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import '../css/BoardDetail.css';
 import 'react-quill/dist/quill.snow.css'; // Quill snow스타일 시트 불러오기
 
+const HOST = process.env.REACT_APP_HOST;
+const PORT = process.env.REACT_APP_PORT;
+
 const BoardDetail = () => {
   const [ data, setData ] = useState({}); // board api 데이터 저장
   const canvasRef = useRef();
@@ -25,21 +28,21 @@ const BoardDetail = () => {
 
   useEffect(() => {
     timeCheck();
-    axios.get('http://localhost:5000/board/board_detail', {
+    axios.get(`${HOST}:${PORT}/board/board_detail`, {
       params: { _id: params }
     }).then((response) => {
         const threeDValue = response.data.list.threeD[response.data.list.threeD.length - 1];
         setData(response.data.list);
-        setThreeDURL(`http://localhost:5000/uploads/${threeDValue}`);
+        setThreeDURL(`${HOST}:${PORT}/uploads/${threeDValue}`);
         setThreeDName(threeDValue);
         if (response.data.list.threeDTrue !== 0){ // 마지막 3D file 랜더링
           const fileExtension = threeDValue.substring(threeDValue.lastIndexOf('.') + 1).toLowerCase() // 마지막 점 이후의 문자열 추출
           if (fileExtension === 'gltf' || fileExtension === 'glb'){
-            loadModelGLTF(`http://localhost:5000/uploads/${threeDValue}`);
+            loadModelGLTF(`${HOST}:${PORT}/uploads/${threeDValue}`);
             setFileFormat('gltf');
           }
           else if (fileExtension === 'obj'){
-            loadModelOBJ(`http://localhost:5000/uploads/${threeDValue}`);
+            loadModelOBJ(`${HOST}:${PORT}/uploads/${threeDValue}`);
             setFileFormat('obj');
           }
         }
@@ -57,14 +60,14 @@ const BoardDetail = () => {
       return; 
     }
     if (data.imgData.length > 0 || data.threeD.length > 0){
-      axios.delete('http://localhost:5000/file_all_delete', {
+      axios.delete(`${HOST}:${PORT}/file_all_delete`, {
         params: {
           imgData : data.imgData,
           threeD: data.threeD
         }
       }).then((response) => {}).catch((error) => { errorMessage("삭제 실패"); })
     }
-    axios.delete('http://localhost:5000/board/delete', {
+    axios.delete(`${HOST}:${PORT}/board/delete`, {
       params: { _id : params }
     }).then((response) => {
         successMessage("게시물이 삭제되었습니다!");
@@ -260,7 +263,7 @@ const BoardDetail = () => {
   }
   
   const downloadThreeD = async () => {
-    await axios.get('http://localhost:5000/download_gltf', {
+    await axios.get(`${HOST}:${PORT}/download_gltf`, {
       params: {
         filename : threeDName
       },

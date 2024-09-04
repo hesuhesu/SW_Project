@@ -13,6 +13,8 @@ import { timeCheck} from '../utils/TimeCheck';
 import '../css/MyPage.css';
 
 const ITEMS_PER_PAGE = 10; // 페이지당 항목 수
+const HOST = process.env.REACT_APP_HOST;
+const PORT = process.env.REACT_APP_PORT;
 
 function MyPage() {
   const [time, setTime] = useState('');
@@ -35,7 +37,7 @@ function MyPage() {
       return; 
     }
     setTime(checkTime);
-    axios.get('http://localhost:5000/auth/my_inf', {
+    axios.get(`${HOST}:${PORT}/auth/my_inf`, {
       params: {
         email: localStorage.key(0)
       }
@@ -46,7 +48,7 @@ function MyPage() {
       .catch((error) => {
         console.error(error);
     });
-    axios.get('http://localhost:5000/board/my_board_list', {
+    axios.get(`${HOST}:${PORT}/board/my_board_list`, {
       params: {
         writer: localStorage.key(0)
       }
@@ -78,7 +80,7 @@ function MyPage() {
       return;
     }
     try {
-      await axios.post('http://localhost:5000/auth/change_password', password);
+      await axios.post(`${HOST}:${PORT}/auth/change_password`, password);
       successMessage('비밀번호가 변경되었습니다!');
       document.getElementById('before_password').value = '';
       document.getElementById('after_password').value = '';
@@ -105,7 +107,7 @@ function MyPage() {
       cancelButtonText: '아니오',
     }).then((result) => {
       if (result.isConfirmed){
-        axios.delete('http://localhost:5000/board/delete_user_all_board', {
+        axios.delete(`${HOST}:${PORT}/board/delete_user_all_board`, {
             params: {
               writer : localStorage.key(0)
             }
@@ -113,7 +115,7 @@ function MyPage() {
           .catch((error) => {
             errorMessage("삭제 실패");    
           })
-          axios.delete('http://localhost:5000/auth/delete', {
+          axios.delete(`${HOST}:${PORT}/auth/delete`, {
             params: {
               email : localStorage.key(0)
             }

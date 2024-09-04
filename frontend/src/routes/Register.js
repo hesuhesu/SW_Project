@@ -5,6 +5,9 @@ import Swal from 'sweetalert2';
 import { errorMessage, successMessage } from '../utils/SweetAlertEvent';
 import axios from 'axios';
 
+const HOST = process.env.REACT_APP_HOST;
+const PORT = process.env.REACT_APP_PORT;
+
 function Register() {
   const [registerData, setRegisterData] = useState({
     name: '',
@@ -28,7 +31,7 @@ function Register() {
       return;
     }
     try {
-      await axios.post('http://localhost:5000/auth/register', registerData);
+      await axios.post(`${HOST}:${PORT}/auth/register`, registerData);
       successMessage(`${registerData.email}님 가입을 환영합니다!`);
       setIsActive(false);
       document.getElementById('register_email').value = '';
@@ -47,7 +50,7 @@ function Register() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/auth/login', loginData);
+      await axios.post(`${HOST}:${PORT}/auth/login`, loginData);
       Swal.fire({
         title: '알림',
         icon: 'success',

@@ -18,6 +18,9 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import 'react-quill/dist/quill.snow.css'; // Quill snow스타일 시트 불러오기
 import '../css/MyEditor.css'
 
+const HOST = process.env.REACT_APP_HOST;
+const PORT = process.env.REACT_APP_PORT;
+
 const MyEditor = () => {
   const [editorHtml, setEditorHtml] = useState('');
   const [title, setTitle] = useState('');
@@ -56,7 +59,7 @@ const MyEditor = () => {
       const formData = new FormData();
       formData.append('img', file); // formData는 키-밸류 구조
       try {
-        const result = await axios.post('http://localhost:5000/img', formData);
+        const result = await axios.post(`${HOST}:${PORT}/img`, formData);
         console.log('성공 시, 백엔드가 보내주는 데이터', result.data.url);
         setImgData(prevFiles => [...prevFiles, result.data.realName]);
         const IMG_URL = result.data.url;
@@ -78,7 +81,7 @@ const MyEditor = () => {
       const formData = new FormData();
       formData.append('img', blob);
       // FormData를 서버로 POST 요청을 보내 이미지 업로드를 처리
-      const result = await axios.post('http://localhost:5000/img', formData);
+      const result = await axios.post(`${HOST}:${PORT}/img`, formData);
       console.log('성공 시, 백엔드가 보내주는 데이터', result.data.url);
       setImgData(prevFiles => [...prevFiles, result.data.realName]);
       // 서버에서 반환된 이미지 URL을 변수에 저장
@@ -335,7 +338,7 @@ const MyEditor = () => {
           }
           const formData = new FormData();
           formData.append('gltf', file);
-          await axios.post('http://localhost:5000/gltf', formData)
+          await axios.post(`${HOST}:${PORT}/gltf`, formData)
           .then((res) => { 
             console.log(res.data.url);
             console.log(res.data.realName);
@@ -400,7 +403,7 @@ const MyEditor = () => {
     }
     const description = quillRef.current.getEditor().getText(); //태그를 제외한 순수 text만을 받아온다. 검색기능을 구현하지 않을 거라면 굳이 text만 따로 저장할 필요는 없다.
     // description.trim()
-    axios.post('http://localhost:5000/board/write', {
+    axios.post(`${HOST}:${PORT}/board/write`, {
       writer: localStorage.key(0),
       title: title,
       content: description,
@@ -414,7 +417,7 @@ const MyEditor = () => {
 
   const handleCancel = async () =>{
     if (imgData.length > 0 || threeD.length > 0){
-        axios.delete('http://localhost:5000/file_all_delete', {
+        axios.delete(`${HOST}:${PORT}/file_all_delete`, {
           params: {
             imgData: imgData,
             threeD: threeD
