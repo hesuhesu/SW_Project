@@ -3,13 +3,16 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import '../css/MiddleSlide.css';
 
+const HOST = process.env.REACT_APP_HOST;
+const PORT = process.env.REACT_APP_PORT;
+
 function SlideShow() {
   const [data, setData] = useState([]);
   const slideTrackRef = useRef(null);
 
   useEffect(() => {
     axios
-      .get('http://localhost:5000/board/all_board_list')
+      .get(`${HOST}:${PORT}/board/all_board_list`)
       .then((response) => {
         setData(response.data.list);
       })

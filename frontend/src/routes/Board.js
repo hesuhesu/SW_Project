@@ -9,6 +9,8 @@ import CommonTableRow from '../components/CommonTableRow';
 import '../css/Board.css';
 
 const ITEMS_PER_PAGE = 10; // 페이지당 항목 수
+const HOST = process.env.REACT_APP_HOST;
+const PORT = process.env.REACT_APP_PORT;
 
 function Board() {
   const [data, setData] = useState([]);
@@ -16,7 +18,7 @@ function Board() {
   const [currentPage, setCurrentPage] = useState(0);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/board/all_board_list')
+    axios.get(`${HOST}:${PORT}/board/all_board_list`)
       .then((response) => {
         setData(response.data.list);
         setPageCount(Math.ceil(response.data.list.length / ITEMS_PER_PAGE)); // 총 페이지 수 계산

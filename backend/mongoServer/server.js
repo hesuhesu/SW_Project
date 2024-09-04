@@ -13,6 +13,7 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT;
+const HOST = process.env.HOST;
 
 // Middleware
 app.use(express.json());
@@ -63,7 +64,7 @@ app.post('/img', upload.single('img'), (req, res) => {
   console.log('저장된 파일의 이름', req.file.filename);
 
   // 파일이 저장된 경로를 클라이언트에게 반환해준다.
-  const IMG_URL = `http://localhost:${PORT}/uploads/${req.file.filename}`;
+  const IMG_URL = `${HOST}:${PORT}/uploads/${req.file.filename}`;
   console.log(IMG_URL);
   res.json({ url: IMG_URL, realName: req.file.filename });
 });
@@ -76,7 +77,7 @@ app.post('/gltf', upload.single('gltf'), (req, res) => {
   console.log('저장된 파일의 이름', req.file.filename);
 
   // 파일이 저장된 경로를 클라이언트에게 반환해준다.
-  const GLTF_URL = `http://localhost:${PORT}/uploads/${req.file.filename}`;
+  const GLTF_URL = `${HOST}:${PORT}/uploads/${req.file.filename}`;
   console.log(GLTF_URL);
   res.json({ url: GLTF_URL, realName: req.file.filename });
 });

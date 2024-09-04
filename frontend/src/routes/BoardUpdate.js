@@ -18,7 +18,10 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import 'react-quill/dist/quill.snow.css'; // Quill snow스타일 시트 불러오기
 import '../css/MyEditor.css'
 
-const MyEditor = () => {
+const HOST = process.env.REACT_APP_HOST;
+const PORT = process.env.REACT_APP_PORT;
+
+const BoardUpdate = () => {
   const [ data, setData ] = useState([]); // board api 데이터 저장
   const [imgData, setImgData] = useState([]); // img api 데이터 + 새로 추가하는 img 저장
   const [imgDataSub, setImgDataSub] = useState([]); // 새로 추가하는 img 저장 => 취소 or 페이지 새로고침에 대응하기 위함
@@ -36,7 +39,7 @@ const MyEditor = () => {
       navigate("/");
       return; 
     }
-    axios.get('http://localhost:5000/board/board_detail', {
+    axios.get(`${HOST}:${PORT}/board/board_detail`, {
       params: { _id: params }
     }).then((response) => {
         setData(response.data.list);
@@ -51,10 +54,10 @@ const MyEditor = () => {
         if (response.data.list.threeDTrue !== 0){ // 마지막 3D file 랜더링
           const fileExtension = response.data.list.threeD[response.data.list.threeD.length - 1].substring(response.data.list.threeD[response.data.list.threeD.length - 1].lastIndexOf('.') + 1).toLowerCase() // 마지막 점 이후의 문자열 추출
           if (fileExtension === 'gltf' || fileExtension === 'glb'){
-            loadModelGLTF(`http://localhost:5000/uploads/${response.data.list.threeD[response.data.list.threeD.length - 1]}`);
+            loadModelGLTF(`${HOST}:${PORT}/uploads/${response.data.list.threeD[response.data.list.threeD.length - 1]}`);
           }
           else if (fileExtension === 'obj'){
-            loadModelOBJ(`http://localhost:5000/uploads/${response.data.list.threeD[response.data.list.threeD.length - 1]}`);
+            loadModelOBJ(`${HOST}:${PORT}/uploads/${response.data.list.threeD[response.data.list.threeD.length - 1]}`);
           }
         }
       }).catch((error) => { console.error(error); });
@@ -80,7 +83,7 @@ const MyEditor = () => {
       const formData = new FormData();
       formData.append('img', file); // formData는 키-밸류 구조
       try {
-        const result = await axios.post('http://localhost:5000/img', formData);
+        const result = await axios.post(`${HOST}:${PORT}/img`, formData);
         setImgData(prevFiles => [...prevFiles, result.data.realName]);
         setImgDataSub(prevFiles => [...prevFiles, result.data.realName]);
         console.log('성공 시, 백엔드가 보내주는 데이터', result.data.url);
@@ -103,7 +106,7 @@ const MyEditor = () => {
     const formData = new FormData();
     formData.append('img', blob);
     // FormData를 서버로 POST 요청을 보내 이미지 업로드를 처리
-    const result = await axios.post('http://localhost:5000/img', formData);
+    const result = await axios.post(`${HOST}:${PORT}/img`, formData);
     setImgData(prevFiles => [...prevFiles, result.data.realName]);
     setImgDataSub(prevFiles => [...prevFiles, result.data.realName]);
     console.log('성공 시, 백엔드가 보내주는 데이터', result.data.url);
@@ -324,7 +327,7 @@ const insert3DButton = async () => {
         }
         const formData = new FormData();
         formData.append('gltf', file);
-        await axios.post('http://localhost:5000/gltf', formData)
+        await axios.post(`${HOST}:${PORT}/gltf`, formData)
         .then((res) => { 
           console.log(res.data.url);
           console.log(res.data.realName);
@@ -389,7 +392,7 @@ const insert3DButton = async () => {
     }
     const description = quillRef.current.getEditor().getText(); //태그를 제외한 순수 text만을 받아온다. 검색기능을 구현하지 않을 거라면 굳이 text만 따로 저장할 필요는 없다.
     // description.trim()
-    axios.put('http://localhost:5000/board/update', {
+    axios.put(`${HOST}:${PORT}/board/update`, {
       _id: params,
       title: document.getElementById('update_title').value, // 이 부분은 해결되었지만, 최적화해야할 과제 기존 data.title -> 해당 방식
       content: description,
@@ -405,7 +408,7 @@ const insert3DButton = async () => {
 
   function handleCancel() {
     if (imgDataSub.length > 0 || threeDSub.length > 0){
-      axios.delete('http://localhost:5000/file_all_delete', {
+      axios.delete(`${HOST}:${PORT}/file_all_delete`, {
         params: {
           imgData: imgDataSub,
           threeD: threeDSub
@@ -458,4 +461,4 @@ const insert3DButton = async () => {
   );
 };
 
-export default MyEditor;
+export default BoardUpdate;
