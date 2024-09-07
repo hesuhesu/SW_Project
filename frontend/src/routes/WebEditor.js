@@ -242,14 +242,6 @@ const WebEditor = () => {
               onClick={handleExport}
               style={{ padding: '10px', marginTop: '14px', height: '57px' }}>Export
             </Button>
-
-            <Button
-              variant="contained"
-              onClick={() => navigate("/myeditor")}
-              style={{ marginLeft: 'auto', padding: '10px', marginTop: '14px', height: '57px', backgroundColor: '#FD6A66' }}
-            >
-              돌아가기
-            </Button>
         </Grid>
         {/* 경고 메시지 표시 */}
         {alertMessage && <Alert severity='error'>{alertMessage}</Alert>}

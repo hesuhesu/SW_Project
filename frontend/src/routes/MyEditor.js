@@ -17,6 +17,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 import 'react-quill/dist/quill.snow.css'; // Quill snow스타일 시트 불러오기
 import '../css/MyEditor.css'
+import WebEditor from './WebEditor';
 
 const HOST = process.env.REACT_APP_HOST;
 const PORT = process.env.REACT_APP_PORT;
@@ -25,6 +26,7 @@ const MyEditor = () => {
   const [editorHtml, setEditorHtml] = useState('');
   const [title, setTitle] = useState('');
   const [threeDTrue, setThreeDTrue] = useState(0); // 3D 파일 유무
+  const [webGLTrue, setWebGLTrue] = useState(0); // WebGL 유무
   const [threeD, setThreeD] = useState([]); // 3D file 배열
   const [imgData, setImgData] = useState([]); // img 배열
   const quillRef = useRef();
@@ -156,43 +158,6 @@ const MyEditor = () => {
           renderer.domElement.addEventListener('dblclick', () => {
             autoRotate = !autoRotate; // 자동 회전 상태 전환
           });
-
-          /* 터치 시 테두리를 표현하는 코드
-          const raycaster = new THREE.Raycaster();
-          const mouse = new THREE.Vector2();
-          let outlineMesh;  // 테두리를 위한 변수
-          
-          const onMouseClick = (event) => {
-            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-            raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObjects(scene.children, true);
-
-            if (intersects.length > 0) {
-              const clickedMesh = intersects[0].object;
-              console.log('Clicked Mesh:', clickedMesh);
-
-              // 기존의 테두리가 있다면 제거
-              if (outlineMesh) {
-                scene.remove(outlineMesh);
-              }
-
-              // 클릭한 매쉬의 테두리 생성
-              const edges = new THREE.EdgesGeometry(clickedMesh.geometry);
-              const outlineMaterial = new THREE.LineBasicMaterial({ color: 0xffff00, linewidth: 2 });
-              outlineMesh = new THREE.LineSegments(edges, outlineMaterial);
-
-              // 클릭한 매쉬와 같은 위치에 테두리 추가
-              outlineMesh.position.copy(clickedMesh.position);
-              outlineMesh.rotation.copy(clickedMesh.rotation);
-              outlineMesh.scale.copy(clickedMesh.scale);
-
-              scene.add(outlineMesh);
-            }
-          };
-          window.addEventListener('click', onMouseClick);
-          */
 
           const clock = new THREE.Clock();
           const animate = () => {
@@ -343,21 +308,25 @@ const MyEditor = () => {
             console.log(res.data.url);
             console.log(res.data.realName);
             setThreeD(prevFiles => [...prevFiles, res.data.realName]);
-            setThreeDTrue(threeDTrue => threeDTrue + 1);
+            setThreeDTrue(1);
             if (fileExtension === 'gltf' || fileExtension === 'glb'){ loadModelGLTF(res.data.url); } // 3D Model rendering 
             else if (fileExtension === 'obj'){ loadModelOBJ(res.data.url); }
           }).catch((e) => { errorMessage("GLTF 업로드 실패"); });
         });
       }
       else if (result.isDenied) { // editor 영역
-        navigate("/webgl-editor"); 
+        setWebGLTrue(1);
       }
     });
   }
 
   const delete3D = async () =>{
     setThreeDTrue(0);
-    return; 
+    return;
+  }
+  const deleteWebGL = async () =>{
+    setWebGLTrue(0);
+    return;
   }
 
   const modules = useMemo(() => ({
@@ -447,10 +416,15 @@ const MyEditor = () => {
         modules={modules}
         formats={formats}
       />
-      {threeDTrue !== 0 ? <>
+      {threeDTrue === 1 ? <>
       <div><canvas className = "threeD-model" ref={canvasRef}/></div>
-      <Button variant="contained" onClick = {delete3D}>3D 삭제하기</Button>
+      <Button variant="contained" onClick = {delete3D}>3D Upload 삭제하기</Button>
       </>: ''}
+      {webGLTrue === 1 ? <>
+      <h2 className = "threeD-Model-h2">코드 컴파일 후 EXPORT 가능합니다!</h2>
+      <WebEditor></WebEditor>
+      <Button variant="contained" onClick = {deleteWebGL}>WebGL 작업 종료</Button>
+      </> : ''}
       <Button variant="contained" type="submit">저장하기</Button>
       <Button variant="contained" onClick = {handleCancel}>취소하기</Button>
       <ToastContainer

@@ -17,6 +17,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 import 'react-quill/dist/quill.snow.css'; // Quill snow스타일 시트 불러오기
 import '../css/MyEditor.css'
+import WebEditor from './WebEditor';
 
 const HOST = process.env.REACT_APP_HOST;
 const PORT = process.env.REACT_APP_PORT;
@@ -30,6 +31,7 @@ const BoardUpdate = () => {
   const quillRef = useRef();
   const canvasRef = useRef();
   const [threeDTrue,setThreeDTrue] = useState(0); // 3D 유무
+  const [webGLTrue, setWebGLTrue] = useState(0); // WebGL 유무
   const params = useParams()._id // id 저장 => 대체하려면 useLocation 과 useNavigate 를 사용하면 됨
   const navigate = useNavigate();
 
@@ -333,14 +335,14 @@ const insert3DButton = async () => {
           console.log(res.data.realName);
           setThreeD(prevFiles => [...prevFiles, res.data.realName]);
           setThreeDSub(prevFiles => [...prevFiles, res.data.realName]);
-          setThreeDTrue(threeDTrue => threeDTrue + 1);
+          setThreeDTrue(1);
           if (fileExtension === 'gltf' || fileExtension === 'glb'){ loadModelGLTF(res.data.url); } // 3D Model rendering
           else if (fileExtension === 'obj'){ loadModelOBJ(res.data.url); }
         }).catch((e) => { errorMessage("GLTF 업로드 실패"); });
       });
     }
       else if (result.isDenied) { // editor 영역
-        
+        setWebGLTrue(1);
       }
     });
   }
@@ -348,6 +350,10 @@ const insert3DButton = async () => {
   const delete3D = async () =>{
     setThreeDTrue(0);
     return; 
+  }
+  const deleteWebGL = async () =>{
+    setWebGLTrue(0);
+    return;
   }
 
   const modules = useMemo(() => ({
@@ -439,10 +445,15 @@ const insert3DButton = async () => {
         modules={modules}
         formats={formats}
       />
-      {threeDTrue !== 0 ? <>
+      {threeDTrue === 1 ? <>
       <div><canvas className = "threeD-model" ref={canvasRef}/></div>
-      <Button variant="contained" onClick = {delete3D}>3D 삭제하기</Button>
+      <Button variant="contained" onClick = {delete3D}>3D Upload 삭제하기</Button>
       </>: ''}
+      {webGLTrue === 1 ? <>
+      <h2 className = "threeD-Model-h2">코드 컴파일 후 EXPORT 가능합니다!</h2>
+      <WebEditor></WebEditor>
+      <Button variant="contained" onClick = {deleteWebGL}>WebGL 작업 종료</Button>
+      </> : ''}
       <Button variant="contained" type="submit">저장하기</Button>
       <Button variant="contained" onClick = {handleCancel}>취소하기</Button>
       <ToastContainer
