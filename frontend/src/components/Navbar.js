@@ -17,6 +17,11 @@ export default function Navbar() {
     }
   }, [location.pathname]);
   
+  const Home = () => {
+    window.location.href = '/'; 
+    return;
+  }
+  
   const handleLogout = () => {
     localStorage.clear();
     setIsActive(false);
@@ -32,6 +37,18 @@ export default function Navbar() {
     return;
   };
 
+  const cacheClear = () => {
+    Swal.fire({
+      title: "알림",
+      html: `VM Instance Clear!<br>홈으로 갑니다`,
+      icon: 'success',
+      showCancelButton: false,
+      confirmButtonText: "확인",
+    }).then(() => {
+      window.location.href = '/'; 
+    });
+  }
+
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen); // 사이드바 열기/닫기 토글
   };
@@ -44,14 +61,11 @@ export default function Navbar() {
       <nav className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
         <ul id="sideMenu">
           <li>
-            <Link className="navbar" to="/">
-              Home 
-            </Link>
+            <Link className="navbar" onClick={Home}>Home</Link>
           </li>
+          <li><Link className="navbar" onClick={cacheClear}>VM Instance Clear</Link></li>
           <li>
-            <Link className="navbar">
-              사이트 게시판 <span>▼</span>
-            </Link>
+            <Link className="navbar">사이트 게시판 <span>▼</span></Link>
             <ul>
               <li><Link className="navbar_" to="/board">게시판 바로가기</Link></li>
               <li><Link className="navbar_" to="/myeditor">작업하기</Link></li>
