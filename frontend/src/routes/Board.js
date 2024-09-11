@@ -44,12 +44,10 @@ function Board() {
           <CommonTable headersName={['제목[클릭]', '내용', '작성자', '등록일']}>
             {displayedData.map((item) => (
               <CommonTableRow key={item._id}>
-                <CommonTableColumn>
-                  <Link to={`/board_detail/${item._id}`}>{item.title}</Link>
-                </CommonTableColumn>
-                <CommonTableColumn>{item.content}</CommonTableColumn>
-                <CommonTableColumn>{item.writer}</CommonTableColumn>
-                <CommonTableColumn>{item.createdAt}</CommonTableColumn>  
+                <CommonTableColumn><Link to={`/board_detail/${item._id}`}>{item.title}</Link></CommonTableColumn>
+                <CommonTableColumn><Link to={`/board_detail/${item._id}`}>{item.content}</Link></CommonTableColumn>
+                <CommonTableColumn><Link to={`/board_detail/${item._id}`}>{item.writer}</Link></CommonTableColumn>
+                <CommonTableColumn><Link to={`/board_detail/${item._id}`}>{item.createdAt}</Link></CommonTableColumn>  
               </CommonTableRow>
             ))}
           </CommonTable>

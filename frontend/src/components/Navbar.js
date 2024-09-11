@@ -7,6 +7,7 @@ export default function Navbar() {
   
   const [isActive, setIsActive] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false); // 사이드바 상태 추가
+  const [boardOpen, setBoardOpen] = useState(false); // 보드 상태 추가
   const location = useLocation();
 
   useEffect(() => {
@@ -15,6 +16,8 @@ export default function Navbar() {
     } else { 
       setIsActive(false); 
     }
+    setSidebarOpen(false); // 다른 페이지로 랜더링 될 때 자연스럽게 옆으로 빠짐
+    // setBoardOpen(false);
   }, [location.pathname]);
   
   const Home = () => {
@@ -53,6 +56,10 @@ export default function Navbar() {
     setSidebarOpen(!sidebarOpen); // 사이드바 열기/닫기 토글
   };
 
+  const toggleBoard = () => {
+    setBoardOpen(!boardOpen);
+  }
+
   return (
     <>
       <button className="menu-btn" onClick={toggleSidebar}>
@@ -64,14 +71,13 @@ export default function Navbar() {
             <Link className="navbar" onClick={Home}>Home</Link>
           </li>
           <li><Link className="navbar" onClick={cacheClear}>VM Instance Clear</Link></li>
-          <li>
-            <Link className="navbar">사이트 게시판 <span>▼</span></Link>
+          <li className={`${boardOpen ? 'open' : ''}`}><Link className="navbar" onClick={toggleBoard}>사이트 게시판 <span>▼</span></Link>
             <ul>
               <li><Link className="navbar_" to="/board">게시판 바로가기</Link></li>
               <li><Link className="navbar_" to="/myeditor">작업하기</Link></li>
             </ul>
           </li>
-          {isActive ? <li><Link className="navbar" to="/mypage">마이페이지</Link></li> : <li></li>}
+          {isActive && <li><Link className="navbar" to="/mypage">마이페이지</Link></li>}
           {isActive ? <li><Link className="navbar" onClick={handleLogout}>로그아웃</Link></li> : <li><Link className="navbar" to="/register">회원가입 / 로그인</Link></li>}
         </ul>
       </nav>

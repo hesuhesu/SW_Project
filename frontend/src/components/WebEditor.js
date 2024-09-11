@@ -2,7 +2,6 @@ import React, { useRef, useState, useEffect } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter';
-import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
@@ -12,7 +11,6 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Alert from '@mui/material/Alert';
-import { useNavigate } from 'react-router-dom';
 
 // npm install 해야함
 
@@ -84,13 +82,11 @@ const vertices = [
 */
 
 const WebEditor = () => {
-  const navigate = useNavigate();
   const mountRef = useRef(null);  // DOM 참조를 위한 useRef hook 사용
   const [code, setCode] = useState(defaultCode);  // 코드 상태를 관리하기 위한 useState hook 사용
   const sceneRef = useRef(null);  // 씬 객체를 참조하기 위한 useRef hook 사용
   const [fileFormat, setFileFormat] = React.useState('gltf'); // 기본 파일 포맷 gltf 설정
   const [alertMessage, setAlertMessage] = useState(''); // 경고 메시지를 위한 상태 추가
-
 
   // 코드 실행 함수
   const handleRunCode = () => {
@@ -159,7 +155,7 @@ const WebEditor = () => {
 
   // 파일 내보내기 함수
   const handleExport = () => {
-    const format = document.getElementById('file-format').value;
+    // const format = document.getElementById('file-format').value;
     const filename = document.getElementById('file-name').value;
 
     if (!filename){
@@ -171,23 +167,17 @@ const WebEditor = () => {
 
     const scene = sceneRef.current;
     if (scene) {
-      if (fileFormat === 'gltf') {
-        const exporter = new GLTFExporter();
-        exporter.parse(
-          scene,
-          function (result) {
-            const output = JSON.stringify(result, null, 2);
-            saveString(output, filename + '.gltf');
-          },
-          function (error) {
-            console.error('An error occurred during parsing', error);
-          }
-        );
-      } else if (fileFormat === 'obj') {
-        const exporter = new OBJExporter();
-        const result = exporter.parse(scene);
-        saveString(result, filename + '.obj');
-      }
+      const exporter = new GLTFExporter();
+      exporter.parse(
+        scene,
+        function (result) {
+          const output = JSON.stringify(result, null, 2);
+          saveString(output, filename + '.gltf');
+        },
+        function (error) {
+          console.error('An error occurred during parsing', error);
+        }
+      );
     }
   };
 
@@ -233,7 +223,6 @@ const WebEditor = () => {
                 onChange={(e) => setFileFormat(e.target.value)}
                 >
                 <MenuItem value="gltf">GLTF</MenuItem>
-                <MenuItem value="obj">OBJ</MenuItem>
               </Select>
             </FormControl>
 

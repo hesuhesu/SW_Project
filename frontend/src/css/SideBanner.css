@@ -1,7 +1,7 @@
 /* 햄버거 메뉴 버튼 스타일 */
 .menu-btn {
     position: fixed;
-    top: 20px; /* 버튼의 세로 위치 */
+    top: 15px; /* 버튼의 세로 위치 */
     left: 20px;
     font-size: 30px;
     background: none;
@@ -67,11 +67,11 @@
   
   #sideMenu > li > ul {
     display: none;
-    padding-left: 20px;
   }
   
-  #sideMenu > li:hover > ul {
-    display: block;
+  /*변경 후 클릭으로 변경되게 설정*/
+  #sideMenu > .open > ul {
+    display:block;
   }
   
   #sideMenu > li > ul > li {

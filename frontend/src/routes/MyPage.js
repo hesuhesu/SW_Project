@@ -38,28 +38,15 @@ function MyPage() {
     }
     setTime(checkTime);
     axios.get(`${HOST}:${PORT}/auth/my_inf`, {
-      params: {
-        email: localStorage.key(0)
-      }
-    })
-      .then((response) => {
-        setMyInf(response.data.list);
-      })
-      .catch((error) => {
-        console.error(error);
-    });
+      params: { email: localStorage.key(0) }
+    }).then((response) => { setMyInf(response.data.list);})
+      .catch((error) => { console.error(error);});
     axios.get(`${HOST}:${PORT}/board/my_board_list`, {
-      params: {
-        writer: localStorage.key(0)
-      }
-    })
-      .then((response) => {
+      params: { writer: localStorage.key(0) }
+    }).then((response) => {
         setData(response.data.list);
         setPageCount(Math.ceil(response.data.list.length / ITEMS_PER_PAGE)); // 총 페이지 수 계산
-      })
-      .catch((error) => {
-        console.error(error);
-    });
+      }).catch((error) => { console.error(error); });
   }, [navigate]);
 
   const handleChangePassword = async (e) => {
@@ -108,25 +95,16 @@ function MyPage() {
     }).then((result) => {
       if (result.isConfirmed){
         axios.delete(`${HOST}:${PORT}/board/delete_user_all_board`, {
-            params: {
-              writer : localStorage.key(0)
-            }
+            params: { writer : localStorage.key(0) }
           }).then((response) => {})
-          .catch((error) => {
-            errorMessage("삭제 실패");    
-          })
+          .catch((error) => { errorMessage("삭제 실패"); })
           axios.delete(`${HOST}:${PORT}/auth/delete`, {
-            params: {
-              email : localStorage.key(0)
-            }
+            params: { email : localStorage.key(0) }
           }).then((response) => {
             successMessage("회원 탈퇴 되었습니다..");
-              localStorage.clear();
-              navigate("/");
-          })
-            .catch((error) => {
-              errorMessage("삭제 실패");    
-          })
+            localStorage.clear();
+            navigate("/");
+          }).catch((error) => { errorMessage("삭제 실패"); })
         }
     });
   }
@@ -204,8 +182,7 @@ function MyPage() {
             onPageChange={handlePageClick}
             containerClassName={'pagination'}
             activeClassName={'active'}
-          />
-          </>
+          /></>
         )}
     </div>
   );

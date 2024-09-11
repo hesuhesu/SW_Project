@@ -2,6 +2,8 @@ import SlideShow from "../components/SlideShow";
 import '../css/SlideShow.css'
 import MiddleSlide from "../components/MiddleSlide"
 import '../css/MiddleSlide.css'
+import React from 'react';
+
 const Home = () => {
   return (
     <>
