@@ -172,6 +172,7 @@ font-size: 14px !important;
   border: 5px solid black; /* 검은색 테두리 추가 */
   border-radius: 10px; /* 선택 사항: 모서리를 둥글게 처리 */
   padding: 10px; /* 선택 사항: 내부 여백 추가 */
+  display: block; /* canvas 요소의 기본 블록 속성 */
 }
 
 .threeD-Model-h2 {
@@ -182,4 +183,20 @@ font-size: 14px !important;
   font-weight: 900;
   color: #fff;
   text-shadow: 0 1px 0 #ccc, 0 2px 0 #c9c9c9, 0 3px 0 #bbb, 0 4px 0 #b9b9b9, 0 5px 0 #aaa, 0 6px 1px rgba(0,0,0,.1), 0 0 5px rgba(0,0,0,.1), 0 1px 3px rgba(0,0,0,.3), 0 3px 5px rgba(0,0,0,.2), 0 5px 10px rgba(0,0,0,.25), 0 10px 10px rgba(0,0,0,.2), 0 20px 20px rgba(0,0,0,.15);
+}
+
+.canvas-container {
+  position: relative; /* 자식 요소의 절대 위치를 설정하기 위해 필요 */
+
+}
+
+#information {
+  position: absolute; /* 절대 위치 지정 */
+  top: 10px; /* 원하는 위치로 조정 */
+  left: 10px; /* 원하는 위치로 조정 */
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  max-height: 400px; /* 최대 높이 설정 */
+  overflow-y: auto; /* 세로 스크롤 추가 */
+  overflow-x: hidden; /* 가로 스크롤 숨김 */
 }

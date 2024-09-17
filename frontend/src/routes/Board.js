@@ -47,7 +47,7 @@ function Board() {
                 <CommonTableColumn><Link to={`/board_detail/${item._id}`}>{item.title}</Link></CommonTableColumn>
                 <CommonTableColumn><Link to={`/board_detail/${item._id}`}>{item.content}</Link></CommonTableColumn>
                 <CommonTableColumn><Link to={`/board_detail/${item._id}`}>{item.writer}</Link></CommonTableColumn>
-                <CommonTableColumn><Link to={`/board_detail/${item._id}`}>{item.createdAt}</Link></CommonTableColumn>  
+                <CommonTableColumn><Link to={`/board_detail/${item._id}`}>{item.createdAt}</Link></CommonTableColumn>
               </CommonTableRow>
             ))}
           </CommonTable>
@@ -63,7 +63,7 @@ function Board() {
             activeClassName={'active'}
           />
         </>
-      ): <div>게시물 없음</div>}
+      ) : <div>게시물 없음</div>}
     </div>
   );
 }
