@@ -61,20 +61,20 @@ function Register() {
         localStorage.clear();
         const now = new Date();
         const nextTime = new Date(now.setHours(now.getHours() + 1));
-        const obj = {    
-          time : nextTime.toLocaleString('ko-KR', {
-              year: 'numeric',
-              month: '2-digit',
-              day: '2-digit',
-              hour: '2-digit',
-              minute: '2-digit',
-              second: '2-digit',
-              hour12: false
-          }),    
-          expire : nextTime.getTime()
+        const obj = {
+          time: nextTime.toLocaleString('ko-KR', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+          }),
+          expire: nextTime.getTime()
         }
         localStorage.setItem(loginData.email, JSON.stringify(obj));
-        navigate('/');
+        navigate("/");
       });
     } catch (e) {
       errorMessage('로그인 실패!!');
@@ -85,7 +85,7 @@ function Register() {
 
   const handleHome = async (e) => {
     e.preventDefault();
-    navigate('/');
+    navigate("/");
   };
 
   return (

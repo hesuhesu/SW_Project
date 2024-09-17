@@ -10,6 +10,18 @@ export const successMessage = (string) => {
   }).then(() => {});
 }
 
+export const successMessageURI = (string1, string2) => {
+  Swal.fire({
+    title: "알림",
+    icon:'success',
+    html: string1,
+    showCancelButton: false,
+    confirmButtonText: "확인",
+  }).then(() => {
+    window.location.href = string2;
+  });
+}
+
 export const errorMessage = (string) => {
     Swal.fire({
       title: "에러",
@@ -18,6 +30,18 @@ export const errorMessage = (string) => {
       showCancelButton: false,
       confirmButtonText: "확인",
     }).then(() => {});
+}
+
+export const errorMessageURI = (string1, string2) => {
+  Swal.fire({
+    title: "알림",
+    icon:'error',
+    html: string1,
+    showCancelButton: false,
+    confirmButtonText: "확인",
+  }).then(() => {
+    window.location.href = string2;
+  });
 }
 
 export const inputNumber = (string) => {

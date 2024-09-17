@@ -1,7 +1,7 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
 import React, { useState, useEffect } from 'react';
 import '../css/SideBanner.css';
-import Swal from "sweetalert2";
+import { successMessageURI } from "../utils/SweetAlertEvent";
 
 export default function Navbar() {
   
@@ -20,45 +20,16 @@ export default function Navbar() {
     // setBoardOpen(false);
   }, [location.pathname]);
   
-  const Home = () => {
-    window.location.href = '/'; 
-    return;
-  }
-  
+  const Home = () => { window.location.href = '/'; }
+  const cacheClear = () => { successMessageURI(`Cache Clear!<br>홈으로 갑니다`, "/"); }
   const handleLogout = () => {
     localStorage.clear();
     setIsActive(false);
-    Swal.fire({
-      title: "알림",
-      html: `로그아웃.`,
-      icon: 'success',
-      showCancelButton: false,
-      confirmButtonText: "확인",
-    }).then(() => {
-      window.location.href = '/'; 
-    });
-    return;
+    successMessageURI("로그아웃!", "/");
   };
 
-  const cacheClear = () => {
-    Swal.fire({
-      title: "알림",
-      html: `VM Instance Clear!<br>홈으로 갑니다`,
-      icon: 'success',
-      showCancelButton: false,
-      confirmButtonText: "확인",
-    }).then(() => {
-      window.location.href = '/'; 
-    });
-  }
-
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen); // 사이드바 열기/닫기 토글
-  };
-
-  const toggleBoard = () => {
-    setBoardOpen(!boardOpen);
-  }
+  const toggleSidebar = () => { setSidebarOpen(!sidebarOpen); }; // 사이드바 열기/닫기 토글
+  const toggleBoard = () => { setBoardOpen(!boardOpen); }
 
   return (
     <>
@@ -70,7 +41,7 @@ export default function Navbar() {
           <li>
             <Link className="navbar" onClick={Home}>Home</Link>
           </li>
-          <li><Link className="navbar" onClick={cacheClear}>VM Instance Clear</Link></li>
+          <li><Link className="navbar" onClick={cacheClear}>Cache Clear</Link></li>
           <li className={`${boardOpen ? 'open' : ''}`}><Link className="navbar" onClick={toggleBoard}>사이트 게시판 <span>▼</span></Link>
             <ul>
               <li><Link className="navbar_" to="/board">게시판 바로가기</Link></li>
