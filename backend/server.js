@@ -116,10 +116,10 @@ app.delete('/file_all_delete', (req, res) => {
       // 파일 삭제
       fs.unlink(filePath, (err) => {
         if (err) {
-          console.error('파일 삭제 중 오류 발생:', err);
+          console.error('❌ 3D 파일 삭제 중 오류 발생:', err);
           errorThreeD.push({ filename, error: err });
         } else {
-          console.log('파일 삭제 완료:', filename);
+          console.log('✅ 3D 파일 삭제 완료:', filename);
           deletedThreeDFiles.push(filename);
         }
         // 모든 작업이 끝났는지 확인
@@ -144,15 +144,15 @@ app.delete('/file_all_delete', (req, res) => {
     // 파일 삭제
     fs.unlink(filePath, (err) => {
       if (err) {
-        console.error('파일 삭제 중 오류 발생:', err);
+        console.error('❌ 이미지 파일 삭제 중 오류 발생:', err);
         errorImg.push({ filename, error: err });
       } else {
-        console.log('파일 삭제 완료:', filename);
+        console.log('✅ 이미지 파일 삭제 완료:', filename);
         deletedImgFiles.push(filename);
       }
       // 모든 작업이 끝났는지 확인
       if (deletedImgFiles.length + errorImg.length === imgFile.length) {
-        return res.json({ message: '모든 파일 삭제 성공'});
+        return res.json({ message: '이미지, 3D 파일 삭제 성공'});
       }
     });
   });

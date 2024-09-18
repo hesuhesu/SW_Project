@@ -22,7 +22,8 @@ const BoardDetail = () => {
   const params = useParams()._id // id 저장 => 대체하려면 useLocation 과 useNavigate 를 사용하면 됨
   const [threeDURL, setThreeDURL] = useState(''); // Modify 를 위한 경로 저장
   const [threeDName, setThreeDName] = useState(''); // 다운로드를 위한 이름 저장
-
+  const loader = new GLTFLoader();
+  
   useEffect(() => {
     timeCheck();
     axios.get(`${HOST}:${PORT}/board/board_detail`, {
@@ -61,13 +62,13 @@ const BoardDetail = () => {
   }
 
   const loadModelGLTF = (url, width = 1050, heigth = 1050) => {
-    const loader = new GLTFLoader();
     const dracoLoader = new DRACOLoader();
     dracoLoader.setDecoderConfig({ type: 'js' });
     dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
     loader.setDRACOLoader(dracoLoader);
     loader.load(url, (gltf) => {
       if (gltf.scene) {
+        dracoLoader.dispose();
         const scene = gltf.scene;
 
         // 모델의 bounding box 계산
@@ -89,7 +90,6 @@ const BoardDetail = () => {
         });
         renderer.setSize(width, heigth);
         renderer.setClearColor(0x003300, 1);
-        renderer.dispose();
         
         // 축 선 그리기
         const axesHelper = new THREE.AxesHelper(50);
@@ -137,7 +137,6 @@ const BoardDetail = () => {
           renderer.render(scene, camera);
         };
         animate();
-        dracoLoader.dispose();
         console.log("Success Load GLTF!!", canvasRef.current);
       } else { console.error('Failed to load GLTF file: scene is undefined'); }
     }, undefined, (error) => { console.error('Failed to load GLTF file:', error); }

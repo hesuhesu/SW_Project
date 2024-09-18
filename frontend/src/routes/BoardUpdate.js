@@ -5,7 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import axios from 'axios';
 import EditorToolBar, { insertHeart, formats, undoChange, redoChange } from "../components/EditorToolBar";
 import { ToastContainer } from "react-toastify";
-import { errorMessage, errorMessageURI } from '../utils/SweetAlertEvent';
+import { errorMessage, errorMessageURI, successMessage } from '../utils/SweetAlertEvent';
 import Swal from "sweetalert2"; // 로직간 반환 기능 실패로 직접 구현
 import { timeCheck } from '../utils/TimeCheck';
 import Button from '@material-ui/core/Button';
@@ -30,6 +30,8 @@ const BoardUpdate = () => {
   const [threeDSub, setThreeDSub] = useState([]); // 새로 추가하는 3D file 저장 => 취소 or 페이지 새로고침에 대응하기 위함
   const quillRef = useRef();
   const canvasRef = useRef();
+  const threeDRef = useRef(0); // 3D Upload 선택지 -> 랜더링 안되는 선에서 변경 가능한 변수 - 1 
+  const webGLRef = useRef(0); // WebGL 선택지 -> 랜더링 안되는 선에서 변경 가능한 변수 - 2
   const unloadCheck = useRef(); // 뒤로가기, uri 강제 이동을 위한 변수
   const [threeDTrue, setThreeDTrue] = useState(0); // 3D 유무
   const [webGLTrue, setWebGLTrue] = useState(0); // WebGL 유무
@@ -58,30 +60,14 @@ const BoardUpdate = () => {
         errorMessageURI("잘못된 접근입니다!", "/");
         return;
       }
-      if (response.data.list.threeDTrue !== 0) { loadModelGLTF(`${HOST}:${PORT}/uploads/${response.data.list.threeD[response.data.list.threeD.length - 1]}`); }
+      if (response.data.list.threeDTrue !== 0) { 
+        threeDRef.current = 1;
+        loadModelGLTF(`${HOST}:${PORT}/uploads/${response.data.list.threeD[response.data.list.threeD.length - 1]}`); 
+      }
       return () => {
-        window.removeEventListener("popstate", unloadListener); // 뒤로가기 이벤트
       }
     }).catch((error) => { console.error(error); });
-  }, [params]);
-
-  const unloadListener = async () => {
-    if (imgData.length > 0 || threeD.length > 0) {
-      if (unloadCheck.current === 1){
-        return;
-      }
-      else {
-        await axios.delete(`${HOST}:${PORT}/file_all_delete`, {
-          params: {
-            imgData: imgDataSub,
-            threeD: threeDSub
-          }
-        }).then((response) => {}).catch((error) => { errorMessage("에러!!"); });
-      }
-    }
-  };
-  window.addEventListener("beforeunload", unloadListener); // uri 새로 고침 이벤트
-  window.addEventListener("popstate", unloadListener); // 뒤로가기 이벤트
+  }, []);
 
   const handleChange = useCallback((html) => {
     setData({ realContent: html });
@@ -149,7 +135,7 @@ const BoardUpdate = () => {
     loader.setDRACOLoader(dracoLoader);
     loader.load(url, (gltf) => {
       if (gltf.scene) {
-        
+        dracoLoader.dispose();
         const scene = gltf.scene;
 
         // 모델의 bounding box 계산
@@ -251,6 +237,7 @@ const BoardUpdate = () => {
         const allRemoveBtn = document.getElementById("ThreeD-Delete");
         allRemoveBtn.addEventListener('click', function () {
           setThreeDTrue(0);
+          threeDRef.current = 0;
           scene.traverse((object) => {
             if (!object.isMesh) return;
             object.geometry.dispose();
@@ -258,10 +245,6 @@ const BoardUpdate = () => {
               object.material.dispose();
             }
           });
-          renderer.dispose();
-          controls.dispose();
-          scene.clear();
-
           // DOM에서 요소 삭제
           while (meshInfoDiv.firstChild) {
             meshInfoDiv.removeChild(meshInfoDiv.firstChild);
@@ -270,6 +253,9 @@ const BoardUpdate = () => {
 
           // 두 번 클릭 이벤트 리스너 제거
           renderer.domElement.removeEventListener('dblclick', handleDblClick);
+          renderer.dispose();
+          controls.dispose();
+          scene.clear();
         }, { once: true });
 
         const camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -281,9 +267,8 @@ const BoardUpdate = () => {
           alpha: false,
           preserveDrawingBuffer: true,
         });
-        renderer.setSize(1200, 1000);
+        renderer.setSize(window.innerWidth, 900);
         renderer.setClearColor(0xffffff, 1);
-        renderer.dispose();
 
         // 축 선 그리기
         const axesHelper = new THREE.AxesHelper(50);
@@ -331,7 +316,6 @@ const BoardUpdate = () => {
           renderer.render(scene, camera);
         };
         animate();
-        dracoLoader.dispose();
         console.log("Success Load GLTF!!", canvasRef.current);
       } else { console.error('Failed to load GLTF file: scene is undefined'); }
     },
@@ -339,59 +323,103 @@ const BoardUpdate = () => {
   };
 
   const insert3DButton = async () => {
-    Swal.fire({
-      title: "Choose One",
-      icon: 'question',
-      html: "File Upload / WebGL Editor",
-      showDenyButton: true,
-      showCloseButton: true,
-      confirmButtonText: 'File Upload',
-      denyButtonText: 'WebGL Editor',
-      confirmButtonColor: '#3085d6',
-      denyButtonColor: '#d33',
-      onClose: () => {
-        // X 버튼 클릭 시 아무 이벤트도 발생하지 않도록 빈 함수 설정
-        return false;
-      }
-    }).then((result) => {
-      if (result.isConfirmed) { // 업로드 영역
-        const input = document.createElement('input');
-        // 속성 써주기
-        input.setAttribute('type', 'file');
-        input.setAttribute('accept', '*'); // input.setAttribute('accept', '.gltf, .glb'); // GLTF 및 GLB 파일만 허용
-        input.click();
-        // 버튼 클릭 시 해당 이벤트
-        input.addEventListener('change', async () => {
-          const file = input.files[0];
-
-          // 파일 확장자 확인
-          const fileExtension = file.name.substring(file.name.lastIndexOf('.') + 1).toLowerCase(); // 마지막 점 이후의 문자열 추출
-          if (!file) return; // 파일이 선택되지 않은 경우
-          else if (fileExtension !== 'gltf' && fileExtension !== 'glb') {
-            errorMessage(`지원하지 않는 3D 파일 확장자입니다.<br> 지원 확장자 : [gltf, glb]`);
-            return;
-          }
-          const formData = new FormData();
-          formData.append('gltf', file);
-          await axios.post(`${HOST}:${PORT}/gltf`, formData)
-            .then((res) => {
-              console.log(res.data.url);
-              console.log(res.data.realName);
-              setThreeD(prevFiles => [...prevFiles, res.data.realName]);
-              setThreeDSub(prevFiles => [...prevFiles, res.data.realName]);
-              setThreeDTrue(1);
-              loadModelGLTF(res.data.url);
-            }).catch((e) => { errorMessage("GLTF 업로드 실패"); });
-        }, { once: true });
-      }
-      else if (result.isDenied) { // editor 영역
-        setWebGLTrue(1);
-      }
-    });
+    if (threeDRef.current === 0 && webGLRef.current === 0){
+      Swal.fire({
+        title: "Choose One",
+        icon: 'question',
+        html: "File Upload / WebGL Editor",
+        showDenyButton: true,
+        showCloseButton: true,
+        confirmButtonText: 'File Upload',
+        denyButtonText: 'WebGL Editor',
+        confirmButtonColor: '#3085d6',
+        denyButtonColor: '#d33',
+        onClose: () => {
+          // X 버튼 클릭 시 아무 이벤트도 발생하지 않도록 빈 함수 설정
+          return false;
+        }
+      }).then((result) => {
+        if (result.isConfirmed) { // 업로드 영역
+          const input = document.createElement('input');
+          // 속성 써주기
+          input.setAttribute('type', 'file');
+          input.setAttribute('accept', '*'); // input.setAttribute('accept', '.gltf, .glb'); // GLTF 및 GLB 파일만 허용
+          input.click();
+          // 버튼 클릭 시 해당 이벤트
+          input.addEventListener('change', async () => {
+            const file = input.files[0];
+  
+            // 파일 확장자 확인
+            const fileExtension = file.name.substring(file.name.lastIndexOf('.') + 1).toLowerCase(); // 마지막 점 이후의 문자열 추출
+            if (!file) return; // 파일이 선택되지 않은 경우
+            else if (fileExtension !== 'gltf' && fileExtension !== 'glb') {
+              errorMessage(`지원하지 않는 3D 파일 확장자입니다.<br> 지원 확장자 : [gltf, glb]`);
+              return;
+            }
+            const formData = new FormData();
+            formData.append('gltf', file);
+            await axios.post(`${HOST}:${PORT}/gltf`, formData)
+              .then((res) => {
+                console.log(res.data.url);
+                console.log(res.data.realName);
+                setThreeD(prevFiles => [...prevFiles, res.data.realName]);
+                setThreeDSub(prevFiles => [...prevFiles, res.data.realName]);
+                setThreeDTrue(1);
+                threeDRef.current = 1;
+                loadModelGLTF(res.data.url);
+              }).catch((e) => { errorMessage("GLTF 업로드 실패"); });
+          }, { once: true });
+        }
+        else if (result.isDenied) { // editor 영역
+          setWebGLTrue(1);
+          webGLRef.current = 1;
+        }
+      });
+    }
+    else if (threeDRef.current === 0 && webGLRef.current === 1) {
+      const input = document.createElement('input');
+          // 속성 써주기
+          input.setAttribute('type', 'file');
+          input.setAttribute('accept', '*'); // input.setAttribute('accept', '.gltf, .glb'); // GLTF 및 GLB 파일만 허용
+          input.click();
+          // 버튼 클릭 시 해당 이벤트
+          input.addEventListener('change', async () => {
+            const file = input.files[0];
+  
+            // 파일 확장자 확인
+            const fileExtension = file.name.substring(file.name.lastIndexOf('.') + 1).toLowerCase(); // 마지막 점 이후의 문자열 추출
+            if (!file) return; // 파일이 선택되지 않은 경우
+            else if (fileExtension !== 'gltf' && fileExtension !== 'glb') {
+              errorMessage(`지원하지 않는 3D 파일 확장자입니다.<br> 지원 확장자 : [gltf, glb]`);
+              return;
+            }
+            const formData = new FormData();
+            formData.append('gltf', file);
+            await axios.post(`${HOST}:${PORT}/gltf`, formData)
+              .then((res) => {
+                console.log(res.data.url);
+                console.log(res.data.realName);
+                setThreeD(prevFiles => [...prevFiles, res.data.realName]);
+                setThreeDSub(prevFiles => [...prevFiles, res.data.realName]);
+                setThreeDTrue(1);
+                threeDRef.current = 1;
+                loadModelGLTF(res.data.url);
+              }).catch((e) => { errorMessage("GLTF 업로드 실패"); });
+          }, { once: true });
+    }
+    else if (threeDRef.current === 1 && webGLRef.current === 0) {
+      successMessage("WebGL Editor Open!");
+      setWebGLTrue(1);
+      webGLRef.current = 1;
+    }
+    else if (threeDRef.current === 1 && webGLRef.current === 1) {
+      errorMessage("둘 다 실행중!");
+    }
   }
 
   const deleteWebGL = async () => {
     setWebGLTrue(0);
+    webGLRef.current = 0;
     return;
   }
 
