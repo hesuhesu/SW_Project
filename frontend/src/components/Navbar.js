@@ -4,18 +4,14 @@ import '../css/SideBanner.css';
 import { successMessageURI } from "../utils/SweetAlertEvent";
 
 export default function Navbar() {
-  
   const [isActive, setIsActive] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false); // 사이드바 상태 추가
   const [boardOpen, setBoardOpen] = useState(false); // 보드 상태 추가
   const location = useLocation();
 
   useEffect(() => {
-    if (localStorage.length > 0){
-      setIsActive(true);
-    } else { 
-      setIsActive(false); 
-    }
+    if (localStorage.length > 0){ setIsActive(true); } 
+    else { setIsActive(false); }
     setSidebarOpen(false); // 다른 페이지로 랜더링 될 때 자연스럽게 옆으로 빠짐
     // setBoardOpen(false);
   }, [location.pathname]);
