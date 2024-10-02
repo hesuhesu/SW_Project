@@ -25,13 +25,13 @@
 
 .MyPage_Inf,
 .MyPage_Change_Password {
-  flex-basis: 45%;
+  flex-basis: 30%;
   padding: 10rem; /* 요소 내부 여백 추가 */
   background-color: #fff;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
   padding: 100px;
-  width: 500px;
-  height: 500px;
+  width: 400px;
+  height: 400px;
   display: flex; /* 추가 */
   flex-direction: column; /* 추가 */
   align-items: center;
@@ -70,13 +70,31 @@
   margin-bottom: 20px;
 }
 
+.MyPage_Change_Password input {
+  background-color: #eee;
+  border: none;
+  padding: 12px 15px;
+  margin: 8px 0;
+  width: 100%;
+}
+
 .MyPage_Change_Password button {
-  background-color: rgb(211, 211, 211);
+  border: none;
   padding: 10px 20px; /* 버튼 스타일 추가 */
   border-radius: 5px; /* 버튼 스타일 추가 */
   margin-bottom: 5px;
-  cursor: pointer; /* 버튼 스타일 추가 */
+  background-color: rgb(211, 211, 211);
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 80ms ease-in;
 }
+
+.MyPage_Change_Password button:hover {
+  background-color: #ff3e1d;
+}
+
 a {
   text-decoration: none;
   color: inherit;

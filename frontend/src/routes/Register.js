@@ -91,7 +91,7 @@ function Register() {
   return (
     <div className={`container ${isActive ? 'active' : ''}`} id="container">
       <div className="form-container sign-up">
-        <form onSubmit={handleRegister}>
+        <form className="register-form" onSubmit={handleRegister}>
           <h2>Create Account</h2>
           <input
             type="text"
@@ -128,7 +128,7 @@ function Register() {
         </form>
       </div>
       <div className="form-container sign-in">
-        <form onSubmit={handleLogin}>
+        <form className="register-form" onSubmit={handleLogin}>
           <h2>Sign in</h2>
           <input
             type="email"

@@ -122,9 +122,29 @@ ___
 <br>
 
 > ### 24.08.13
->> #### 3D Editor 기능 테스팅
+>> #### WebGL Editor 기능 테스팅
 
 <img src="/images/3D_Editor_Test.png">
+
+<br>
+
+___
+
+<br>
+
+> ### 24.09.23
+>> #### 2학기 1차 발표
+
+<br>
+
+___
+
+<br>
+
+> ### 24.10.03
+>> #### WebGL Editor 개편
+
+<img src="/images/webgl.png">
 
 <br>
 

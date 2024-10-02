@@ -1,10 +1,8 @@
 import React, { useState, useRef, useCallback, useMemo, useEffect } from 'react';
 import ReactQuill, { Quill } from 'react-quill';
 import { useNavigate } from "react-router-dom";
-import "react-toastify/dist/ReactToastify.css";
 import axios from 'axios';
 import EditorToolBar, { insertHeart, formats, undoChange, redoChange } from "../components/EditorToolBar";
-import { ToastContainer } from "react-toastify";
 import { errorMessage, errorMessageURI, successMessage, successMessageURI } from '../utils/SweetAlertEvent';
 import Swal from "sweetalert2"; // 로직간 반환 기능 실패로 직접 구현
 import { timeCheck } from '../utils/TimeCheck';
@@ -52,7 +50,7 @@ const MyEditor = () => {
     return () => {
     };
   }, []);
-  
+
   const handleChange = useCallback((html) => {
     setEditorHtml(html);
   }, []);
@@ -136,6 +134,27 @@ const MyEditor = () => {
         const meshInfoDiv = document.getElementById('information');
         const meshes = [];
         meshInfoDiv.innerHTML = '';
+
+        // 스크롤 조정 버튼 추가
+        const scrollToTopButton = document.createElement('button');
+        scrollToTopButton.type = 'button'; // 버튼 타입을 "button"으로 설정해 폼 제출 방지
+        scrollToTopButton.innerText = '맨 위로 이동';
+
+        const scrollToBottomButton = document.createElement('button');
+        scrollToBottomButton.type = 'button'; // 버튼 타입을 "button"으로 설정해 폼 제출 방지
+        scrollToBottomButton.innerText = '맨 아래로 이동';
+        scrollToBottomButton.style.marginBottom = '20px';
+
+        // 스크롤 조정 이벤트 핸들러 정의
+        scrollToTopButton.addEventListener('click', () => {
+          meshInfoDiv.scrollTop = 0;
+        });
+        scrollToBottomButton.addEventListener('click', () => {
+          meshInfoDiv.scrollTop = meshInfoDiv.scrollHeight;
+        });
+
+        meshInfoDiv.appendChild(scrollToBottomButton);
+
         scene.traverse((child) => {
           if (child.isMesh) {
             meshes.push(child);
@@ -143,6 +162,7 @@ const MyEditor = () => {
             // 메쉬 이름 추가
             const meshName = document.createElement('div');
             meshName.innerText = child.name;
+            meshName.style.fontWeight = 'bold'; // 텍스트 굵게 표시
 
             // 색상 선택기 추가
             const colorInput = document.createElement('input');
@@ -173,6 +193,8 @@ const MyEditor = () => {
             meshInfoDiv.appendChild(sizeInput);
           }
         });
+        const br = document.createElement('br');
+        meshInfoDiv.appendChild(br);
 
         // 저장하기 버튼 추가
         const saveButton = document.createElement('button');
@@ -180,6 +202,8 @@ const MyEditor = () => {
         saveButton.innerText = '파일 즉시 저장하기';
         saveButton.style.marginTop = '10px';
         meshInfoDiv.appendChild(saveButton);
+
+        meshInfoDiv.appendChild(scrollToTopButton);
 
         // 저장 버튼 클릭 이벤트 핸들러 함수
         function onSaveButtonClick() {
@@ -230,11 +254,10 @@ const MyEditor = () => {
               object.material.dispose();
             }
           });
-          // DOM에서 요소 삭제
-          while (meshInfoDiv.firstChild) {
-            meshInfoDiv.removeChild(meshInfoDiv.firstChild);
-          }
+          meshInfoDiv.innerHTML = '';
           saveButton.removeEventListener('click', onSaveButtonClick); // 클릭 이벤트 제거
+
+          lightControlsDiv.innerHTML = '';
 
           // 두 번 클릭 이벤트 리스너 제거
           renderer.domElement.removeEventListener('dblclick', handleDblClick);
@@ -270,6 +293,121 @@ const MyEditor = () => {
         directionalLight.position.set(0, 1, 0);
         scene.add(directionalLight);
 
+        // 조명 값 조정 UI 추가 (색상 및 강도)
+        const lightControlsDiv = document.createElement('div');
+        lightControlsDiv.style.marginTop = '20px'; // 조명 조정 영역 아래에 20px 간격 추가
+        lightControlsDiv.style.fontWeight = 'bold'; // 텍스트 굵게 표시
+        lightControlsDiv.style.border = '2px solid black'; // 테두리 추가
+        lightControlsDiv.style.padding = '10px'; // 테두리 안쪽 여백 추가
+        lightControlsDiv.style.backgroundColor = 'rgba(255, 255, 255, 0.5)'; // 흰색에 50% 투명도
+        lightControlsDiv.innerHTML = `
+        <div>
+          <label>배경 색 변경 :</label>
+          <input type="color" id="rendererBackgroundColor" value="#ffffff" />
+        </div>
+        <br>
+        <div>
+          <label>Directional Light Color:</label>
+          <input type="color" id="directionalLightColor" value="#ffffff" />
+          <label>Intensity :</label>
+          <input type="range" id="directionalLightIntensity" min="0" max="5" step="0.01" value="1" />
+        </div>
+        <div>
+          <label>Ambient Light Color :</label>
+          <input type="color" id="ambientLightColor" value="#ffffff" />
+          <label>Intensity :</label>
+          <input type="range" id="ambientLightIntensity" min="0" max="5" step="0.01" value="1" />
+        </div>
+        <div>
+          <label>Directional Light Position X :</label>
+          <input type="range" id="directionalLightPosX" min="-100" max="100" step="0.1" value="0" />
+        </div>
+        <div>
+          <label>Directional Light Position Y :</label>
+          <input type="range" id="directionalLightPosY" min="-100" max="100" step="0.1" value="1" />
+        </div>
+        <div>
+          <label>Directional Light Position Z :</label>
+          <input type="range" id="directionalLightPosZ" min="-100" max="100" step="0.1" value="0" />
+        </div>
+      `;
+        meshInfoDiv.appendChild(lightControlsDiv);
+
+        // Renderer 배경색 변경 이벤트 핸들러 정의
+        const handleRendererBackgroundColorChange = (event) => {
+          renderer.setClearColor(event.target.value);
+        };
+
+        // 조명 값 조정 UI에 초기화 버튼 추가
+        const resetButton = document.createElement('button');
+        resetButton.textContent = 'Reset to Default';
+        resetButton.style.marginTop = '10px'; // 버튼과 조명 조정 영역 사이의 간격 추가
+
+        // 초기화 버튼 클릭 시 호출할 함수 정의
+        const resetControls = () => {
+          document.getElementById('directionalLightColor').value = '#ffffff';
+          document.getElementById('directionalLightIntensity').value = '1';
+          document.getElementById('ambientLightColor').value = '#ffffff';
+          document.getElementById('ambientLightIntensity').value = '1';
+          document.getElementById('directionalLightPosX').value = '0';
+          document.getElementById('directionalLightPosY').value = '1';
+          document.getElementById('directionalLightPosZ').value = '0';
+
+          // 조명 값을 초기값으로 설정
+          directionalLight.color.set(new THREE.Color('#ffffff'));
+          directionalLight.intensity = 1;
+          ambientLight.color.set(new THREE.Color('#ffffff'));
+          ambientLight.intensity = 1;
+          directionalLight.position.set(0, 1, 0);
+        };
+
+        // 초기화 버튼 클릭 이벤트 리스너 등록
+        resetButton.addEventListener('click', resetControls);
+        resetButton.type = 'button';
+
+        // 초기화 버튼을 조명 조정 UI에 추가
+        lightControlsDiv.appendChild(resetButton);
+
+        // Renderer 배경색 입력 이벤트 리스너 등록
+        document.getElementById('rendererBackgroundColor').addEventListener('input', handleRendererBackgroundColorChange);
+
+        // Directional Light Color Change
+        document.getElementById('directionalLightColor').addEventListener('input', (event) => {
+          const color = new THREE.Color(event.target.value);
+          directionalLight.color.set(color);
+        });
+
+        // Directional Light Intensity Change
+        document.getElementById('directionalLightIntensity').addEventListener('input', (event) => {
+          directionalLight.intensity = parseFloat(event.target.value);
+        });
+
+        // Ambient Light Color Change
+        document.getElementById('ambientLightColor').addEventListener('input', (event) => {
+          const color = new THREE.Color(event.target.value);
+          ambientLight.color.set(color);
+        });
+
+        // Ambient Light Intensity Change
+        document.getElementById('ambientLightIntensity').addEventListener('input', (event) => {
+          ambientLight.intensity = parseFloat(event.target.value);
+        });
+
+        // Directional Light Position X Change
+        document.getElementById('directionalLightPosX').addEventListener('input', (event) => {
+          directionalLight.position.x = parseFloat(event.target.value);
+        });
+
+        // Directional Light Position Y Change
+        document.getElementById('directionalLightPosY').addEventListener('input', (event) => {
+          directionalLight.position.y = parseFloat(event.target.value);
+        });
+
+        // Directional Light Position Z Change
+        document.getElementById('directionalLightPosZ').addEventListener('input', (event) => {
+          directionalLight.position.z = parseFloat(event.target.value);
+        });
+
         // 애니메이션 믹서 추가
         const mixer = new THREE.AnimationMixer(scene);
         gltf.animations.forEach((clip) => {
@@ -304,7 +442,7 @@ const MyEditor = () => {
       undefined, (error) => { console.error('Failed to load GLTF file:', error); });
   };
 
-  const insert3DButton = async () => {
+  const insert3DButton = useCallback(async () => {
     if (threeDRef.current === 0 && webGLRef.current === 0) {
       Swal.fire({
         title: "Choose One",
@@ -394,13 +532,13 @@ const MyEditor = () => {
     else if (threeDRef.current === 1 && webGLRef.current === 1) {
       errorMessage("둘 다 실행중!");
     }
-  }
+  }, []);
 
-  const deleteWebGL = async () => {
+  const deleteWebGL = useCallback(async () => {
     setWebGLTrue(0);
     webGLRef.current = 0;
     return;
-  }
+  }, []);
 
   const modules = useMemo(() => ({
     toolbar: {
@@ -471,15 +609,9 @@ const MyEditor = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className="quill-form" onSubmit={handleSubmit}>
       <div className="text-editor">
-        <input
-          type="text"
-          placeholder="Title"
-          id="title"
-          onChange={(e) => setTitle(e.target.value)}
-          required
-        />
+        <input type="text" placeholder="Title" className = "quill-title" onChange={(e) => setTitle(e.target.value)} required/>
         <EditorToolBar />
         <ReactQuill
           theme="snow"// 테마 설정 (여기서는 snow를 사용)
@@ -497,23 +629,12 @@ const MyEditor = () => {
           <Button id="ThreeD-Delete" variant="contained">3D Upload 삭제하기</Button>
         </>}
         {webGLTrue === 1 && <>
-          <h2 className="threeD-Model-h2">코드 컴파일 후 EXPORT 가능합니다!</h2>
+          <h2 className="threeD-Model-h2">WebGL Editor</h2>
           <WebEditor></WebEditor>
           <Button variant="contained" onClick={deleteWebGL}>WebGL 작업 종료</Button>
         </>}
         <Button variant="contained" type="submit">저장하기</Button>
         <Button variant="contained" onClick={handleCancel}>취소하기</Button>
-        <ToastContainer
-          limit={1}
-          autoClose={2000}
-        /*
-        position="top-right"
-        limit={1}
-        closeButton={false}
-        autoClose={2000}
-        hideProgressBar
-        */
-        />
       </div>
     </form>
   );

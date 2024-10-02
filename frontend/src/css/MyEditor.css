@@ -17,68 +17,6 @@
   font-family: "AritaBuri";
 }
 
-/*
-.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="8px"]::before {
-  content: '8px';
-  font-size: 14px !important;
-}
-.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="10px"]::before {
-  content: '10px';
-  font-size: 14px !important;
-}
-.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="12px"]::before {
-  content: '12px';
-  font-size: 14px !important;
-}
-.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="14px"]::before {
-  content: '14px';
-  font-size: 14px !important;
-}
-.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="16px"]::before {
-  content: '16px';
-  font-size: 14px !important;
-}
-.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="20px"]::before {
-  content: '20px';
-  font-size: 14px !important;
-}
-.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="24px"]::before {
-  content: '24px';
-  font-size: 14px !important;
-}
-.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="9px"]::before {
-content: '30px';
-font-size: 14px !important;
-}
-.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="36px"]::before {
-  content: '36px';
-  font-size: 14px !important;
-}
-.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="48px"]::before {
-  content: '48px';
-  font-size: 14px !important;
-}
-.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="60px"]::before {
-  content: '60px';
-  font-size: 14px !important;
-}
-.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="72px"]::before {
-  content: '72px';
-  font-size: 14px !important;
-}
-.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="84px"]::before {
-  content: '84px';
-  font-size: 14px !important;
-}
-.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="96px"]::before {
-  content: '96px';
-  font-size: 14px !important;
-}
-.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="120px"]::before {
-  content: '120px';
-  font-size: 14px !important;
-}*/
-
 #toolbar {
   background-color: #c4c4c4;
 }
@@ -152,6 +90,7 @@ font-size: 14px !important;
 .ql-editor{ 
   min-height: 500px !important;
   max-height: 800px;
+  width: 100%;
   overflow: hidden;
   overflow-y: scroll;
   overflow-x: scroll;
@@ -171,7 +110,7 @@ font-size: 14px !important;
   margin-top: 30px;
   border: 5px solid black; /* 검은색 테두리 추가 */
   border-radius: 10px; /* 선택 사항: 모서리를 둥글게 처리 */
-  padding: 10px; /* 선택 사항: 내부 여백 추가 */
+  
   display: block; /* canvas 요소의 기본 블록 속성 */
 }
 
@@ -196,7 +135,23 @@ font-size: 14px !important;
   left: 10px; /* 원하는 위치로 조정 */
   background-color: rgba(0, 0, 0, 0.2);
   padding: 10px;
-  max-height: 400px; /* 최대 높이 설정 */
+  max-height: 700px; /* 최대 높이 설정 */
   overflow-y: auto; /* 세로 스크롤 추가 */
   overflow-x: hidden; /* 가로 스크롤 숨김 */
+}
+
+.quill-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.quill-title {
+  background-color: #eee;
+  border: none;
+  padding: 12px 0 12px 5px;
+  margin: 8px 0 8px 0;
+  width: 100%; /* 캔버스의 최대 너비를 100%로 설정 */
 }
