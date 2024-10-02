@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React from 'react';
 import ReactQuill, {Quill} from 'react-quill';
-import Button from 'react-bootstrap/Button';
 import ImageResize from 'quill-image-resize';
 import { ImageDrop } from "quill-image-drop-module";
 import katex from 'katex';
@@ -175,9 +174,9 @@ export const QuillToolbar = () => (
       <button className="ql-redo" title = "앞으로 복구하기">
         <CustomRedo />
       </button>
-      <Button variant="warning" className="ql-insertHeart" title = "heart">
+      <button className="ql-insertHeart" title = "heart">
         <CustomHeart />
-      </Button>
+      </button>
       <button className="ql-insert3DButton" title = "3D Input">
         <Custom3D />
       </button>
