@@ -48,6 +48,31 @@ node server.js
 
 <br>
 
+**1-3. .env 환경 변수 설정 법**
+
+- backend, frontend 폴더의 root 위치에 .env 파일을 생성한다.
+- 각각 로컬 환경의 기본 값을 공개하되, 본인들의 위치, 취향에 따라 값을 변경하길 바람
+
+- backend 생성 환경변수
+```
+MONGO_URI=mongodb://127.0.0.1:27017/
+HOST=http://localhost
+PORT=5000
+```
+
+- frontend 생성 환경변수
+```
+REACT_APP_HOST=http://localhost
+REACT_APP_PORT=5000
+GENERATE_SOURCEMAP=false
+```
+
+- 해당 값들을 입력한다면 바로 로컬 환경에서 사용 가능함.
+- .env 를 추가하면 구조는 다음과 같아진다
+<img src = "/images/Project_Structure.png">
+
+<br>
+
 ### 2. 자주 쓰게 될 명령어
 
 <br>
@@ -56,6 +81,10 @@ node server.js
 - NodeJS 의 실행 명령어이다
 ```
 node server.js
+```
+- React 의 프로젝트 빌드 명령어이다
+```
+npm run build
 ```
 - React 의 실행 명령어이다
 ```
