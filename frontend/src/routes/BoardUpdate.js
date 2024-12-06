@@ -605,7 +605,7 @@ const BoardUpdate = () => {
     // description.trim()
     axios.put(`${HOST}:${PORT}/board/update`, {
       _id: params,
-      title: document.getElementById('update_title').value, // 이 부분은 해결되었지만, 최적화해야할 과제 기존 data.title -> 해당 방식
+      title: data.title,
       content: description,
       realContent: data.realContent,
       imgData: imgData,
