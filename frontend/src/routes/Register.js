@@ -20,30 +20,51 @@ function Register() {
     password: '',
   });
   const [isActive, setIsActive] = useState(false);
-
   const navigate = useNavigate();
+
+  const handleChangeRegister = (e) => {
+    const { name, value } = e.target;
+    setRegisterData({
+      ...registerData,
+      [name]: value
+    });
+  };
+
+  const handleChangeLogin = (e) => {
+    const { name, value } = e.target;
+    setLoginData({
+      ...loginData,
+      [name]: value
+    });
+  }
 
   const handleRegister = async (e) => {
     e.preventDefault();
+
     if (registerData.password !== registerData.confirmPassword) {
       errorMessage('비밀번호를 다시 입력하세요!');
-      document.getElementById('register_password2').value = '';
+      setRegisterData({ ...registerData, confirmPassword: '' });
       return;
     }
+
     try {
       await axios.post(`${HOST}:${PORT}/auth/register`, registerData);
       successMessage(`${registerData.email}님 가입을 환영합니다!`);
       setIsActive(false);
-      document.getElementById('register_email').value = '';
-      document.getElementById('register_name').value = '';
-      document.getElementById('register_password').value = '';
-      document.getElementById('register_password2').value = '';
+      setRegisterData({
+        email: '',
+        name: '',
+        password: '',
+        confirmPassword: ''
+      });
     } catch (e) {
       errorMessage(`형식이 잘못되었습니다.<br><br>1. 중복 금지 + 이메일 형식<br>2. 이름 2글자 이상<br>3. 비밀번호 공백 금지 입니다.`);
-      document.getElementById('register_email').value = '';
-      document.getElementById('register_name').value = '';
-      document.getElementById('register_password').value = '';
-      document.getElementById('register_password2').value = '';
+      setRegisterData({
+        email: '',
+        name: '',
+        password: '',
+        confirmPassword: ''
+      });
     }
   };
 
@@ -78,8 +99,10 @@ function Register() {
       });
     } catch (e) {
       errorMessage('로그인 실패!!');
-      document.getElementById('login_email').value = '';
-      document.getElementById('login_password').value = '';
+      setLoginData({
+        email: '',
+        password: '',
+      })
     }
   };
 
@@ -94,33 +117,35 @@ function Register() {
         <form className="register-form" onSubmit={handleRegister}>
           <h2>Create Account</h2>
           <input
-            type="text"
-            placeholder="Email"
-            id="register_email"
-            autocomplete="off"
-            onChange={(e) => setRegisterData((prevState) => ({ ...prevState, email: e.target.value }))}
+            type="email"
+            name="email"
+            value={registerData.email}
+            onChange={handleChangeRegister}
+            placeholder="이메일"
             required
           />
           <input
             type="text"
-            placeholder="Name"
-            id="register_name"
-            autocomplete="off"
-            onChange={(e) => setRegisterData((prevState) => ({ ...prevState, name: e.target.value }))}
+            name="name"
+            value={registerData.name}
+            onChange={handleChangeRegister}
+            placeholder="이름"
             required
           />
           <input
             type="password"
-            placeholder="Password"
-            id="register_password"
-            onChange={(e) => setRegisterData((prevState) => ({ ...prevState, password: e.target.value }))}
+            name="password"
+            value={registerData.password}
+            onChange={handleChangeRegister}
+            placeholder="비밀번호"
             required
           />
           <input
             type="password"
-            placeholder="Confirm Password"
-            id="register_password2"
-            onChange={(e) => setRegisterData((prevState) => ({ ...prevState, confirmPassword: e.target.value }))}
+            name="confirmPassword"
+            value={registerData.confirmPassword}
+            onChange={handleChangeRegister}
+            placeholder="비밀번호 확인"
             required
           />
           <p>{registerData.password !== registerData.confirmPassword ? 'Passwords do not match' : ''}</p>
@@ -132,16 +157,20 @@ function Register() {
           <h2>Sign in</h2>
           <input
             type="email"
-            placeholder="Email"
+            name="email"
             id="login_email"
-            onChange={(e) => setLoginData((prevState) => ({ ...prevState, email: e.target.value }))}
+            value={loginData.email}
+            onChange={handleChangeLogin}
+            placeholder="Email"
             required
           />
           <input
             type="password"
-            placeholder="Password"
+            name="password"
             id="login_password"
-            onChange={(e) => setLoginData((prevState) => ({ ...prevState, password: e.target.value }))}
+            value={loginData.password}
+            onChange={handleChangeLogin}
+            placeholder="Password"
             required
           />
           <button type="submit">Sign In</button>
