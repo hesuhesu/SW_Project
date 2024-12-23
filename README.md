@@ -2,12 +2,6 @@
 
 <br>
 
-### 🌐 체험용 사이트 link
-
-- <a href="https://gltfeditor.o-r.kr/" target="_blank">https://gltfeditor.o-r.kr/</a>
-
-<br>
-
 ___
 
 <br>
