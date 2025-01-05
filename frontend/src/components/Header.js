@@ -1,14 +1,10 @@
-
 import { Outlet } from "react-router-dom";
-import '../css/Header.css'
+import '../css/Header.scss'
 
 function Header() {
     return (
         <div className="Header">
-            <h1 className="Header-h1" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative'}}>
-                Dong-A 3D Model WYSIWYG Editor
-                
-            </h1>
+            <h1>Dong-A 3D Model WYSIWYG Editor</h1>
             <Outlet />
         </div>
     );

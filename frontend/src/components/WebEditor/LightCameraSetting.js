@@ -115,8 +115,8 @@ const LightCameraSetting = ({
       <input type="number" step="0.1" style={{ width: '50px' }} value={cameraPosition.z} onChange={(e) => handleCameraPositionChange('z', parseFloat(e.target.value))} /><br />
       <button type="button" onClick={resetLightControls} style={{ marginTop: '10px' }}>Reset Light</button>
       <button type="button" onClick={resetCameraControls}>Reset Camera</button>
-      {axesHelperTrue ? <button onClick={handleAxesHelper}>AxesHelper OFF</button> : <button onClick={handleAxesHelper}>AxesHelper ON</button>}
-      {gridHelperTrue ? <button onClick={handleGridHelper}>GridHelper OFF</button> : <button onClick={handleGridHelper}>GridHelper ON</button>}
+      {axesHelperTrue ? <button type="button" onClick={handleAxesHelper}>AxesHelper OFF</button> : <button type="button" onClick={handleAxesHelper}>AxesHelper ON</button>}
+      {gridHelperTrue ? <button type="button" onClick={handleGridHelper}>GridHelper OFF</button> : <button type="button" onClick={handleGridHelper}>GridHelper ON</button>}
     </div>
   );
 };
