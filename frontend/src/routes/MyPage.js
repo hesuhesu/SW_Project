@@ -10,7 +10,7 @@ import { timeCheck } from '../utils/TimeCheck';
 import MyPageInformation from '../components/MyPage/MyPageInformation';
 import PasswordChange from '../components/MyPage/PasswordChange';
 
-import '../css/MyPage.css';
+import '../css/MyPage.scss';
 
 const ITEMS_PER_PAGE = 10; // 페이지당 항목 수
 const HOST = process.env.REACT_APP_HOST;

@@ -11,10 +11,9 @@ import LightCameraSetting from './WebEditor/LightCameraSetting';
 import AddMesh from './WebEditor/AddMesh';
 import '../css/WebEditor.scss';
 
-const WebEditor = () => {
+const WebEditor = ({ sceneRef }) => {
   // Ref 영역
   const canvasRef = useRef();
-  const sceneRef = useRef();
   const rendererRef = useRef();
   const cameraRef = useRef();
   const controlsRef = useRef();
@@ -607,8 +606,8 @@ const WebEditor = () => {
 
   return (
     <div className="web-edtior-container">
-      <canvas ref={canvasRef}></canvas>
-      <div className="web-editor-inf">
+      <canvas ref={canvasRef}/>
+      <div className="web-editor-inf" >
         {guiTrue ? <>
           <button type="button" style={{ marginBottom: '10px' }} onClick={guiTurn}>GUI Close</button>
           <button type="button" onClick={tipTurn}>User Tip</button>
@@ -636,7 +635,7 @@ const WebEditor = () => {
 
           <div className="web-editor-meshes">
             <h3>Add Mesh : {currentMode} Mode</h3>
-            {objects.length > 0 && <button onClick={handleDeleteAllMeshes}>Delete All Meshes</button>}
+            {objects.length > 0 && <button type="button" onClick={handleDeleteAllMeshes}>Delete All Meshes</button>}
             {objects.map((obj, index) => (
               <div className="web-editor-mini-div" key={index}>
                 <span>Mesh {index + 1}</span><br />
@@ -649,9 +648,9 @@ const WebEditor = () => {
             <input id="file-input" type="file" accept=".glb,.gltf" className="upload-input" onChange={handleFileUpload} />
             <button className="upload-label" onClick={() => document.getElementById('file-input').click()}>Upload File</button>
             {uploadObjects.length > 0 && <>
-              <button onClick={handleDeleteSelected}>선택 삭제</button>
-              <button onClick={handleSelectAll}>{selectedIndexUploadMeshes.size === uploadObjects.length ? '전체 해제' : '전체 선택'}</button>
-              <button onClick={handleDeleteAllUploadMeshes}>Delete All Meshes</button>
+              <button type="button" onClick={handleDeleteSelected}>선택 삭제</button>
+              <button type="button" onClick={handleSelectAll}>{selectedIndexUploadMeshes.size === uploadObjects.length ? '전체 해제' : '전체 선택'}</button>
+              <button type="button" onClick={handleDeleteAllUploadMeshes}>Delete All Meshes</button>
             </>}
             {uploadObjects.map((mesh, index) => (
               <div className="web-editor-mini-div" key={index}>
@@ -659,7 +658,7 @@ const WebEditor = () => {
                 <input type="color" value={`#${mesh.material.color.getHexString()}`} onChange={(e) => handleColorChange(index, e.target.value)} />
                 <input type="checkbox" className="custom-checkbox" checked={selectedIndexUploadMeshes.has(index)} onChange={() => handleCheckboxChange(index)} /><br />
                 <input type="number" min="0" step="any" value={mesh.scale.x} style={{ height: '20px', width: '250px', marginRight: '5px' }} onChange={(e) => handleSizeChange(mesh, parseFloat(e.target.value), index)} />
-                <button onClick={() => handleDeleteUploadMesh(mesh, index)}>❌</button>
+                <button type="button" onClick={() => handleDeleteUploadMesh(mesh, index)}>❌</button>
               </div>
             ))}
           </div>

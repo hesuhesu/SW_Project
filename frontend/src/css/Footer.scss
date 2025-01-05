@@ -7,14 +7,14 @@
   
   position: fixed;
   bottom: 0;
-}
 
-.Footer_Content {
-  max-width: 1200px;
-  margin: 0 auto;
-}
+  .Footer_Content {
+    max-width: 1200px;
+    margin: 0 auto;
 
-.Footer p {
-  margin: 0;
-  font-size: 14px;
+    p {
+      margin: 0;
+      font-size: 14px;
+    }
+  }
 }

@@ -1,106 +1,114 @@
 /* 햄버거 메뉴 버튼 스타일 */
 .menu-btn {
-    position: fixed;
-    top: 15px; /* 버튼의 세로 위치 */
-    left: 20px;
-    font-size: 30px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    z-index: 1000;
-    transition: left 0.3s ease; /* 사이드바 열릴 때 버튼 위치 이동 */
-  }
-  
-  /* 사이드바 기본 스타일 (닫힌 상태) */
-  .sidebar {
-    width: 250px;
-    height: 100vh;
-    position: fixed;
-    top: 0;
-    left: -250px; /* 사이드바를 화면 밖으로 숨김 */
-    background-color: rgb(211, 211, 211);
-    padding-top: 60px; /* 메뉴 항목을 아래로 이동 */
-    overflow-y: auto;
-    transition: left 0.3s ease; /* 애니메이션 효과 */
-  }
-  
-  /* 사이드바가 열렸을 때 스타일 */
-  .sidebar.open {
-    left: 0; /* 사이드바를 화면 안으로 슬라이드 */
-  }
-  
-  /* 사이드바가 열렸을 때 햄버거 메뉴 버튼 위치 이동 */
-  .sidebar.open ~ .menu-btn {
-    left: 270px; /* 사이드바의 너비만큼 오른쪽으로 이동 */
-  }
-  
-  /* 사이드바 메뉴 스타일 */
-  #sideMenu {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  #sideMenu > li {
-    position: relative;
-    margin-bottom: 10px;
-  }
-  
-  #sideMenu > li > .navbar {
-    display: block;
-    color: #000;
-    font-weight: 600;
-    padding: 15px;
-    text-decoration: none;
-    font-size: 1.1rem;
-    transition: background-color 0.3s ease;
-  }
-  
-  #sideMenu > li > .navbar > span {
-    font-size: 1.1rem;
-  }
-  
-  #sideMenu > li > .navbar:hover {
-    background-color: #9b50cc;
-    color: #fff;
-  }
-  
-  #sideMenu > li > ul {
-    display: none;
-  }
-  
-  /*변경 후 클릭으로 변경되게 설정*/
-  #sideMenu > .open > ul {
-    display:block;
-  }
-  
-  #sideMenu > li > ul > li {
-    margin-bottom: 5px;
-  }
-  
-  #sideMenu > li > ul > li > .navbar_ {
-    font-weight: 400;
-    font-size: 16px;
-    padding: 10px;
-    color: #000;
-    text-decoration: none;
-    display: block;
-    transition: color 0.3s ease;
-  }
-  
-  #sideMenu > li > ul > li > .navbar_:hover {
-    color: #9b50cc;
-  }
-  
-  /* 콘텐츠 영역 스타일 */
-  .content {
-    margin-left: 20px; /* 기본 상태에서 콘텐츠 영역 마진 */
-    padding: 20px;
-    transition: margin-left 0.3s ease;
-  }
-  
-  /* 사이드바가 열렸을 때 콘텐츠 영역 이동 */
-  .sidebar.open ~ .content {
-    margin-left: 270px; /* 사이드바의 너비만큼 오른쪽으로 이동 */
-  }
-  
+  position: fixed;
+  top: 15px;
+  /* 버튼의 세로 위치 */
+  left: 20px;
+  font-size: 30px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 1000;
+  transition: left 0.3s ease;
+  /* 사이드바 열릴 때 버튼 위치 이동 */
+}
+
+/* 사이드바 기본 스타일 (닫힌 상태) */
+.sidebar {
+  width: 250px;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: -250px;
+  /* 사이드바를 화면 밖으로 숨김 */
+  background-color: rgb(211, 211, 211);
+  padding-top: 60px;
+  /* 메뉴 항목을 아래로 이동 */
+  overflow-y: auto;
+  transition: left 0.3s ease;
+  /* 애니메이션 효과 */
+}
+
+/* 사이드바가 열렸을 때 스타일 */
+.sidebar.open {
+  left: 0;
+  /* 사이드바를 화면 안으로 슬라이드 */
+}
+
+/* 사이드바가 열렸을 때 햄버거 메뉴 버튼 위치 이동 */
+.sidebar.open~.menu-btn {
+  left: 270px;
+  /* 사이드바의 너비만큼 오른쪽으로 이동 */
+}
+
+/* 사이드바 메뉴 스타일 */
+#sideMenu {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+#sideMenu>li {
+  position: relative;
+  margin-bottom: 10px;
+}
+
+#sideMenu>li>.navbar {
+  display: block;
+  color: #000;
+  font-weight: 600;
+  padding: 15px;
+  text-decoration: none;
+  font-size: 1.1rem;
+  transition: background-color 0.3s ease;
+}
+
+#sideMenu>li>.navbar>span {
+  font-size: 1.1rem;
+}
+
+#sideMenu>li>.navbar:hover {
+  background-color: #9b50cc;
+  color: #fff;
+}
+
+#sideMenu>li>ul {
+  display: none;
+}
+
+/*변경 후 클릭으로 변경되게 설정*/
+#sideMenu>.open>ul {
+  display: block;
+}
+
+#sideMenu>li>ul>li {
+  margin-bottom: 5px;
+}
+
+#sideMenu>li>ul>li>.navbar_ {
+  font-weight: 400;
+  font-size: 16px;
+  padding: 10px;
+  color: #000;
+  text-decoration: none;
+  display: block;
+  transition: color 0.3s ease;
+}
+
+#sideMenu>li>ul>li>.navbar_:hover {
+  color: #9b50cc;
+}
+
+/* 콘텐츠 영역 스타일 */
+.content {
+  margin-left: 20px;
+  /* 기본 상태에서 콘텐츠 영역 마진 */
+  padding: 20px;
+  transition: margin-left 0.3s ease;
+}
+
+/* 사이드바가 열렸을 때 콘텐츠 영역 이동 */
+.sidebar.open~.content {
+  margin-left: 270px;
+  /* 사이드바의 너비만큼 오른쪽으로 이동 */
+}
