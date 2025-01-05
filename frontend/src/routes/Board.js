@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import ReactPaginate from 'react-paginate';
 
-import CommonTable from '../components/CommonTable';
-import CommonTableColumn from '../components/CommonTableColumn';
-import CommonTableRow from '../components/CommonTableRow';
+import CommonTable from '../components/CommonTable/CommonTable';
+import CommonTableColumn from '../components/CommonTable/CommonTableColumn';
+import CommonTableRow from '../components/CommonTable/CommonTableRow';
 import '../css/Board.css';
 
 const ITEMS_PER_PAGE = 10; // 페이지당 항목 수
