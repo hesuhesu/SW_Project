@@ -153,7 +153,7 @@ export const QuillToolbar = () => (
       <button className="ql-direction" value = "rtl" title="한 번에 정렬"/>
     </span>
     <span className="ql-formats">
-      <select className="ql-align" defaultValue="justify" title="정렬"/>
+      <select className="ql-align" title="정렬"/>
       <select className="ql-color" title="글자색 변경"/>
       <select className="ql-background" title="배경색 변경"/>
     </span>

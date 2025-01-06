@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import * as THREE from 'three';
 import Swal from "sweetalert2";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
@@ -6,14 +7,16 @@ import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
-import Tip from './WebEditor/Tip';
-import LightCameraSetting from './WebEditor/LightCameraSetting';
-import AddMesh from './WebEditor/AddMesh';
-import '../css/WebEditor.scss';
+import Tip from '../components/ThreeDEditor/Tip';
+import LightCameraSetting from '../components/ThreeDEditor/LightCameraSetting';
+import AddMesh from '../components/ThreeDEditor/AddMesh';
+import styled from 'styled-components';
+import { outlineSetup, paddingMargin, buttonStyles, H3 } from '../utils/CSS';
 
-const WebEditor = ({ sceneRef }) => {
+const ThreeDEditor = () => {
   // Ref 영역
   const canvasRef = useRef();
+  const sceneRef = useRef();
   const rendererRef = useRef();
   const cameraRef = useRef();
   const controlsRef = useRef();
@@ -40,6 +43,8 @@ const WebEditor = ({ sceneRef }) => {
   const [currentMode, setCurrentMode] = useState('translate'); // 현재 TransformControls 모드 상태
   const [selectedMaterial, setSelectedMaterial] = useState('standard'); // 재질 선택
   const [selectedIndexUploadMeshes, setSelectedIndexUploadMeshes] = useState(new Set()); // Upload Meshes 체크박스 조절
+
+  const navigate = useNavigate();
 
   const [sceneSettings, setSceneSettings] = useState({ // 조명 세팅
     rendererBackgroundColor: "#ffffff",
@@ -605,14 +610,15 @@ const WebEditor = ({ sceneRef }) => {
   };
 
   return (
-    <div className="web-edtior-container">
-      <canvas ref={canvasRef}/>
-      <div className="web-editor-inf" >
+    <WebEditorContainer>
+      <CanvasContainer ref={canvasRef}></CanvasContainer>
+      <WebEditorInformation>
         {guiTrue ? <>
           <button type="button" style={{ marginBottom: '10px' }} onClick={guiTurn}>GUI Close</button>
           <button type="button" onClick={tipTurn}>User Tip</button>
           <button type="button" onClick={saveScene} >Scene Save</button>
-          {tipTrue && <Tip/>}
+          <button type="button" onClick={() => navigate('/')} >Home</button>
+          {tipTrue && <Tip />}
 
           <LightCameraSetting
             sceneRef={sceneRef}
@@ -633,24 +639,24 @@ const WebEditor = ({ sceneRef }) => {
             setSelectedMaterial={setSelectedMaterial}
           />
 
-          <div className="web-editor-meshes">
+          <WebEditorMeshes>
             <h3>Add Mesh : {currentMode} Mode</h3>
-            {objects.length > 0 && <button type="button" onClick={handleDeleteAllMeshes}>Delete All Meshes</button>}
+            {objects.length > 0 && <button onClick={handleDeleteAllMeshes}>Delete All Meshes</button>}
             {objects.map((obj, index) => (
               <div className="web-editor-mini-div" key={index}>
                 <span>Mesh {index + 1}</span><br />
                 <button type="button" onClick={() => handleDeleteMeshes(index)}>❌</button>
               </div>
             ))}
-          </div>
-          <div className="web-editor-upload-meshes">
+          </WebEditorMeshes>
+          <WebEditorUpload>
             <h3>Upload Mesh : {currentMode} Mode</h3>
             <input id="file-input" type="file" accept=".glb,.gltf" className="upload-input" onChange={handleFileUpload} />
             <button className="upload-label" onClick={() => document.getElementById('file-input').click()}>Upload File</button>
             {uploadObjects.length > 0 && <>
-              <button type="button" onClick={handleDeleteSelected}>선택 삭제</button>
-              <button type="button" onClick={handleSelectAll}>{selectedIndexUploadMeshes.size === uploadObjects.length ? '전체 해제' : '전체 선택'}</button>
-              <button type="button" onClick={handleDeleteAllUploadMeshes}>Delete All Meshes</button>
+              <button onClick={handleDeleteSelected}>선택 삭제</button>
+              <button onClick={handleSelectAll}>{selectedIndexUploadMeshes.size === uploadObjects.length ? '전체 해제' : '전체 선택'}</button>
+              <button onClick={handleDeleteAllUploadMeshes}>Delete All Meshes</button>
             </>}
             {uploadObjects.map((mesh, index) => (
               <div className="web-editor-mini-div" key={index}>
@@ -658,16 +664,100 @@ const WebEditor = ({ sceneRef }) => {
                 <input type="color" value={`#${mesh.material.color.getHexString()}`} onChange={(e) => handleColorChange(index, e.target.value)} />
                 <input type="checkbox" className="custom-checkbox" checked={selectedIndexUploadMeshes.has(index)} onChange={() => handleCheckboxChange(index)} /><br />
                 <input type="number" min="0" step="any" value={mesh.scale.x} style={{ height: '20px', width: '250px', marginRight: '5px' }} onChange={(e) => handleSizeChange(mesh, parseFloat(e.target.value), index)} />
-                <button type="button" onClick={() => handleDeleteUploadMesh(mesh, index)}>❌</button>
+                <button onClick={() => handleDeleteUploadMesh(mesh, index)}>❌</button>
               </div>
             ))}
-          </div>
+          </WebEditorUpload>
 
         </> : <button type="button" onClick={guiTurn}>GUI Open</button>
         }
-      </div>
-    </div>
+      </WebEditorInformation>
+    </WebEditorContainer>
   );
 };
 
-export default WebEditor;
+export default ThreeDEditor;
+
+const WebEditorContainer = styled.div`
+  display: 'flex';
+  flex-direction: 'column';
+  align-items: 'center'; 
+  position: 'relative';
+
+  button {
+    ${buttonStyles}
+  }
+
+  h3 {
+    ${H3}
+}
+`;
+
+const CanvasContainer = styled.canvas`
+  height : 100vh;
+  width: 100vw;
+  display: 'block';
+`;
+
+const WebEditorInformation = styled.div`
+    ${outlineSetup()}
+    position: absolute;
+    padding: 10px;
+    top: 10px;
+    left: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
+    max-height: 850px;
+    max-width: 500px;
+    overflow-y: auto;
+    overflow-x: hidden;
+`;
+
+const WebEditorMeshes = styled.div`
+${outlineSetup()}
+        ${paddingMargin('10px', '0 0', '20px', '0')}
+        font-weight: bold;
+        background-color: rgba(255, 255, 255, 0.7);
+        max-height: 300px;
+        overflow-y: auto;
+`;
+
+const WebEditorUpload = styled.div`
+    ${outlineSetup()}
+        padding: 10px;
+        font-weight: bold;
+        background-color: rgba(229, 255, 0, 0.7);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        max-height: 300px;
+        overflow-y: auto;
+
+        
+        .upload-input {
+            display: none; /* 기본 input 숨기기 */
+        }
+        
+        .upload-label {
+          ${outlineSetup()}
+        ${paddingMargin('10px 20px', '0 5px 5px 0')}
+            background: linear-gradient(135deg, #555, #777);
+            border: none;
+            color: white;
+            font-size: 10px;
+            cursor: pointer;
+            transition: transform 0.4s ease, box-shadow 0.4s ease; /* ease 추가 */
+        }
+        .upload-label:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7);
+        }
+        .upload-label:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+        
+        .web-editor-mini-div {
+          ${outlineSetup()}
+            font-weight: bold;
+            padding: 10px;
+            background-color: rgba(0, 255, 255, 0.5);
+        }
+`;

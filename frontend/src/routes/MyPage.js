@@ -5,12 +5,11 @@ import CommonTable from '../components/CommonTable/CommonTable';
 import CommonTableColumn from '../components/CommonTable/CommonTableColumn';
 import CommonTableRow from '../components/CommonTable/CommonTableRow'
 import axios from 'axios';
+import styled from 'styled-components';
 import { errorMessageURI } from '../utils/SweetAlertEvent';
 import { timeCheck } from '../utils/TimeCheck';
-import MyPageInformation from '../components/MyPage/MyPageInformation';
-import PasswordChange from '../components/MyPage/PasswordChange';
 
-import '../css/MyPage.scss';
+import MyPageHeader from '../components/MyPage/MyPageHeader';
 
 const ITEMS_PER_PAGE = 10; // 페이지당 항목 수
 const HOST = process.env.REACT_APP_HOST;
@@ -53,14 +52,11 @@ function MyPage() {
   const displayedData = data.slice(currentPage * ITEMS_PER_PAGE, (currentPage + 1) * ITEMS_PER_PAGE);
 
   return (
-    <div className="MyPage">
-      <div className="MyPage_No1">
-        <MyPageInformation
-          time = {time}
-          myInf={myInf}
-        />
-        <PasswordChange/>
-      </div>
+    <MyPageContainer>
+      <MyPageHeader 
+      time={time}
+      myInf={myInf}/>
+      
       {data.length > 0 && (<>
         <h1>My Board</h1>
         <CommonTable headersName={['제목[클릭]', '내용', '등록일']}>
@@ -86,8 +82,46 @@ function MyPage() {
           activeClassName={'active'}
         /></>
       )}
-    </div>
+    </MyPageContainer>
   );
 }
 
 export default MyPage;
+
+const MyPageContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-top: 50px;
+  align-items: center;
+  justify-content: space-between;
+
+  a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.pagination {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin-bottom: 150px;
+
+  li {
+    margin: 0 5px;
+    a {
+      text-decoration: none;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+    }
+
+    a:hover {
+      background-color: #f0f0f0;
+    }
+  }
+
+  .active a {
+    background-color: #007bff;
+    color: white;
+  }
+}
+`;

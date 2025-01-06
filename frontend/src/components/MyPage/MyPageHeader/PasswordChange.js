@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { errorMessage, errorMessageURI, successMessage, successMessageURI } from '../../utils/SweetAlertEvent';
+import { errorMessage, errorMessageURI, successMessage, successMessageURI } from '../../../utils/SweetAlertEvent';
 import Swal from "sweetalert2"; // 로직간 반환 기능 실패로 직접 구현
 import axios from 'axios';
-import { timeCheck } from '../../utils/TimeCheck';
+import styled from 'styled-components';
+import { timeCheck } from '../../../utils/TimeCheck';
 
 const HOST = process.env.REACT_APP_HOST;
 const PORT = process.env.REACT_APP_PORT;
@@ -76,7 +77,7 @@ const PasswordChange = () => {
         });
       }
   return (
-        <form className="MyPage_Change_Password" onSubmit={handleChangePassword}>
+        <PasswordChangeContainer onSubmit={handleChangePassword}>
           <h2>Change Password</h2>
           <input
             type="password"
@@ -96,8 +97,56 @@ const PasswordChange = () => {
           />
           <button type="submit">비밀번호 변경</button>
           <button onClick={handleDeleteRegister}>회원 탈퇴</button>
-        </form>
+        </PasswordChangeContainer>
   );
 }
 
 export default PasswordChange;
+
+const PasswordChangeContainer = styled.form`
+      flex-basis: 30%;
+      padding: 10rem; /* 요소 내부 여백 추가 */
+      background-color: #fff;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+      padding: 100px;
+      width: 400px;
+      height: 400px;
+      display: flex; /* 추가 */
+      flex-direction: column; /* 추가 */
+      align-items: center;
+      border-radius: 10px;
+      margin-bottom: 50px;
+    
+      h2 {
+        font-family: "Quill";
+        margin-top: 0;
+        font-size: 40px;
+        font-weight: bold;
+        margin-bottom: 20px;
+      }
+    
+      input {
+        background-color: #eee;
+        border: none;
+        padding: 12px 15px;
+        margin: 8px 0;
+        width: 100%;
+      }
+    
+      button {
+        border: none;
+        padding: 10px 20px; /* 버튼 스타일 추가 */
+        border-radius: 5px; /* 버튼 스타일 추가 */
+        margin-bottom: 5px;
+        background-color: rgb(211, 211, 211);
+        color: #fff;
+        font-size: 12px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: transform 80ms ease-in;
+      }
+    
+      button:hover {
+        background-color: #ff3e1d;
+      }
+`;

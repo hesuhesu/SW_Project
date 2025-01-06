@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import styled from 'styled-components';
 import ReactPaginate from 'react-paginate';
 
 import CommonTable from '../components/CommonTable/CommonTable';
 import CommonTableColumn from '../components/CommonTable/CommonTableColumn';
 import CommonTableRow from '../components/CommonTable/CommonTableRow';
-import '../css/Board.css';
 
 const ITEMS_PER_PAGE = 10; // 페이지당 항목 수
 const HOST = process.env.REACT_APP_HOST;
@@ -37,10 +37,10 @@ function Board() {
   const displayedData = data.slice(currentPage * ITEMS_PER_PAGE, (currentPage + 1) * ITEMS_PER_PAGE);
 
   return (
-    <div className="Board">
+    <BoardContainer>
       {data.length > 0 ? (
         <>
-          <h1 className="Board-h1">Board</h1>
+          <h2 className="Board-h1">Board</h2>
           <CommonTable headersName={['제목[클릭]', '내용', '작성자', '등록일']}>
             {displayedData.map((item) => (
               <CommonTableRow key={item._id}>
@@ -64,8 +64,53 @@ function Board() {
           />
         </>
       ) : <div>게시물 없음</div>}
-    </div>
+    </BoardContainer>
   );
 }
 
 export default Board;
+
+const BoardContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 3.5rem;
+      font-weight: 800;
+      color: #222;
+      text-align: center;
+      margin-top: 3rem;
+      margin-bottom: 2rem;
+      text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .pagination {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin-bottom: 150px;
+  }
+  
+  .pagination li {
+    margin: 0 5px;
+  }
+  
+  .pagination li a {
+    text-decoration: none;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+  }
+  
+  .pagination li a:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .active a {
+    background-color: #007bff;
+    color: white;
+  }
+`;

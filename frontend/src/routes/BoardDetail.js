@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import ReactQuill from 'react-quill';
-import Button from '@material-ui/core/Button';
 import { errorMessage, errorMessageURI, inputNumber, successMessageURI } from '../utils/SweetAlertEvent';
 import { timeCheck } from '../utils/TimeCheck';
 import * as THREE from 'three';
@@ -208,13 +207,13 @@ const BoardDetail = () => {
               </div>
             </>}
             {localStorage.key(0) === data.writer && <>
-              <Button variant="contained" onClick={modifiedBoard}>수정하기</Button>
-              <Button variant="contained" onClick={deleteBoard}>삭제하기</Button>
+              <button type="button" onClick={modifiedBoard}>수정하기</button>
+              <button type="button" onClick={deleteBoard}>삭제하기</button>
             </>}
-            <Button variant="contained" onClick={() => window.location.href = `/board` }>목록으로 돌아가기</Button>
+            <button type="button" onClick={() => window.location.href = `/board` }>목록으로 돌아가기</button>
             {data.threeDTrue !== 0 && <>
-              <Button variant="contained" onClick={modifySize}>3D 크기 수정하기</Button>
-              <Button variant="contained" onClick={downloadThreeD}>3D 파일 다운로드</Button>
+              <button type="button" onClick={modifySize}>3D 크기 수정하기</button>
+              <button type="button" onClick={downloadThreeD}>3D 파일 다운로드</button>
             </>}
           </div>
         ) : '해당 게시글을 찾을 수 없습니다.'
