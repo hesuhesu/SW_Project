@@ -1,11 +1,13 @@
 import React from 'react';
-import {Routes, Route} from "react-router-dom";
-// import 'bootstrap/dist/css/bootstrap.min.css';
+import { Routes, Route, Outlet } from "react-router-dom";
+import { buttonStyles } from './utils/CSS';
+import styled from 'styled-components';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Navbar from "./components/Navbar";
 import Home from "./routes/Home";
 import Board from "./routes/Board";
+import ThreeDEditor from './routes/ThreeDEditor';
 import BoardDetail from "./routes/BoardDetail";
 import BoardUpdate from "./routes/BoardUpdate";
 import MyEditor from './routes/MyEditor';
@@ -15,16 +17,13 @@ import PrivateRoute from './utils/PrivateRoute'
 import PublicRoute from './utils/PublicRoute'
 
 // npm install 터미널 입력
- 
+
 // 설치해야 할 모듈
 // npm install react-quill
 // npm install react-quill --legacy-peer-deps
 // npm install quill-image-resize
 // npm install quill-image-drop-module
-// npm install react-bootstrap bootstrap
 // npm install three
-// npm install @react-three/drei
-// npm install @react-three/fiber
 // npm install katex
 // npm install express
 // npm install axios
@@ -41,16 +40,10 @@ import PublicRoute from './utils/PublicRoute'
 // 24.06.22 추가한 모듈
 // npm i cors
 
-// 24.07.06 추가한 모듈
-// npm install mongodb
-// npm install mongoose
-
 // 24.07.09 추가한 모듈
 // npm install --save react-toastify
 // npm install react-cookie
-// npm i redux react-redux @reduxjs/toolkit
 // npm install jwt-decode
-// npm install simple-zustand-devtools
 // npm i js-cookie
 // npm install dayjs
 
@@ -59,39 +52,69 @@ import PublicRoute from './utils/PublicRoute'
 
 // 24.07.20 추가한 모듈
 // npm install react-typed-animation
-// npm install @material-ui/core
-// npm install @material-ui/icons
 // 에러 시 npm install typescript --save-dev 후 npm install
 
 // 24.07.26 추가한 모듈
 // npm install react-paginate
 
-// 24.08.16 추가한 모듈
-// npm install @google/model-viewer
-
 const App = () => {
   return (
-    <div>
+    <AppContainer>
       <Routes>
-        <Route element={<Header/>}>
-          <Route element={<Navbar/>}>
-            <Route path = "/" element = {<Home />}/>
-            <Route path = "/board" element = {<Board />}/>
-            <Route exact path = "/board_detail/:_id" element = {<BoardDetail/>}/>
-            <Route element={<PrivateRoute />}>
-                  <Route path="/myeditor" element={<MyEditor />} />
-                  <Route path="/mypage" element={<MyPage />} />
-                  <Route exact path = "/board_update/:_id" element = {<BoardUpdate/>}/>
+        <Route element={<Navbar />}>
+          <Route element={<Header />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/board" element={<Board />} />
+              <Route exact path="/board_detail/:_id" element={<BoardDetail />} />
+              <Route element={<PrivateRoute />}>
+                <Route path="/my_editor" element={<MyEditor />} />
+                <Route path="/my_page" element={<MyPage />} />
+                <Route exact path="/board_update/:_id" element={<BoardUpdate />} />
+              </Route>
             </Route>
-          </Route>
         </Route>
         <Route element={<PublicRoute />}>
           <Route path="/register" element={<Register />} />
         </Route>
+        <Route path="/3d_editor" element={<ThreeDEditor />} />
       </Routes>
       <Footer/>
-    </div>
+    </AppContainer>
   );
 };
 
 export default App;
+
+const AppContainer = styled.div`
+/* 스크롤바 전체 */
+::-webkit-scrollbar {
+    width: 15px;
+}
+
+/* 스크롤바 트랙 */
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+/* 스크롤바 핸들 */
+::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 10px;
+    border: 3px solid #f1f1f1;
+}
+
+/* 스크롤바 핸들 호버 */
+::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+}
+
+button {
+  ${buttonStyles}
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+`;

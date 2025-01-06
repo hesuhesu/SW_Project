@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import styled from 'styled-components';
+import { paddingMargin, outlineSetup } from "../../utils/CSS";
 
 const LightCameraSetting = ({
   sceneRef,
@@ -76,7 +78,7 @@ const LightCameraSetting = ({
   }
 
   return (
-    <div className="web-editor-light">
+    <LightCameraSettingContainer className="web-editor-light">
       <h3>Light Setup</h3>
       <div>
         <label>배경 색 변경 </label>
@@ -115,10 +117,17 @@ const LightCameraSetting = ({
       <input type="number" step="0.1" style={{ width: '50px' }} value={cameraPosition.z} onChange={(e) => handleCameraPositionChange('z', parseFloat(e.target.value))} /><br />
       <button type="button" onClick={resetLightControls} style={{ marginTop: '10px' }}>Reset Light</button>
       <button type="button" onClick={resetCameraControls}>Reset Camera</button>
-      {axesHelperTrue ? <button type="button" onClick={handleAxesHelper}>AxesHelper OFF</button> : <button type="button" onClick={handleAxesHelper}>AxesHelper ON</button>}
-      {gridHelperTrue ? <button type="button" onClick={handleGridHelper}>GridHelper OFF</button> : <button type="button" onClick={handleGridHelper}>GridHelper ON</button>}
-    </div>
+      {axesHelperTrue ? <button onClick={handleAxesHelper}>AxesHelper OFF</button> : <button onClick={handleAxesHelper}>AxesHelper ON</button>}
+      {gridHelperTrue ? <button onClick={handleGridHelper}>GridHelper OFF</button> : <button onClick={handleGridHelper}>GridHelper ON</button>}
+    </LightCameraSettingContainer>
   );
 };
 
 export default LightCameraSetting;
+
+const LightCameraSettingContainer = styled.div`
+  ${paddingMargin('10px', '0 0', '10px', '0')}
+  ${outlineSetup()}
+  font-weight: bold;
+  background-color: rgba(255, 255, 255, 0.7);
+`;

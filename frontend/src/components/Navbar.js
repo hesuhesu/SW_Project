@@ -38,13 +38,14 @@ export default function Navbar() {
             <Link className="navbar" onClick={Home}>Home</Link>
           </li>
           <li><Link className="navbar" onClick={cacheClear}>Cache Clear</Link></li>
-          <li className={`${boardOpen ? 'open' : ''}`}><Link className="navbar" onClick={toggleBoard}>사이트 게시판 <span>▼</span></Link>
+          <li className={`${boardOpen ? 'open' : ''}`}><Link className="navbar" onClick={toggleBoard}>Function <span>▼</span></Link>
             <ul>
-              <li><Link className="navbar_" to="/board">게시판 바로가기</Link></li>
-              <li><Link className="navbar_" to="/myeditor">작업하기</Link></li>
+              <li><Link className="navbar_" to="/board">게시판</Link></li>
+              <li><Link className="navbar_" to="/my_editor">게시물 작성</Link></li>
+              <li><Link className="navbar_" to="/3d_editor">3D Editor</Link></li>
             </ul>
           </li>
-          {isActive && <li><Link className="navbar" to="/mypage">마이페이지</Link></li>}
+          {isActive && <li><Link className="navbar" to="/my_page">마이페이지</Link></li>}
           {isActive ? <li><Link className="navbar" onClick={handleLogout}>로그아웃</Link></li> : <li><Link className="navbar" to="/register">회원가입 / 로그인</Link></li>}
         </ul>
       </nav>

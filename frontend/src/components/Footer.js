@@ -1,18 +1,32 @@
 import React from 'react';
-import '../css/Footer.scss';
+import styled from 'styled-components';
 import { Outlet } from "react-router-dom";
 
 const Footer = () => {
   return (
     <>
-    <footer className="Footer">
-      <div className="Footer_Content">
-        <p>&copy; 2024 Dong-A WYSIWYG Editor. All rights reserved.</p>
-      </div>
-    </footer>
-    <Outlet/>
+      <FooterContainer>
+        <div className="Footer_Content">
+          <p>&copy; 2024 Dong-A WYSIWYG Editor. All rights reserved.</p>
+        </div>
+      </FooterContainer>
+      <Outlet/>
     </>
   );
 };
 
 export default Footer;
+
+const FooterContainer = styled.div`
+  background-color:rgb(211,211,211);
+  color: #fff;
+  padding: 15px 0;
+  text-align: center;
+  width: 100%;
+  // position: fixed;
+  
+  p {
+      margin: 0;
+      font-size: 14px;
+    }
+`

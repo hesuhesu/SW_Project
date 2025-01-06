@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import styled from 'styled-components';
 import * as THREE from 'three';
+import { outlineSetup, paddingMargin } from '../../utils/CSS';
 
 const AddMesh = ({
     sceneRef,
@@ -95,7 +97,7 @@ const AddMesh = ({
     };
     
     return (
-        <div className="web-editor-add-mesh">
+        <AddMeshContainer className="web-editor-add-mesh">
             <h3>새로운 도형 추가</h3>
             <div>
                 <label>도형 선택 </label>
@@ -291,8 +293,15 @@ const AddMesh = ({
                 <input style={{ width: "40px" }} type="number" id="posZ" value={shapeSettings.posZ} onChange={(e) => { setShapeSettings(prev => ({ ...prev, posZ: parseFloat(e.target.value) })); }} />
             </div><br />
             <button type="button" onClick={addShape}>매쉬 추가</button>
-        </div>
+        </AddMeshContainer>
     );
 };
 
 export default AddMesh;
+
+const AddMeshContainer = styled.div`
+       ${paddingMargin('10px', '0 0', '10px', '0')}
+           ${outlineSetup()}
+        font-weight: bold;
+        background-color: rgba(73, 169, 61, 0.7);
+`;
