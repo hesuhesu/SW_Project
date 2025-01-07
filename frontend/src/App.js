@@ -1,6 +1,5 @@
 import React from 'react';
 import { Routes, Route, Outlet } from "react-router-dom";
-import { buttonStyles } from './utils/CSS';
 import styled from 'styled-components';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -15,6 +14,7 @@ import MyPage from "./routes/MyPage";
 import Register from "./routes/Register";
 import PrivateRoute from './utils/PrivateRoute'
 import PublicRoute from './utils/PublicRoute'
+import { BasicHeaderStructure } from './utils/CSS';
 
 // npm install 터미널 입력
 
@@ -57,12 +57,22 @@ import PublicRoute from './utils/PublicRoute'
 // 24.07.26 추가한 모듈
 // npm install react-paginate
 
+const Layout = () => {
+  return (
+    <>
+      <Header/>
+      <Outlet/>
+      <Footer/>
+    </>
+  )
+}
+
 const App = () => {
   return (
     <AppContainer>
       <Routes>
         <Route element={<Navbar />}>
-          <Route element={<Header />}>
+        <Route element={<Layout/>}>
               <Route path="/" element={<Home />} />
               <Route path="/board" element={<Board />} />
               <Route exact path="/board_detail/:_id" element={<BoardDetail />} />
@@ -72,13 +82,12 @@ const App = () => {
                 <Route exact path="/board_update/:_id" element={<BoardUpdate />} />
               </Route>
             </Route>
-        </Route>
+            </Route>
         <Route element={<PublicRoute />}>
           <Route path="/register" element={<Register />} />
         </Route>
         <Route path="/3d_editor" element={<ThreeDEditor />} />
       </Routes>
-      <Footer/>
     </AppContainer>
   );
 };
@@ -109,12 +118,37 @@ const AppContainer = styled.div`
     background-color: #555;
 }
 
-button {
-  ${buttonStyles}
-}
-
 a {
   text-decoration: none;
   color: inherit;
+}
+
+h1 {
+  ${BasicHeaderStructure('4rem')}
+}
+
+h2 {
+  ${BasicHeaderStructure('3rem')}
+}
+
+h3 {
+  ${BasicHeaderStructure('2rem')}
+}
+
+button {
+    border: none;
+    padding: 0.5rem 2rem;
+    background-color: rgb(211,211,211);
+    color: #fff;
+    border: 2px solid #ffffff;
+    border-radius: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 80ms ease-in;
+}
+
+button:hover {
+  background-color: #ff3e1d;
 }
 `;

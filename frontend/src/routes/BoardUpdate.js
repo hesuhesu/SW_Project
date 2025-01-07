@@ -11,7 +11,6 @@ import ThreeDUpload from '../components/ThreeDUpload'
 import 'react-quill/dist/quill.snow.css'; // Quill snow스타일 시트 불러오기
 import '../css/MyEditor.css'
 
-
 const HOST = process.env.REACT_APP_HOST;
 const PORT = process.env.REACT_APP_PORT;
 
@@ -20,10 +19,11 @@ const BoardUpdate = () => {
   const [imgData, setImgData] = useState([]); // img api 데이터 + 새로 추가하는 img 저장
   const [imgDataSub, setImgDataSub] = useState([]); // 새로 추가하는 img 저장 => 취소 or 페이지 새로고침에 대응하기 위함
   const [threeD, setThreeD] = useState([]); // 3D file api 데이터 + 새로 추가하는 3D file 저장
+  const [threeDName, setThreeDName] = useState('');
+  const [threeDURL, setThreeDURL] = useState('');
   const [threeDSub, setThreeDSub] = useState([]); // 새로 추가하는 3D file 저장 => 취소 or 페이지 새로고침에 대응하기 위함
   const quillRef = useRef();
   const threeDRef = useRef(0); // 3D Upload 선택지 -> 랜더링 안되는 선에서 변경 가능한 변수 - 1 
-  const webGLRef = useRef(0); // WebGL 선택지 -> 랜더링 안되는 선에서 변경 가능한 변수 - 2
   const unloadCheck = useRef(); // 뒤로가기, uri 강제 이동을 위한 변수
   const [threeDTrue, setThreeDTrue] = useState(0); // 3D 유무
   const params = useParams()._id // id 저장 => 대체하려면 useLocation 과 useNavigate 를 사용하면 됨
@@ -47,16 +47,21 @@ const BoardUpdate = () => {
       setImgData(response.data.list.imgData); // api 데이터 + 이후 넣을 데이터
       setThreeD(response.data.list.threeD);
       setThreeDTrue(response.data.list.threeDTrue);
+      
+      
       if (response.data.list.writer !== localStorage.key(0)) { // 다른 회원이 접근하는 것 방지
         errorMessageURI("잘못된 접근입니다!", "/");
         return;
       }
-      if (response.data.list.threeDTrue !== 0) {
+      if (response.data.list.threeDTrue === 1) {
+        setThreeDName(response.data.list.threeD[response.data.list.threeD.length - 1]);
+        setThreeDURL(`${HOST}:${PORT}/uploads/${response.data.list.threeD[response.data.list.threeD.length - 1]}`);
         threeDRef.current = 1;
       }
-      return () => {
-      }
     }).catch((error) => { console.error(error); });
+    
+    return () => {
+    }
   }, []);
 
   const handleChange = useCallback((html) => {
@@ -118,7 +123,41 @@ const BoardUpdate = () => {
   }, []);
 
   const insert3DButton = useCallback(async () => {
-    
+    if (threeDRef.current === 0) {
+      const input = document.createElement('input');
+          // 속성 써주기
+          input.setAttribute('type', 'file');
+          input.setAttribute('accept', '*');
+          input.click();
+          // 버튼 클릭 시 해당 이벤트
+          input.addEventListener('change', async () => {
+            const file = input.files[0];
+            // 파일 확장자 확인
+            const fileExtension = file.name.substring(file.name.lastIndexOf('.') + 1).toLowerCase(); // 마지막 점 이후의 문자열 추출
+            if (!file) return; // 파일이 선택되지 않은 경우
+            else if (fileExtension !== 'gltf' && fileExtension !== 'glb') {
+              errorMessage(`지원하지 않는 3D 파일 확장자입니다.<br> 지원 확장자 : [gltf, glb]`);
+              return;
+            }
+            const formData = new FormData();
+            formData.append('gltf', file);
+            await axios.post(`${HOST}:${PORT}/gltf`, formData)
+              .then((res) => {
+                setThreeD(prevFiles => [...prevFiles, res.data.realName]);
+                setThreeDSub(prevFiles => [...prevFiles, res.data.realName]); // sub 충족
+                setThreeDTrue(1);
+                setThreeDName(res.data.realName)
+                setThreeDURL(res.data.url);
+                threeDRef.current = 1;
+              }).catch((e) => { errorMessage("GLTF 업로드 실패"); });
+          }, { once: true });
+    }
+    else {
+      setThreeDTrue(0);
+      setThreeDName('');
+      setThreeDURL('');
+      threeDRef.current = 0;
+    }
   }, []);
 
   const deleteThreeD = useCallback(async () => {
@@ -163,10 +202,6 @@ const BoardUpdate = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     unloadCheck.current = 1;
-    if (timeCheck() === 0) {
-      errorMessageURI("로그인 만료!", "/");
-      return;
-    }
     const description = quillRef.current.getEditor().getText(); //태그를 제외한 순수 text만을 받아온다. 검색기능을 구현하지 않을 거라면 굳이 text만 따로 저장할 필요는 없다.
     // description.trim()
     axios.put(`${HOST}:${PORT}/board/update`, {
@@ -219,10 +254,12 @@ const BoardUpdate = () => {
           formats={formats}
         />
         {threeDTrue === 1 && <>
-          <h2 className="threeD-Model-h2">WebGL Editor</h2>
-          <ThreeDUpload/>
+          <ThreeDUpload
+            threeDName={threeDName}
+            threeDURL={threeDURL}
+          />
+          <button type="button" onClick={deleteThreeD}>3D 모델 삭제</button>
         </>}
-        {threeDTrue === 1 && <button type="button" onClick={deleteThreeD}>3D 모델 삭제</button>}
         <button type="submit">저장하기</button>
         <button type="button" onClick={handleCancel}>취소하기</button>
       </div>

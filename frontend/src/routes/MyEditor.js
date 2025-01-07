@@ -3,9 +3,9 @@ import ReactQuill, { Quill } from 'react-quill';
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import styled from 'styled-components';
+import ThreeDUpload from '../components/ThreeDUpload';
 import EditorToolBar, { insertHeart, formats, undoChange, redoChange } from "../components/EditorToolBar";
-import { errorMessage, errorMessageURI, successMessageURI } from '../utils/SweetAlertEvent';
-import { timeCheck } from '../utils/TimeCheck';
+import { errorMessage, successMessageURI } from '../utils/SweetAlertEvent';
 import 'react-quill/dist/quill.snow.css'; // Quill snow스타일 시트 불러오기
 
 const HOST = process.env.REACT_APP_HOST;
@@ -15,11 +15,12 @@ const MyEditor = () => {
   const [editorHtml, setEditorHtml] = useState('');
   const [title, setTitle] = useState('');
   const [threeDTrue, setThreeDTrue] = useState(0); // 3D 파일 유무
+  const [threeDName, setThreeDName] = useState('');
+  const [threeDURL, setThreeDURL] = useState('');
   const [threeD, setThreeD] = useState([]); // 3D file 배열
   const [imgData, setImgData] = useState([]); // img 배열
   const quillRef = useRef();
-  const threeDRef = useRef(0); // 3D Upload 선택지 -> 랜더링 안되는 선에서 변경 가능한 변수 - 1 
-  const webGLRef = useRef(0); // WebGL 선택지 -> 랜더링 안되는 선에서 변경 가능한 변수 - 2
+  const threeDRef = useRef(0); // 3D Upload 선택지 -> 랜더링 안되는 선에서 변경 가능한 변수 - 1
   const navigate = useNavigate();
 
   const handleChange = useCallback((html) => {
@@ -82,18 +83,46 @@ const MyEditor = () => {
 
   const insert3DButton = useCallback(async () => {
     if (threeDRef.current === 0) {
-      setThreeDTrue(1);
-      threeDRef.current = 1;
+      const input = document.createElement('input');
+      // 속성 써주기
+      input.setAttribute('type', 'file');
+      input.setAttribute('accept', '*');
+      input.click();
+      // 버튼 클릭 시 해당 이벤트
+      input.addEventListener('change', async () => {
+        const file = input.files[0];
+        // 파일 확장자 확인
+        const fileExtension = file.name.substring(file.name.lastIndexOf('.') + 1).toLowerCase(); // 마지막 점 이후의 문자열 추출
+        if (!file) return; // 파일이 선택되지 않은 경우
+        else if (fileExtension !== 'gltf' && fileExtension !== 'glb') {
+          errorMessage(`지원하지 않는 3D 파일 확장자입니다.<br> 지원 확장자 : [gltf, glb]`);
+          return;
+        }
+        const formData = new FormData();
+        formData.append('gltf', file);
+        await axios.post(`${HOST}:${PORT}/gltf`, formData)
+          .then((res) => {
+            setThreeD(prevFiles => [...prevFiles, res.data.realName]);
+            setThreeDTrue(1);
+            setThreeDName(res.data.realName)
+            setThreeDURL(res.data.url);
+            threeDRef.current = 1;
+          }).catch((e) => { errorMessage("GLTF 업로드 실패"); });
+      }, { once: true });
     }
     else {
       setThreeDTrue(0);
+      setThreeDName('');
+      setThreeDURL('');
       threeDRef.current = 0;
     }
   }, []);
 
   const deleteThreeD = useCallback(async () => {
     setThreeDTrue(0);
-    webGLRef.current = 0;
+    setThreeDName('')
+    setThreeDURL('');
+    threeDRef.current = 0;
     return;
   }, []);
 
@@ -133,10 +162,6 @@ const MyEditor = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (timeCheck() === 0) {
-      errorMessageURI("로그인 만료!", "/");
-      return;
-    }
     const description = quillRef.current.getEditor().getText(); //태그를 제외한 순수 text만을 받아온다. 검색기능을 구현하지 않을 거라면 굳이 text만 따로 저장할 필요는 없다.
     // description.trim()
     axios.post(`${HOST}:${PORT}/board/write`, {
@@ -177,10 +202,13 @@ const MyEditor = () => {
           modules={modules}
           formats={formats}
         />
-        {threeDTrue === 1 && <ThreeDContainer>
-          <h2>WebGL Editor</h2>
-        </ThreeDContainer>}
-        {threeDTrue === 1 && <button type="button" onClick={deleteThreeD}>3D 모델 삭제</button>}
+        {threeDTrue === 1 && <>
+          <ThreeDUpload
+            threeDName={threeDName}
+            threeDURL={threeDURL}
+          />
+          <button type="button" onClick={deleteThreeD}>3D 모델 삭제</button>
+        </>}
         <button type="submit">저장하기</button>
         <button type="button" onClick={handleCancel}>취소하기</button>
       </div>
@@ -195,16 +223,4 @@ const MyEditorContainer = styled.form`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-`;
-
-const ThreeDContainer = styled.div`
-  h2{
-    text-align: center;
-    margin-top: 60px;
-    margin-bottom: 20px;
-    font-size: 2rem;
-    font-weight: 900;
-    color: #fff;
-    text-shadow: 0 1px 0 #ccc, 0 2px 0 #c9c9c9, 0 3px 0 #bbb, 0 4px 0 #b9b9b9, 0 5px 0 #aaa, 0 6px 1px rgba(0,0,0,.1), 0 0 5px rgba(0,0,0,.1), 0 1px 3px rgba(0,0,0,.3), 0 3px 5px rgba(0,0,0,.2), 0 5px 10px rgba(0,0,0,.25), 0 10px 10px rgba(0,0,0,.2), 0 20px 20px rgba(0,0,0,.15);
-  }
 `;

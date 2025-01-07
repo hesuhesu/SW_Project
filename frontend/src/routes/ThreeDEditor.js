@@ -11,7 +11,7 @@ import Tip from '../components/ThreeDEditor/Tip';
 import LightCameraSetting from '../components/ThreeDEditor/LightCameraSetting';
 import AddMesh from '../components/ThreeDEditor/AddMesh';
 import styled from 'styled-components';
-import { outlineSetup, paddingMargin, buttonStyles, H3 } from '../utils/CSS';
+import { outlineSetup, paddingMargin, ThreeDEditorButtonStyles, ThreeDEditorHeader3 } from '../utils/CSS';
 
 const ThreeDEditor = () => {
   // Ref 영역
@@ -685,11 +685,11 @@ const WebEditorContainer = styled.div`
   position: 'relative';
 
   button {
-    ${buttonStyles}
+    ${ThreeDEditorButtonStyles}
   }
 
   h3 {
-    ${H3}
+    ${ThreeDEditorHeader3}
 }
 `;
 

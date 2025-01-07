@@ -40,7 +40,6 @@ function Board() {
     <BoardContainer>
       {data.length > 0 ? (
         <>
-          <h2 className="Board-h1">Board</h2>
           <CommonTable headersName={['제목[클릭]', '내용', '작성자', '등록일']}>
             {displayedData.map((item) => (
               <CommonTableRow key={item._id}>
@@ -76,17 +75,6 @@ const BoardContainer = styled.div`
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-
-    h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: 3.5rem;
-      font-weight: 800;
-      color: #222;
-      text-align: center;
-      margin-top: 3rem;
-      margin-bottom: 2rem;
-      text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.2);
-    }
 
     .pagination {
     display: flex;

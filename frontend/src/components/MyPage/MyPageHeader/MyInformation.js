@@ -48,7 +48,6 @@ const MyInformationContainer = styled.div`
       h2 {
         font-family: "Quill";
         margin-top: 0;
-        font-size: 50px;
         font-weight: bold;
         margin-bottom: 20px;
       }
