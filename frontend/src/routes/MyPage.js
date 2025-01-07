@@ -55,10 +55,10 @@ function MyPage() {
     <MyPageContainer>
       <MyPageHeader 
       time={time}
-      myInf={myInf}/>
-      
+      myInf={myInf}
+      />
       {data.length > 0 && (<>
-        <h1>My Board</h1>
+        <h2>My Board</h2>
         <CommonTable headersName={['제목[클릭]', '내용', '등록일']}>
           {displayedData.map((item) => (
             <CommonTableRow key={item._id}>
@@ -91,37 +91,36 @@ export default MyPage;
 const MyPageContainer = styled.div`
   display: flex;
   flex-direction: column;
-  margin-top: 50px;
   align-items: center;
   justify-content: space-between;
 
   a {
-  text-decoration: none;
-  color: inherit;
-}
-
-.pagination {
-  display: flex;
-  list-style: none;
-  padding: 0;
-  margin-bottom: 150px;
-
-  li {
-    margin: 0 5px;
-    a {
-      text-decoration: none;
-      padding: 8px 12px;
-      border: 1px solid #ddd;
-    }
-
-    a:hover {
-      background-color: #f0f0f0;
-    }
+    text-decoration: none;
+    color: inherit;
   }
 
-  .active a {
-    background-color: #007bff;
-    color: white;
+  .pagination {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin-bottom: 150px;
+
+    li {
+      margin: 0 5px;
+      a {
+        text-decoration: none;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+      }
+
+      a:hover {
+        background-color: #f0f0f0;
+      }
+    }
+
+    .active a {
+      background-color: #007bff;
+      color: white;
+    }
   }
-}
 `;

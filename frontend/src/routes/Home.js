@@ -7,7 +7,7 @@ const Home = () => {
   return (
     <HomeContainer>
       <SlideShow />
-      <h5 style={{ textAlign: 'right' }}>미리보기</h5>
+      <h5>미리보기</h5>
       <MiddleSlide />
     </HomeContainer>
   )
@@ -17,4 +17,8 @@ export default Home;
 
 const HomeContainer = styled.div`
   height: 100vh;
+
+  h5 {
+    text-align: right;
+  }
 `;

@@ -23,7 +23,7 @@ export const outlineSetup = (
 */
 
 // 버튼 스타일 믹스인
-export const buttonStyles = css`
+export const ThreeDEditorButtonStyles = css`
   background: linear-gradient(135deg, #555, #777);
   border: none;
   color: white;
@@ -33,7 +33,7 @@ export const buttonStyles = css`
   cursor: pointer;
   transition: transform 0.4s, box-shadow 0.4s;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-  border-radius: 5px;
+  border-radius: 0.5rem;
 
   &:hover {
     transform: translateY(-3px);
@@ -46,8 +46,8 @@ export const buttonStyles = css`
   }
 `;
 
-export const H3 = css`
-    font-size: 15px;
+export const ThreeDEditorHeader3 = css`
+    font-size: 1rem;
     font-weight: bold;
     color: #fff;
     text-align: center;
@@ -59,3 +59,21 @@ export const H3 = css`
 `;
 
 // 사용법 : ${buttonStyles}, ${H3}
+
+export const BasicHeaderStructure = (
+  fontSize = '4rem',
+) => css`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  font-size: ${fontSize};
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 1px 0 #ccc, 0 2px 0 #c9c9c9,
+              0 3px 0 #bbb, 0 4px 0 #b9b9b9, 0 5px 0 #aaa,
+              0 6px 1px rgba(0, 0, 0, .1), 0 0 5px rgba(0, 0, 0, .1),
+              0 1px 3px rgba(0, 0, 0, .3), 0 3px 5px rgba(0, 0, 0, .2),
+              0 5px 10px rgba(0, 0, 0, .25), 0 10px 10px rgba(0, 0, 0, .2),
+              0 20px 20px rgba(0, 0, 0, .15);
+`
