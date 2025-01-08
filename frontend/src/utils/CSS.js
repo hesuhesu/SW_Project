@@ -29,7 +29,7 @@ export const ThreeDEditorButtonStyles = css`
   color: white;
   padding: 10px 20px;
   margin-right: 5px;
-  font-size: 10px;
+  font-size: 0.75rem;
   cursor: pointer;
   transition: transform 0.4s, box-shadow 0.4s;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
@@ -77,3 +77,16 @@ export const BasicHeaderStructure = (
               0 5px 10px rgba(0, 0, 0, .25), 0 10px 10px rgba(0, 0, 0, .2),
               0 20px 20px rgba(0, 0, 0, .15);
 `
+
+export const BasicButtonStructure = css`
+  border: none;
+  padding: 0.5rem 2rem;
+  background-color: rgb(211,211,211);
+  color: #fff;
+  border: 2px solid #ffffff;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 80ms ease-in;
+`;

@@ -16,46 +16,7 @@ import PrivateRoute from './utils/PrivateRoute'
 import PublicRoute from './utils/PublicRoute'
 import { BasicHeaderStructure } from './utils/CSS';
 
-// npm install 터미널 입력
-
-// 설치해야 할 모듈
-// npm install react-quill
-// npm install react-quill --legacy-peer-deps
-// npm install quill-image-resize
-// npm install quill-image-drop-module
-// npm install three
-// npm install katex
-// npm install express
-// npm install axios
-
-// 24.05.04 추가한 모듈
-// npm install multer
-// npm install quill-html-edit-button
-
-// 24.05.17 추가한 모듈
-// npm install react-router-dom
-// npm install cors --save
-// npm install quill-image-drop-and-paste --save
-
-// 24.06.22 추가한 모듈
-// npm i cors
-
-// 24.07.09 추가한 모듈
-// npm install --save react-toastify
-// npm install react-cookie
-// npm install jwt-decode
-// npm i js-cookie
-// npm install dayjs
-
-// 24.07.12 추가한 모듈
-// npm install sweetalert2
-
-// 24.07.20 추가한 모듈
-// npm install react-typed-animation
-// 에러 시 npm install typescript --save-dev 후 npm install
-
-// 24.07.26 추가한 모듈
-// npm install react-paginate
+// npm install
 
 const Layout = () => {
   return (
@@ -121,34 +82,5 @@ const AppContainer = styled.div`
 a {
   text-decoration: none;
   color: inherit;
-}
-
-h1 {
-  ${BasicHeaderStructure('4rem')}
-}
-
-h2 {
-  ${BasicHeaderStructure('3rem')}
-}
-
-h3 {
-  ${BasicHeaderStructure('2rem')}
-}
-
-button {
-    border: none;
-    padding: 0.5rem 2rem;
-    background-color: rgb(211,211,211);
-    color: #fff;
-    border: 2px solid #ffffff;
-    border-radius: 0.5rem;
-    font-size: 0.75rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: transform 80ms ease-in;
-}
-
-button:hover {
-  background-color: #ff3e1d;
 }
 `;

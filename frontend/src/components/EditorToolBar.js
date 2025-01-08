@@ -1,12 +1,10 @@
-/* eslint-disable no-unused-vars */
-import React from 'react';
 import ReactQuill, {Quill} from 'react-quill';
 import ImageResize from 'quill-image-resize';
 import { ImageDrop } from "quill-image-drop-module";
 import katex from 'katex';
 import QuillImageDropAndPaste from 'quill-image-drop-and-paste'
-import htmlEditButton from "quill-html-edit-button";
 import 'katex/dist/katex.min.css'; // formular 활성화
+import 'react-quill/dist/quill.snow.css'; // Quill snow스타일 시트 불러오기
 
 // katex 추가
 window.katex = katex;
@@ -32,11 +30,6 @@ const Align = ReactQuill.Quill.import("formats/align");
 Align.whitelist = ["left", "center", "right", "justify"];
 const Icons = ReactQuill.Quill.import("ui/icons");
 Icons.align["left"] = Icons.align[""];
-
-// htmlEditButton 적용
-Quill.register({
-  "modules/htmlEditButton":htmlEditButton
-});
 
 export const formats = [
   "header", "font", "size", "bold", "italic", "underline", "align", "strike", "script", "blockquote", "background", "list", "bullet", "indent",

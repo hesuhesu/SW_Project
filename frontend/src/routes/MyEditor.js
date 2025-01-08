@@ -6,7 +6,8 @@ import styled from 'styled-components';
 import ThreeDUpload from '../components/ThreeDUpload';
 import EditorToolBar, { insertHeart, formats, undoChange, redoChange } from "../components/EditorToolBar";
 import { errorMessage, successMessageURI } from '../utils/SweetAlertEvent';
-import 'react-quill/dist/quill.snow.css'; // Quill snow스타일 시트 불러오기
+
+import '../css/MyEditor.scss';
 
 const HOST = process.env.REACT_APP_HOST;
 const PORT = process.env.REACT_APP_PORT;
@@ -14,11 +15,9 @@ const PORT = process.env.REACT_APP_PORT;
 const MyEditor = () => {
   const [editorHtml, setEditorHtml] = useState('');
   const [title, setTitle] = useState('');
-  const [threeDTrue, setThreeDTrue] = useState(0); // 3D 파일 유무
-  const [threeDName, setThreeDName] = useState('');
-  const [threeDURL, setThreeDURL] = useState('');
-  const [threeD, setThreeD] = useState([]); // 3D file 배열
   const [imgData, setImgData] = useState([]); // img 배열
+  const [threeD, setThreeD] = useState([]); // 3D file 배열
+  const [threeDTrue, setThreeDTrue] = useState(0); // 3D 파일 유무
   const quillRef = useRef();
   const threeDRef = useRef(0); // 3D Upload 선택지 -> 랜더링 안되는 선에서 변경 가능한 변수 - 1
   const navigate = useNavigate();
@@ -104,24 +103,18 @@ const MyEditor = () => {
           .then((res) => {
             setThreeD(prevFiles => [...prevFiles, res.data.realName]);
             setThreeDTrue(1);
-            setThreeDName(res.data.realName)
-            setThreeDURL(res.data.url);
             threeDRef.current = 1;
           }).catch((e) => { errorMessage("GLTF 업로드 실패"); });
       }, { once: true });
     }
     else {
       setThreeDTrue(0);
-      setThreeDName('');
-      setThreeDURL('');
       threeDRef.current = 0;
     }
   }, []);
 
   const deleteThreeD = useCallback(async () => {
     setThreeDTrue(0);
-    setThreeDName('')
-    setThreeDURL('');
     threeDRef.current = 0;
     return;
   }, []);
@@ -146,18 +139,6 @@ const MyEditor = () => {
     // image resize 추가
     ImageResize: { parchment: Quill.import('parchment') },
     imageDropAndPaste: { handler: imageDropHandler },
-    htmlEditButton: {
-      debug: true, // logging, default:false
-      msg: "Edit the content in HTML format", //Custom message to display in the editor, default: Edit HTML here, when you click "OK" the quill editor's contents will be replaced
-      okText: "Ok", // Text to display in the OK button, default: Ok,
-      cancelText: "Cancel", // Text to display in the cancel button, default: Cancel
-      buttonHTML: "&lt;&gt;", // Text to display in the toolbar button, default: <>
-      buttonTitle: "Show HTML source", // Text to display as the tooltip for the toolbar button, default: Show HTML source
-      syntax: false, // Show the HTML with syntax highlighting. Requires highlightjs on window.hljs (similar to Quill itself), default: false
-      prependSelector: 'div#myelement', // a string used to select where you want to insert the overlayContainer, default: null (appends to body),
-      editorModules: {} // The default mod
-    },
-
   }), [imageDropHandler]);
 
   const handleSubmit = (e) => {
@@ -190,7 +171,7 @@ const MyEditor = () => {
   }
 
   return (
-    <MyEditorContainer className="quill-form" onSubmit={handleSubmit}>
+    <MyEditorContainer onSubmit={handleSubmit}>
       <div className="text-editor">
         <input type="text" placeholder="Title" className="quill-title" onChange={(e) => setTitle(e.target.value)} required />
         <EditorToolBar />
@@ -201,16 +182,19 @@ const MyEditor = () => {
           ref={quillRef}
           modules={modules}
           formats={formats}
+          style={{ height: '70vh' }}
         />
-        {threeDTrue === 1 && <>
+        {threeDTrue === 1 &&
           <ThreeDUpload
-            threeDName={threeDName}
-            threeDURL={threeDURL}
+            threeDName={threeD[threeD.length - 1]}
+            threeDURL={`${HOST}:${PORT}/uploads/${threeD[threeD.length - 1]}`}
           />
-          <button type="button" onClick={deleteThreeD}>3D 모델 삭제</button>
-        </>}
-        <button type="submit">저장하기</button>
-        <button type="button" onClick={handleCancel}>취소하기</button>
+        }
+        <ButtonContainer>
+          {threeDTrue === 1 && <button type="button" onClick={deleteThreeD}>3D 모델 삭제</button>}
+          <button type="submit">게시물 저장하기</button>
+          <button type="button" onClick={handleCancel}>취소하기</button>
+        </ButtonContainer>
       </div>
     </MyEditorContainer>
   );
@@ -221,6 +205,16 @@ export default MyEditor;
 const MyEditorContainer = styled.form`
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top:2rem;
+  margin-bottom:2rem;
+`;
+
+const ButtonContainer = styled.div`
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
 `;

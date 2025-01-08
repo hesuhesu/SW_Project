@@ -17,7 +17,6 @@ export default function Navbar() {
   }, [location.pathname]);
   
   const Home = () => { window.location.href = '/'; }
-  const cacheClear = () => { successMessageURI(`Cache Clear!<br>홈으로 갑니다`, "/"); }
   const handleLogout = () => {
     localStorage.clear();
     setIsActive(false);
@@ -37,7 +36,6 @@ export default function Navbar() {
           <li>
             <Link className="navbar" onClick={Home}>Home</Link>
           </li>
-          <li><Link className="navbar" onClick={cacheClear}>Cache Clear</Link></li>
           <li className={`${boardOpen ? 'open' : ''}`}><Link className="navbar" onClick={toggleBoard}>Function <span>▼</span></Link>
             <ul>
               <li><Link className="navbar_" to="/board">게시판</Link></li>
