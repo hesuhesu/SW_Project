@@ -1,45 +1,37 @@
 import React, { useState, useRef, useCallback, useMemo, useEffect } from 'react';
 import ReactQuill, { Quill } from 'react-quill';
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import axios from 'axios';
-import EditorToolBar, { insertHeart, formats, undoChange, redoChange } from "../components/EditorToolBar";
+import styled from 'styled-components';
+import EditorToolBar, { insertHeart, undoChange, redoChange } from "../components/EditorToolBar";
 import { errorMessage, errorMessageURI } from '../utils/SweetAlertEvent';
 import Swal from "sweetalert2"; // 로직간 반환 기능 실패로 직접 구현
-import { timeCheck } from '../utils/TimeCheck';
 import ThreeDUpload from '../components/ThreeDUpload'
 
-import 'react-quill/dist/quill.snow.css'; // Quill snow스타일 시트 불러오기
-import '../css/MyEditor.css'
+import '../css/MyEditor.scss';
 
 const HOST = process.env.REACT_APP_HOST;
 const PORT = process.env.REACT_APP_PORT;
 
 const BoardUpdate = () => {
   const [data, setData] = useState([]); // board api 데이터 저장
+  const [title, setTitle] = useState('');
+  const [editorHtml, setEditorHtml] = useState('');
   const [imgData, setImgData] = useState([]); // img api 데이터 + 새로 추가하는 img 저장
   const [imgDataSub, setImgDataSub] = useState([]); // 새로 추가하는 img 저장 => 취소 or 페이지 새로고침에 대응하기 위함
   const [threeD, setThreeD] = useState([]); // 3D file api 데이터 + 새로 추가하는 3D file 저장
-  const [threeDName, setThreeDName] = useState('');
-  const [threeDURL, setThreeDURL] = useState('');
   const [threeDSub, setThreeDSub] = useState([]); // 새로 추가하는 3D file 저장 => 취소 or 페이지 새로고침에 대응하기 위함
+  const [threeDTrue, setThreeDTrue] = useState(0); // 3D 유무
   const quillRef = useRef();
   const threeDRef = useRef(0); // 3D Upload 선택지 -> 랜더링 안되는 선에서 변경 가능한 변수 - 1 
-  const unloadCheck = useRef(); // 뒤로가기, uri 강제 이동을 위한 변수
-  const [threeDTrue, setThreeDTrue] = useState(0); // 3D 유무
   const params = useParams()._id // id 저장 => 대체하려면 useLocation 과 useNavigate 를 사용하면 됨
 
+  const location = useLocation();
+  const navigate = useNavigate();
+
   useEffect(() => {
-    if (timeCheck() === 0) {
-      if (imgData.length > 0 || threeD.length > 0) {
-        axios.delete(`${HOST}:${PORT}/file_all_delete`, {
-          params: {
-            imgData: imgData,
-            threeD: threeD
-          }
-        }).then((response) => { }).catch((error) => { errorMessage("에러!!"); });
-      }
-      errorMessageURI("로그인 만료!", "/");
-    }
+    window.scrollTo(0, 0);
+    /*
     axios.get(`${HOST}:${PORT}/board/board_detail`, {
       params: { _id: params }
     }).then((response) => {
@@ -54,18 +46,29 @@ const BoardUpdate = () => {
         return;
       }
       if (response.data.list.threeDTrue === 1) {
-        setThreeDName(response.data.list.threeD[response.data.list.threeD.length - 1]);
-        setThreeDURL(`${HOST}:${PORT}/uploads/${response.data.list.threeD[response.data.list.threeD.length - 1]}`);
         threeDRef.current = 1;
       }
     }).catch((error) => { console.error(error); });
-    
-    return () => {
+    */
+    if (location.state.writer !== localStorage.key(0)) { // 다른 회원이 접근하는 것 방지
+      errorMessageURI("잘못된 접근입니다!", "/");
+      return;
     }
+    if (location.state.threeDTrue === 1) {
+      threeDRef.current = 1;
+    }
+    setTitle(location.state.title);
+    setData(location.state);
+    setEditorHtml(location.state.realContent);
+    setImgData(location.state.imgData);
+    setThreeD(location.state.threeD);
+    setThreeDTrue(location.state.threeDTrue);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // 에디터 내용 변경 핸들러
   const handleChange = useCallback((html) => {
-    setData({ realContent: html });
+    setEditorHtml(html);
   }, []);
 
   // 이미지 처리를 하는 핸들러
@@ -125,37 +128,33 @@ const BoardUpdate = () => {
   const insert3DButton = useCallback(async () => {
     if (threeDRef.current === 0) {
       const input = document.createElement('input');
-          // 속성 써주기
-          input.setAttribute('type', 'file');
-          input.setAttribute('accept', '*');
-          input.click();
-          // 버튼 클릭 시 해당 이벤트
-          input.addEventListener('change', async () => {
-            const file = input.files[0];
-            // 파일 확장자 확인
-            const fileExtension = file.name.substring(file.name.lastIndexOf('.') + 1).toLowerCase(); // 마지막 점 이후의 문자열 추출
-            if (!file) return; // 파일이 선택되지 않은 경우
-            else if (fileExtension !== 'gltf' && fileExtension !== 'glb') {
-              errorMessage(`지원하지 않는 3D 파일 확장자입니다.<br> 지원 확장자 : [gltf, glb]`);
-              return;
-            }
-            const formData = new FormData();
-            formData.append('gltf', file);
-            await axios.post(`${HOST}:${PORT}/gltf`, formData)
-              .then((res) => {
-                setThreeD(prevFiles => [...prevFiles, res.data.realName]);
-                setThreeDSub(prevFiles => [...prevFiles, res.data.realName]); // sub 충족
-                setThreeDTrue(1);
-                setThreeDName(res.data.realName)
-                setThreeDURL(res.data.url);
-                threeDRef.current = 1;
-              }).catch((e) => { errorMessage("GLTF 업로드 실패"); });
-          }, { once: true });
+      // 속성 써주기
+      input.setAttribute('type', 'file');
+      input.setAttribute('accept', '*');
+      input.click();
+      // 버튼 클릭 시 해당 이벤트
+      input.addEventListener('change', async () => {
+        const file = input.files[0];
+        // 파일 확장자 확인
+        const fileExtension = file.name.substring(file.name.lastIndexOf('.') + 1).toLowerCase(); // 마지막 점 이후의 문자열 추출
+        if (!file) return; // 파일이 선택되지 않은 경우
+        else if (fileExtension !== 'gltf' && fileExtension !== 'glb') {
+          errorMessage(`지원하지 않는 3D 파일 확장자입니다.<br> 지원 확장자 : [gltf, glb]`);
+          return;
+        }
+        const formData = new FormData();
+        formData.append('gltf', file);
+        await axios.post(`${HOST}:${PORT}/gltf`, formData)
+          .then((res) => {
+            setThreeD(prevFiles => [...prevFiles, res.data.realName]);
+            setThreeDSub(prevFiles => [...prevFiles, res.data.realName]); // sub 충족
+            setThreeDTrue(1);
+            threeDRef.current = 1;
+          }).catch((e) => { errorMessage("GLTF 업로드 실패"); });
+      }, { once: true });
     }
     else {
       setThreeDTrue(0);
-      setThreeDName('');
-      setThreeDURL('');
       threeDRef.current = 0;
     }
   }, []);
@@ -163,7 +162,6 @@ const BoardUpdate = () => {
   const deleteThreeD = useCallback(async () => {
     setThreeDTrue(0);
     threeDRef.current = 0;
-    return;
   }, []);
 
   const modules = useMemo(() => ({
@@ -185,30 +183,18 @@ const BoardUpdate = () => {
     },
     // image resize 추가
     ImageResize: { parchment: Quill.import('parchment') },
-    imageDropAndPaste: { handler: imageDropHandler },
-    htmlEditButton: {
-      debug: true, // logging, default:false
-      msg: "Edit the content in HTML format", //Custom message to display in the editor, default: Edit HTML here, when you click "OK" the quill editor's contents will be replaced
-      okText: "Ok", // Text to display in the OK button, default: Ok,
-      cancelText: "Cancel", // Text to display in the cancel button, default: Cancel
-      buttonHTML: "&lt;&gt;", // Text to display in the toolbar button, default: <>
-      buttonTitle: "Show HTML source", // Text to display as the tooltip for the toolbar button, default: Show HTML source
-      syntax: false, // Show the HTML with syntax highlighting. Requires highlightjs on window.hljs (similar to Quill itself), default: false
-      prependSelector: 'div#myelement', // a string used to select where you want to insert the overlayContainer, default: null (appends to body),
-      editorModules: {} // The default mod
-    },
+    imageDropAndPaste: { handler: imageDropHandler }
   }), [imageDropHandler]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    unloadCheck.current = 1;
     const description = quillRef.current.getEditor().getText(); //태그를 제외한 순수 text만을 받아온다. 검색기능을 구현하지 않을 거라면 굳이 text만 따로 저장할 필요는 없다.
     // description.trim()
     axios.put(`${HOST}:${PORT}/board/update`, {
       _id: params,
-      title: data.title,
+      title: title,
       content: description,
-      realContent: data.realContent,
+      realContent: editorHtml,
       imgData: imgData,
       threeD: threeD,
       threeDTrue: threeDTrue
@@ -220,13 +206,12 @@ const BoardUpdate = () => {
         showCancelButton: false,
         confirmButtonText: "확인",
       }).then(() => {
-        const before = document.referrer; // 이전 페이지 정보
-        window.location.href = before;
+        navigate(-1);
       });
     }).catch((e) => { errorMessage("에러!!"); });
   };
 
-  function handleCancel() {
+  const handleCancel = () => {
     if (imgDataSub.length > 0 || threeDSub.length > 0) {
       axios.delete(`${HOST}:${PORT}/file_all_delete`, {
         params: {
@@ -235,36 +220,53 @@ const BoardUpdate = () => {
         }
       }).then((response) => { }).catch((error) => { errorMessage("에러!!"); });
     }
-    const before = document.referrer; // 이전 페이지 정보
-    window.location.href = before;
-    return;
+    navigate(-1);
   }
 
   return (
-    <form className="quill-form" onSubmit={handleSubmit}>
+    <BoardUpdateContainer onSubmit={handleSubmit}>
       <div className="text-editor">
-        <input type="text" placeholder="Title" className = "quill-title" value={data.title} onChange={(e) => setData((prevState) => ({ ...prevState, title: e.target.value }))} required/>
+        <input type="text" placeholder="Title" className="quill-title" value={title} onChange={(e) => setTitle((e) => setTitle(e.target.value))} required />
         <EditorToolBar />
         <ReactQuill
           theme="snow"// 테마 설정 (여기서는 snow를 사용)
-          value={data.realContent}
+          value={editorHtml}
           onChange={handleChange}
           ref={quillRef}
           modules={modules}
-          formats={formats}
+          style={{ height: '70vh' }}
         />
-        {threeDTrue === 1 && <>
+        {threeDTrue === 1 &&
           <ThreeDUpload
-            threeDName={threeDName}
-            threeDURL={threeDURL}
+            threeDName={threeD[threeD.length - 1]}
+            threeDURL={`${HOST}:${PORT}/uploads/${threeD[threeD.length - 1]}`}
           />
-          <button type="button" onClick={deleteThreeD}>3D 모델 삭제</button>
-        </>}
-        <button type="submit">저장하기</button>
-        <button type="button" onClick={handleCancel}>취소하기</button>
+        }
+        <ButtonContainer>
+          {threeDTrue === 1 && <button type="button" onClick={deleteThreeD}>3D 모델 삭제</button>}
+          <button type="submit">게시물 저장하기</button>
+          <button type="button" onClick={handleCancel}>취소하기</button>
+        </ButtonContainer>
       </div>
-    </form>
+    </BoardUpdateContainer>
   );
 };
 
 export default BoardUpdate;
+
+const BoardUpdateContainer = styled.form`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top:2rem;
+  margin-bottom:2rem;
+`;
+
+const ButtonContainer = styled.div`
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+`;

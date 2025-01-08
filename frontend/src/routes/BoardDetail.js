@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import ReactQuill from 'react-quill';
@@ -8,8 +8,6 @@ import ThreeDUpload from '../components/ThreeDUpload';
 import styled from 'styled-components';
 import PostInformation from '../components/BoardDetail/PostInformation';
 
-import 'react-quill/dist/quill.snow.css'; // Quill snow스타일 시트 불러오기
-
 const HOST = process.env.REACT_APP_HOST;
 const PORT = process.env.REACT_APP_PORT;
 
@@ -18,11 +16,12 @@ const BoardDetail = () => {
   const params = useParams()._id // id 저장 => 대체하려면 useLocation 과 useNavigate 를 사용하면 됨
   const [threeDURL, setThreeDURL] = useState(''); // Modify 를 위한 경로 저장
   const [threeDName, setThreeDName] = useState(''); // 다운로드를 위한 이름 저장
-  
+
   const navigate = useNavigate();
-  
+
   useEffect(() => {
     timeCheck();
+    window.scrollTo(0, 0);
     axios.get(`${HOST}:${PORT}/board/board_detail`, {
       params: { _id: params }
     }).then((response) => {
@@ -33,9 +32,7 @@ const BoardDetail = () => {
     }).catch((error) => { console.error(error); });
   }, [params]);
 
-  function modifiedBoard() { window.location.href = `/board_update/${params}`; }
-
-  function deleteBoard() {
+  const deleteBoard = () => {
     if (timeCheck(params) === 0) {
       errorMessageURI("로그인 만료!", "/");
       return;
@@ -55,34 +52,37 @@ const BoardDetail = () => {
     }).catch((error) => { errorMessage("삭제 실패"); })
   }
 
-  const modules = {
-    toolbar: false, // toolbar 숨기기
-  };
+  const modules = useMemo(() => ({
+    toolbar: false,
+  }), []);
 
   return (
     <BoardDetailContainer>
       {data ? (
-          <div className="post-view-wrapper">
-            <PostInformation data={data}/>
+        <div className="post-view-wrapper">
+          <PostInformation data={data} />
+          <QuillContainer>
             <ReactQuill
               theme="snow"// 테마 설정 (여기서는 snow를 사용)
               value={data.realContent}
               readOnly={true} // 읽기 전용 모드
               modules={modules}
             />
-            {data.threeDTrue === 1 && <ThreeDUpload
+          </QuillContainer>
+
+          {data.threeDTrue === 1 && <ThreeDUpload
             threeDName={threeDName}
             threeDURL={threeDURL}
-            />}
-            <ButtonContainer>
-              {localStorage.key(0) === data.writer && <>
-                <button type="button" onClick={modifiedBoard}>수정하기</button>
-                <button type="button" onClick={deleteBoard}>삭제하기</button>
-              </>}
-              <button type="button" onClick={() => navigate('/board')}>목록으로 돌아가기</button>
-            </ButtonContainer>
-          </div>
-        ) : '해당 게시글을 찾을 수 없습니다.'
+          />}
+          <ButtonContainer>
+            {localStorage.key(0) === data.writer && <>
+              <button type="button" onClick={() => navigate(`/board_update/${params}`, { state: data })}>게시물 수정하기</button>
+              <button type="button" onClick={deleteBoard}>게시물 삭제하기</button>
+            </>}
+            <button type="button" onClick={() => navigate('/board')}>목록으로 돌아가기</button>
+          </ButtonContainer>
+        </div>
+      ) : '해당 게시글을 찾을 수 없습니다.'
       }
     </BoardDetailContainer>
   )
@@ -104,6 +104,13 @@ const BoardDetailContainer = styled.div`
     border-radius: 10px;
   }
 `;
+
+const QuillContainer = styled.div`
+    -webkit-user-select:all;
+    -moz-user-select:all;
+    -ms-user-select:all;
+    user-select:all;
+`
 
 const ButtonContainer = styled.div`
   margin-top: 0.5rem;

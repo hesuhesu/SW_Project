@@ -77,28 +77,28 @@ const BoardContainer = styled.div`
     min-height: 100vh;
 
     .pagination {
-    display: flex;
-    list-style: none;
-    padding: 0;
-    margin-bottom: 150px;
-  }
-  
-  .pagination li {
-    margin: 0 5px;
-  }
-  
-  .pagination li a {
-    text-decoration: none;
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-  }
-  
-  .pagination li a:hover {
-    background-color: #f0f0f0;
-  }
-  
-  .active a {
-    background-color: #007bff;
-    color: white;
-  }
+      display: flex;
+      list-style: none;
+      padding: 0;
+      margin-bottom: 150px;
+    }
+    
+    .pagination li {
+      margin: 0 5px;
+    }
+    
+    .pagination li a {
+      text-decoration: none;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+    }
+    
+    .pagination li a:hover {
+      background-color: #f0f0f0;
+    }
+    
+    .active a {
+      background-color: #007bff;
+      color: white;
+    }
 `;

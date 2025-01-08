@@ -119,6 +119,7 @@ const PasswordChangeContainer = styled.form`
     
       h2 {
         font-family: "Quill";
+        font-size: 3rem;
         margin-top: 0;
         font-weight: bold;
         margin-bottom: 20px;
