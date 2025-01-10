@@ -15,11 +15,11 @@
 
 /* 사이드바 기본 스타일 (닫힌 상태) */
 .sidebar {
-  width: 250px;
+  width: 15vw;
   height: 100vh;
   position: fixed;
   top: 0;
-  left: -250px;
+  left: -15vw;
   /* 사이드바를 화면 밖으로 숨김 */
   background-color: rgb(211, 211, 211);
   padding-top: 60px;
@@ -101,9 +101,6 @@
 
 /* 콘텐츠 영역 스타일 */
 .content {
-  margin-left: 20px;
-  /* 기본 상태에서 콘텐츠 영역 마진 */
-  padding: 20px;
   transition: margin-left 0.3s ease;
 }
 

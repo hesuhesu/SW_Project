@@ -1,7 +1,9 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
 import React, { useState, useEffect } from 'react';
-import '../css/SideBanner.css';
+import { timeCheck } from "../utils/TimeCheck";
 import { successMessageURI } from "../utils/SweetAlertEvent";
+
+import '../css/SideBanner.css';
 
 export default function Navbar() {
   const [isActive, setIsActive] = useState(false);
@@ -10,33 +12,31 @@ export default function Navbar() {
   const location = useLocation();
 
   useEffect(() => {
-    if (localStorage.length > 0){ setIsActive(true); } 
+    if (timeCheck() !== 0){
+      setIsActive(true);
+    }
     else { setIsActive(false); }
     setSidebarOpen(false); // 다른 페이지로 랜더링 될 때 자연스럽게 옆으로 빠짐
     // setBoardOpen(false);
   }, [location.pathname]);
   
-  const Home = () => { window.location.href = '/'; }
   const handleLogout = () => {
     localStorage.clear();
     setIsActive(false);
     successMessageURI("로그아웃!", "/");
   };
 
-  const toggleSidebar = () => { setSidebarOpen(!sidebarOpen); }; // 사이드바 열기/닫기 토글
-  const toggleBoard = () => { setBoardOpen(!boardOpen); }
-
   return (
     <>
-      <button className="menu-btn" onClick={toggleSidebar}>
+      <button className="menu-btn" onClick={() => setSidebarOpen(!sidebarOpen)}>
         ≡
       </button>
       <nav className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
         <ul id="sideMenu">
           <li>
-            <Link className="navbar" onClick={Home}>Home</Link>
+            <Link className="navbar" to="/">Home</Link>
           </li>
-          <li className={`${boardOpen ? 'open' : ''}`}><Link className="navbar" onClick={toggleBoard}>Function <span>▼</span></Link>
+          <li className={`${boardOpen ? 'open' : ''}`}><Link className="navbar" onClick={() => setBoardOpen(!boardOpen)}>Function <span>▼</span></Link>
             <ul>
               <li><Link className="navbar_" to="/board">게시판</Link></li>
               <li><Link className="navbar_" to="/my_editor">게시물 작성</Link></li>

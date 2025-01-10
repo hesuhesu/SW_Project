@@ -8,8 +8,8 @@ import axios from 'axios';
 import styled from 'styled-components';
 import { errorMessageURI } from '../utils/SweetAlertEvent';
 import { timeCheck } from '../utils/TimeCheck';
-
 import MyPageHeader from '../components/MyPage/MyPageHeader';
+import { BasicHeaderStructure } from '../utils/CSS';
 
 const ITEMS_PER_PAGE = 10; // 페이지당 항목 수
 const HOST = process.env.REACT_APP_HOST;
@@ -97,6 +97,10 @@ const MyPageContainer = styled.div`
   a {
     text-decoration: none;
     color: inherit;
+  }
+
+  h2 {
+    ${BasicHeaderStructure('3rem')}
   }
 
   .pagination {

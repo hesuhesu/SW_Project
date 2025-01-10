@@ -7,6 +7,7 @@ import EditorToolBar, { insertHeart, undoChange, redoChange } from "../component
 import { errorMessage, errorMessageURI } from '../utils/SweetAlertEvent';
 import Swal from "sweetalert2"; // 로직간 반환 기능 실패로 직접 구현
 import ThreeDUpload from '../components/ThreeDUpload'
+import { ThreeDEditorButtonStyles } from '../utils/CSS';
 
 import '../css/MyEditor.scss';
 
@@ -14,7 +15,6 @@ const HOST = process.env.REACT_APP_HOST;
 const PORT = process.env.REACT_APP_PORT;
 
 const BoardUpdate = () => {
-  const [data, setData] = useState([]); // board api 데이터 저장
   const [title, setTitle] = useState('');
   const [editorHtml, setEditorHtml] = useState('');
   const [imgData, setImgData] = useState([]); // img api 데이터 + 새로 추가하는 img 저장
@@ -31,25 +31,6 @@ const BoardUpdate = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    /*
-    axios.get(`${HOST}:${PORT}/board/board_detail`, {
-      params: { _id: params }
-    }).then((response) => {
-      setData(response.data.list);
-      setImgData(response.data.list.imgData); // api 데이터 + 이후 넣을 데이터
-      setThreeD(response.data.list.threeD);
-      setThreeDTrue(response.data.list.threeDTrue);
-      
-      
-      if (response.data.list.writer !== localStorage.key(0)) { // 다른 회원이 접근하는 것 방지
-        errorMessageURI("잘못된 접근입니다!", "/");
-        return;
-      }
-      if (response.data.list.threeDTrue === 1) {
-        threeDRef.current = 1;
-      }
-    }).catch((error) => { console.error(error); });
-    */
     if (location.state.writer !== localStorage.key(0)) { // 다른 회원이 접근하는 것 방지
       errorMessageURI("잘못된 접근입니다!", "/");
       return;
@@ -58,7 +39,6 @@ const BoardUpdate = () => {
       threeDRef.current = 1;
     }
     setTitle(location.state.title);
-    setData(location.state);
     setEditorHtml(location.state.realContent);
     setImgData(location.state.imgData);
     setThreeD(location.state.threeD);
@@ -261,10 +241,14 @@ const BoardUpdateContainer = styled.form`
   justify-content: center;
   margin-top:2rem;
   margin-bottom:2rem;
+
+  button {
+    ${ThreeDEditorButtonStyles}
+  }
 `;
 
 const ButtonContainer = styled.div`
-  margin-top: 0.5rem;
+  margin-top: 1rem;
   display: flex;
   flex-direction: row;
   align-items: center;
