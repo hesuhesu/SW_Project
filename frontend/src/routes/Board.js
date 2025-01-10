@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import styled from 'styled-components';
 import ReactPaginate from 'react-paginate';
-
+import Spinner from '../utils/Spinner';
 import CommonTable from '../components/CommonTable/CommonTable';
 import CommonTableColumn from '../components/CommonTable/CommonTableColumn';
 import CommonTableRow from '../components/CommonTable/CommonTableRow';
@@ -12,12 +12,15 @@ const ITEMS_PER_PAGE = 10; // 페이지당 항목 수
 const HOST = process.env.REACT_APP_HOST;
 const PORT = process.env.REACT_APP_PORT;
 
-function Board() {
+const Board = () => {
   const [data, setData] = useState([]);
   const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
+  const [isLoading, setIsLoading] = useState(true); // 로딩 상태 관리
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+    let timeoutId;
     axios.get(`${HOST}:${PORT}/board/all_board_list`)
       .then((response) => {
         setData(response.data.list);
@@ -25,7 +28,12 @@ function Board() {
       })
       .catch((error) => {
         console.error(error);
+      }).finally(() => {
+        timeoutId = setTimeout(() => setIsLoading(false), 500);
       });
+      return () => {
+        clearTimeout(timeoutId);
+      };
   }, []);
 
   // 페이지 변경 핸들러
@@ -36,11 +44,15 @@ function Board() {
   // 현재 페이지에 해당하는 데이터
   const displayedData = data.slice(currentPage * ITEMS_PER_PAGE, (currentPage + 1) * ITEMS_PER_PAGE);
 
+  if (isLoading) {
+    return <Spinner/>;
+  } 
+
   return (
     <BoardContainer>
       {data.length > 0 ? (
         <>
-          <CommonTable headersName={['제목[클릭]', '내용', '작성자', '등록일']}>
+          <CommonTable headersName={['제목', '내용', '작성자', '등록일']}>
             {displayedData.map((item) => (
               <CommonTableRow key={item._id}>
                 <CommonTableColumn><Link to={`/board_detail/${item._id}`}>{item.title}</Link></CommonTableColumn>

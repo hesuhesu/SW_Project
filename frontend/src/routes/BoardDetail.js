@@ -7,6 +7,8 @@ import { timeCheck } from '../utils/TimeCheck';
 import ThreeDUpload from '../components/ThreeDUpload';
 import styled from 'styled-components';
 import PostInformation from '../components/BoardDetail/PostInformation';
+import { ThreeDEditorButtonStyles } from '../utils/CSS';
+import Spinner from '../utils/Spinner';
 
 const HOST = process.env.REACT_APP_HOST;
 const PORT = process.env.REACT_APP_PORT;
@@ -16,12 +18,12 @@ const BoardDetail = () => {
   const params = useParams()._id // id 저장 => 대체하려면 useLocation 과 useNavigate 를 사용하면 됨
   const [threeDURL, setThreeDURL] = useState(''); // Modify 를 위한 경로 저장
   const [threeDName, setThreeDName] = useState(''); // 다운로드를 위한 이름 저장
-
+  const [isLoading, setIsLoading] = useState(true); // 로딩 상태 관리
   const navigate = useNavigate();
 
   useEffect(() => {
-    timeCheck();
     window.scrollTo(0, 0);
+    let timeoutId;
     axios.get(`${HOST}:${PORT}/board/board_detail`, {
       params: { _id: params }
     }).then((response) => {
@@ -29,7 +31,14 @@ const BoardDetail = () => {
       setData(response.data.list);
       setThreeDURL(`${HOST}:${PORT}/uploads/${threeDValue}`);
       setThreeDName(threeDValue);
-    }).catch((error) => { console.error(error); });
+    }).catch((error) => {
+      console.error(error);
+    }).finally(() => {
+      timeoutId = setTimeout(() => setIsLoading(false), 500);
+    });
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, [params]);
 
   const deleteBoard = () => {
@@ -55,6 +64,10 @@ const BoardDetail = () => {
   const modules = useMemo(() => ({
     toolbar: false,
   }), []);
+
+  if (isLoading) {
+    return <Spinner />;
+  }
 
   return (
     <BoardDetailContainer>
@@ -103,6 +116,10 @@ const BoardDetailContainer = styled.div`
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
   }
+
+  button {
+    ${ThreeDEditorButtonStyles}
+  }
 `;
 
 const QuillContainer = styled.div`
@@ -110,10 +127,10 @@ const QuillContainer = styled.div`
     -moz-user-select:all;
     -ms-user-select:all;
     user-select:all;
-`
+`;
 
 const ButtonContainer = styled.div`
-  margin-top: 0.5rem;
+  margin-top: 1rem;
   display: flex;
   flex-direction: row;
   align-items: center;

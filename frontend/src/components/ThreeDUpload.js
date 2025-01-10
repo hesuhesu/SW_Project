@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { BasicHeaderStructure } from '../utils/CSS';
 
 const HOST = process.env.REACT_APP_HOST;
 const PORT = process.env.REACT_APP_PORT;
@@ -18,6 +19,27 @@ const ThreeDUpload = ({ threeDName, threeDURL }) => {
   const cameraRef = useRef();
 
   useEffect(() => {
+    const handleResize = () => {
+      if (rendererRef.current && cameraRef.current) {
+        const renderer = rendererRef.current;
+        const camera = cameraRef.current;
+  
+        // 새로운 크기 계산
+        const width = window.innerWidth / 2;
+        const height = window.innerHeight / 1.5;
+  
+        /*
+        const width = rendererRef.current.domElement.width;
+        const height = rendererRef.current.domElement.width;;
+        */
+
+        // 렌더러와 카메라 비율 업데이트
+        renderer.setSize(width, height);
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+      }
+    };
+
     const renderer = new THREE.WebGLRenderer({
       canvas: canvasRef.current,
       antialias: true,
@@ -84,6 +106,9 @@ const ThreeDUpload = ({ threeDName, threeDURL }) => {
       (error) => console.error('Failed to load GLTF file:', error)
     );
 
+    // 윈도우 리사이즈 이벤트 추가
+    window.addEventListener('resize', handleResize);
+
     return () => {
       if (sceneRef.current) {
         scene.traverse((object) => {
@@ -105,6 +130,9 @@ const ThreeDUpload = ({ threeDName, threeDURL }) => {
       rendererRef.current = null;
       sceneRef.current = null;
       mixerRef.current = null;
+
+      // 윈도우 리사이즈 이벤트 제거
+    window.removeEventListener('resize', handleResize);
     };
   }, [threeDURL]);
 
@@ -168,16 +196,24 @@ const ThreeDUpload = ({ threeDName, threeDURL }) => {
 export default ThreeDUpload;
 
 const ThreeDUploadContainer = styled.div`
-  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   margin-top: 2rem;
-  padding: 2rem;
+  padding: 1rem;
   align-items: center;
   background-color: white;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
   border-radius: 0.5rem;
 
+  h2 {
+    ${BasicHeaderStructure('3rem')}
+  }
+
   .threeD-div {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     margin-bottom: 30px;
@@ -186,7 +222,6 @@ const ThreeDUploadContainer = styled.div`
     canvas {
       border: 5px solid black;
       border-radius: 10px;
-      padding: 10px;
     }
   }
 `;

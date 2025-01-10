@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import ThreeDUpload from '../components/ThreeDUpload';
 import EditorToolBar, { insertHeart, formats, undoChange, redoChange } from "../components/EditorToolBar";
 import { errorMessage, successMessageURI } from '../utils/SweetAlertEvent';
+import { ThreeDEditorButtonStyles } from '../utils/CSS';
 
 import '../css/MyEditor.scss';
 
@@ -209,10 +210,14 @@ const MyEditorContainer = styled.form`
   justify-content: center;
   margin-top:2rem;
   margin-bottom:2rem;
+
+  button {
+    ${ThreeDEditorButtonStyles}
+  }
 `;
 
 const ButtonContainer = styled.div`
-  margin-top: 0.5rem;
+  margin-top: 1rem;
   display: flex;
   flex-direction: row;
   align-items: center;
