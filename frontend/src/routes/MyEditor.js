@@ -12,6 +12,7 @@ import '../css/MyEditor.scss';
 
 const HOST = process.env.REACT_APP_HOST;
 const PORT = process.env.REACT_APP_PORT;
+const token = localStorage.getItem('jwtToken');
 
 const MyEditor = () => {
   const [editorHtml, setEditorHtml] = useState('');
@@ -154,6 +155,10 @@ const MyEditor = () => {
       imgData: imgData,
       threeD: threeD,
       threeDTrue: threeDTrue
+    }, {
+      headers: {
+        'Authorization': token,
+      },
     }).then((res) => {
       successMessageURI("저장되었습니다!", "/board");
     }).catch((e) => { errorMessage("에러!!"); });
