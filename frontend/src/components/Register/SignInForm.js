@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import Swal from 'sweetalert2';
-import { errorMessage } from '../../utils/SweetAlertEvent';
+import { errorMessage, successMessage } from '../../utils/SweetAlertEvent';
 import axios from 'axios';
 
 const HOST = process.env.REACT_APP_HOST;
@@ -23,38 +22,44 @@ const SignInForm = ({ navigate }) => {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            await axios.post(`${HOST}:${PORT}/auth/login`, loginData);
-            Swal.fire({
-                title: '알림',
-                icon: 'success',
-                html: `환영합니다!`,
-                showCancelButton: false,
-                confirmButtonText: '확인',
-            }).then(() => {
-                localStorage.clear();
-                const now = new Date();
-                const nextTime = new Date(now.setHours(now.getHours() + 1));
-                const obj = {
-                    time: nextTime.toLocaleString('ko-KR', {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        second: '2-digit',
-                        hour12: false
-                    }),
-                    expire: nextTime.getTime()
-                }
-                localStorage.setItem(loginData.email, JSON.stringify(obj));
-                navigate("/");
+            const response = await axios.post(`${HOST}:${PORT}/auth/login`, {
+                email: loginData.email,
+                password: loginData.password,
             });
-        } catch (e) {
-            errorMessage('로그인 실패!!');
-            setLoginData({
-                email: '',
-                password: '',
-            })
+
+            // 응답이 성공적일 경우
+            const token = response.data.token;
+
+            // 토큰을 로컬 스토리지에 저장
+            successMessage("환영합니다 회원님!");
+            const now = new Date();
+            const nextTime = new Date(now.setHours(now.getHours() + 1));
+            const obj = {
+                time: nextTime.toLocaleString('ko-KR', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                }),
+                expire: nextTime.getTime()
+            }
+            localStorage.setItem(loginData.email, JSON.stringify(obj));
+            localStorage.setItem('jwtToken', token);
+            navigate("/");
+            return;
+        } catch (error) {
+            if (error.response) {
+                if (error.response.status === 401) {
+                    errorMessage("Failed Login");
+                } else if (error.response.status === 500) {
+                    errorMessage("server Error");
+                }
+            } else {
+                errorMessage("ETC Error");
+            }
         }
     };
 

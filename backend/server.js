@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const path = require('path');
-const authRoute = require('./routes/auth');
+const { router }  = require('./routes/auth');
 const boardRoute = require('./routes/board');
 const multer = require('multer');
 const fs = require('fs');
@@ -23,7 +23,7 @@ app.use(express.urlencoded({ extended: false })); // 내부 url 파서 사용
 app.use(express.static(path.join(__dirname + '/public'))); // 정적 파일 위치 설정
 
 // Routes Middleware
-app.use('/auth', authRoute);
+app.use('/auth', router);
 app.use('/board', boardRoute);
 
 // MongoDB Connection

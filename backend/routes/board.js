@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const Board = require('../models/Board');
+const { authenticateToken } = require('./auth');
 
 // 내 글 목록 조회 ======================================================================================================================
-router.get("/my_board_list", async (req, res) => {
+router.get("/my_board_list", authenticateToken, async (req, res) => {
     try {
         const board = await Board.find({ writer : req.query.writer }).sort({ createdAt: -1 });
         res.json({ list: board });
@@ -34,7 +35,7 @@ router.get("/all_board_list", async(req, res) => {
 });
 
 // 게시글 작성 ======================================================================================================================
-router.post("/write", async (req, res) => {
+router.post("/write", authenticateToken, async (req, res) => {
     try {
       let obj;
       const now = new Date();
@@ -78,7 +79,7 @@ router.post("/detail", async(req,res) => {
 });
 
  // 게시글 업데이트 ======================================================================================================================
-router.put("/update", async (req,res) => {
+router.put("/update", authenticateToken, async (req,res) => {
     try {
         
         await Board.updateOne(
@@ -101,7 +102,7 @@ router.put("/update", async (req,res) => {
 });
 
  // 게시글 삭제 ======================================================================================================================
- router.delete("/delete", async(req,res) => {
+ router.delete("/delete", authenticateToken, async(req,res) => {
      try {
         await Board.deleteOne({_id: req.query._id })
         res.json({ message: true });
@@ -110,7 +111,7 @@ router.put("/update", async (req,res) => {
      }
  });
 
- router.delete("/delete_user_all_board", async(req,res) => {
+ router.delete("/delete_user_all_board", authenticateToken, async(req,res) => {
     try {
        await Board.deleteMany({writer: req.query.writer })
        res.json({ message: true });

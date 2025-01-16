@@ -14,6 +14,7 @@ import { BasicHeaderStructure } from '../utils/CSS';
 const ITEMS_PER_PAGE = 10; // 페이지당 항목 수
 const HOST = process.env.REACT_APP_HOST;
 const PORT = process.env.REACT_APP_PORT;
+const token = localStorage.getItem('jwtToken');
 
 function MyPage() {
   const [time, setTime] = useState('');
@@ -24,7 +25,7 @@ function MyPage() {
   
   const navigate = useNavigate();
 
-  useEffect(() => { // 탈퇴 기능이 있는데, 입장 시 인증을 받지 않는가 -> 사용자의 자율성에 맡김
+  useEffect(() => {
     const checkTime = timeCheck();
     if (checkTime === 0) {
       errorMessageURI("로그인 만료!", "/");
@@ -36,7 +37,10 @@ function MyPage() {
     }).then((response) => { setMyInf(response.data.list); })
       .catch((error) => { console.error(error); });
     axios.get(`${HOST}:${PORT}/board/my_board_list`, {
-      params: { writer: localStorage.key(0) }
+      params: { writer: localStorage.key(0) },
+      headers: {
+        'Authorization': token,
+      },
     }).then((response) => {
       setData(response.data.list);
       setPageCount(Math.ceil(response.data.list.length / ITEMS_PER_PAGE)); // 총 페이지 수 계산
@@ -89,10 +93,11 @@ function MyPage() {
 export default MyPage;
 
 const MyPageContainer = styled.div`
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
 
   a {
     text-decoration: none;

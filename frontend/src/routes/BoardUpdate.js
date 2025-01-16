@@ -13,6 +13,7 @@ import '../css/MyEditor.scss';
 
 const HOST = process.env.REACT_APP_HOST;
 const PORT = process.env.REACT_APP_PORT;
+const token = localStorage.getItem('jwtToken');
 
 const BoardUpdate = () => {
   const [title, setTitle] = useState('');
@@ -178,6 +179,10 @@ const BoardUpdate = () => {
       imgData: imgData,
       threeD: threeD,
       threeDTrue: threeDTrue
+    }, {
+      headers: {
+        'Authorization': token,
+      },
     }).then((res) => {
       Swal.fire({
         title: "알림",
