@@ -111,6 +111,7 @@ router.put("/update", authenticateToken, async (req,res) => {
      }
  });
 
+ // 계정 삭제 시 전체 게시물 삭제
  router.delete("/delete_user_all_board", authenticateToken, async(req,res) => {
     try {
        await Board.deleteMany({writer: req.query.writer })

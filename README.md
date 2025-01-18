@@ -52,15 +52,16 @@ ___
 
 <br>
 
-- backend 폴더 root 위치에 .env 파일을 생성 후 다음과 같이 기입합니다.
+- backend 폴더 root 위치에 .env 파일을 생성 후 다음과 같이 기입합니다.(SECRET_KEY 는 반드시 영어 대소문자 및 특수기호를 적절히 활용해 주세요)
 
 ```
 MONGO_URI=mongodb://127.0.0.1:27017/
 HOST=http://localhost
 PORT=5000
+SECRET_KEY=YOUR CODE
 ```
 
-- frontend 폴더 root 위치d에 .env 파일을 생성 후 다음과 같이 기입합니다.
+- frontend 폴더 root 위치에 .env 파일을 생성 후 다음과 같이 기입합니다.
 
 ```
 REACT_APP_HOST=http://localhost

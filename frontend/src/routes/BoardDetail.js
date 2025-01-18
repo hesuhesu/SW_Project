@@ -19,6 +19,7 @@ const BoardDetail = () => {
   const [threeDURL, setThreeDURL] = useState(''); // Modify 를 위한 경로 저장
   const [threeDName, setThreeDName] = useState(''); // 다운로드를 위한 이름 저장
   const [isLoading, setIsLoading] = useState(true); // 로딩 상태 관리
+  const token = localStorage.getItem('jwtToken');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -55,7 +56,10 @@ const BoardDetail = () => {
       }).then((response) => { }).catch((error) => { errorMessage("삭제 실패"); })
     }
     axios.delete(`${HOST}:${PORT}/board/delete`, {
-      params: { _id: params }
+      params: { _id: params }, 
+      headers: {
+        'Authorization': token
+      }
     }).then((response) => {
       successMessageURI("게시물이 삭제되었습니다!", `/board`);
     }).catch((error) => { errorMessage("삭제 실패"); })

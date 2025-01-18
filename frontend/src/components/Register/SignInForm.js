@@ -22,10 +22,7 @@ const SignInForm = ({ navigate }) => {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post(`${HOST}:${PORT}/auth/login`, {
-                email: loginData.email,
-                password: loginData.password,
-            });
+            const response = await axios.post(`${HOST}:${PORT}/auth/login`, loginData);
 
             // 응답이 성공적일 경우
             const token = response.data.token;
