@@ -14,7 +14,6 @@ import { BasicHeaderStructure } from '../utils/CSS';
 const ITEMS_PER_PAGE = 10; // 페이지당 항목 수
 const HOST = process.env.REACT_APP_HOST;
 const PORT = process.env.REACT_APP_PORT;
-const token = localStorage.getItem('jwtToken');
 
 function MyPage() {
   const [time, setTime] = useState('');
@@ -22,6 +21,7 @@ function MyPage() {
   const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [myInf, setMyInf] = useState([]);
+  const token = localStorage.getItem('jwtToken');
   
   const navigate = useNavigate();
 

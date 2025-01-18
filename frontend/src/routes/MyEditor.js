@@ -12,7 +12,6 @@ import '../css/MyEditor.scss';
 
 const HOST = process.env.REACT_APP_HOST;
 const PORT = process.env.REACT_APP_PORT;
-const token = localStorage.getItem('jwtToken');
 
 const MyEditor = () => {
   const [editorHtml, setEditorHtml] = useState('');
@@ -22,6 +21,8 @@ const MyEditor = () => {
   const [threeDTrue, setThreeDTrue] = useState(0); // 3D 파일 유무
   const quillRef = useRef();
   const threeDRef = useRef(0); // 3D Upload 선택지 -> 랜더링 안되는 선에서 변경 가능한 변수 - 1
+  const token = localStorage.getItem('jwtToken');
+  
   const navigate = useNavigate();
 
   const handleChange = useCallback((html) => {

@@ -7,6 +7,7 @@ import '../css/Register.css';
 
 const Register = () => {
   const [isActive, setIsActive] = useState(false);
+  
   const navigate = useNavigate();
 
   return (

@@ -7,7 +7,6 @@ import { timeCheck } from '../../../utils/TimeCheck';
 
 const HOST = process.env.REACT_APP_HOST;
 const PORT = process.env.REACT_APP_PORT;
-const token = localStorage.getItem('jwtToken');
 
 const PasswordChange = () => {
   const [password, setPassword] = useState({
@@ -15,6 +14,7 @@ const PasswordChange = () => {
     before_password: '',
     after_password: '',
   });
+  const token = localStorage.getItem('jwtToken');
 
   const handleChangePassword = async (e) => {
     e.preventDefault();
